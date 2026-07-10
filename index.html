@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Портал материалов | Savely Gerov</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-container">
+          <i class="fa-solid fa-shield-halved logo-icon"></i>
+          <div class="logo-text">
+            <span class="logo-title">ADMINISTRATION</span>
+            <span class="logo-subtitle">Southern District</span>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="sidebar-menu">
+        <button class="menu-item active" data-tab="home" id="tab-btn-home">
+          <i class="fa-solid fa-house"></i>
+          <span>Главная</span>
+        </button>
+        <button class="menu-item" data-tab="lectures" id="tab-btn-lectures">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Лекционный раздел</span>
+        </button>
+        <button class="menu-item disabled" title="Будет добавлено позже">
+          <i class="fa-solid fa-gavel"></i>
+          <span>Уставы и правила <span class="badge">Скоро</span></span>
+        </button>
+        <button class="menu-item disabled" title="Будет добавлено позже">
+          <i class="fa-solid fa-user-tie"></i>
+          <span>Полезный софт <span class="badge">Скоро</span></span>
+        </button>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="author-info">
+          <div class="author-label">РАЗРАБОТЧИК</div>
+          <div class="author-name">Savely_Gerov</div>
+          <div class="author-status">Экс-Глава Администрации ЮР</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="content-area">
+      
+      <!-- Tab: Home -->
+      <section id="tab-home" class="tab-content active">
+        <div class="welcome-banner">
+          <div class="banner-overlay"></div>
+          <div class="banner-body">
+            <span class="welcome-tag">Amazing Online Portal</span>
+            <h1 class="welcome-title">Информационный портал Южного Района</h1>
+            <p class="welcome-desc">Добро пожаловать на единую базу знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей, эффективного обучения сотрудников и быстрого бинда лекций в игру.</p>
+          </div>
+        </div>
+
+        <div class="home-grid">
+          
+          <!-- Creator Info Card -->
+          <div class="info-card creator-card">
+            <div class="card-icon-wrapper">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div class="card-content">
+              <h3>Создатель портала</h3>
+              <p class="creator-name">Savely_Gerov</p>
+              <p class="creator-bio">Бывший глава администрации Южного Района. Портал спроектирован с упором на эргономику и скорость работы для действующих сотрудников и старшего состава фракций.</p>
+              <div class="creator-badge"><i class="fa-solid fa-award"></i> Почетный статус: Экс-Глава Администрации</div>
+            </div>
+          </div>
+
+          <!-- Feature Highlight Card -->
+          <div class="info-card feature-card" id="go-to-lectures-card">
+            <div class="card-icon-wrapper">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="card-content">
+              <h3>Лекционный раздел</h3>
+              <p>Удобный инструмент для проведения лекций составу. Интерактивное копирование каждой строки по клику, автонастройка игровых префиксов и быстрая отправка.</p>
+              <span class="card-link">Перейти в раздел <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </div>
+
+          <!-- Quick Tip Card -->
+          <div class="info-card tips-card">
+            <div class="card-icon-wrapper">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+            <div class="card-content">
+              <h3>Совет по использованию</h3>
+              <p>Откройте лекцию, включите префикс рации в настройках копирования, затем просто нажимайте на строки лекции по порядку. Каждая строка копируется в буфер обмена за доли секунды — вам остается лишь нажать <strong>F6 -> Ctrl+V -> Enter</strong> в игре.</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Tab: Lectures -->
+      <section id="tab-lectures" class="tab-content">
+        <div class="section-header">
+          <div class="header-left">
+            <h2 class="section-title">Лекционный раздел</h2>
+            <p class="section-subtitle">База лекций с системой быстрого интерактивного копирования для игры.</p>
+          </div>
+          
+          <!-- Search & Filter Controls -->
+          <div class="controls-container">
+            <div class="search-wrapper">
+              <i class="fa-solid fa-magnifying-glass search-icon"></i>
+              <input type="text" id="lecture-search" placeholder="Поиск лекции по названию или тексту...">
+            </div>
+          </div>
+        </div>
+
+        <div class="lectures-layout">
+          <!-- Left column: Lectures List -->
+          <div class="lectures-sidebar">
+            <div class="category-filters" id="category-filters-list">
+              <!-- Dynamically generated category tabs -->
+            </div>
+            <div class="lectures-list" id="lectures-list-container">
+              <!-- Dynamically generated list items -->
+            </div>
+          </div>
+
+          <!-- Right column: Active Lecture Viewer -->
+          <div class="lecture-viewer" id="active-lecture-viewer">
+            <!-- Dynamically rendered active lecture -->
+            <div class="viewer-empty-state">
+              <i class="fa-solid fa-book-open"></i>
+              <h3>Выберите лекцию из списка</h3>
+              <p>Выберите лекцию слева, чтобы просмотреть её содержимое и активировать инструменты быстрого копирования.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast notification for copy confirmation -->
+  <div class="toast" id="copy-toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">Скопировано в буфер обмена!</span>
+  </div>
+
+  <!-- Import JS files -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
