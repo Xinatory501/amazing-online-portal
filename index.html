@@ -1,141 +1,130 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Информационный Портал | Savely Gerov</title>
-  <!-- Google Fonts -->
+  <meta name="description" content="Единая база знаний и лекций Южного Района. Разработан Savely_Gerov.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-  <!-- FontAwesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Styrene+A+LC:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
+  <!-- fallback if Styrene not available -->
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="app-container">
-    
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <div class="logo-container">
-          <i class="fa-solid fa-layer-group logo-icon"></i>
-          <div class="logo-text">
-            <span class="logo-title">ПОРТАЛ ЗНАНИЙ</span>
-          </div>
+
+  <div class="layout">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-top">
+        <div class="wordmark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="wordmark-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Портал знаний</span>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-item active" data-tab="home">
+            <i class="fa-regular fa-house-blank"></i>
+            <span>Главная</span>
+          </button>
+          <button class="nav-item" data-tab="lectures">
+            <i class="fa-regular fa-book-open"></i>
+            <span>Лекции</span>
+          </button>
+          <button class="nav-item disabled">
+            <i class="fa-regular fa-file-lines"></i>
+            <span>Уставы <em class="soon-pill">скоро</em></span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button id="theme-toggle" class="theme-btn">
+          <i class="fa-regular fa-moon" id="theme-icon"></i>
+          <span id="theme-label">Светлая тема</span>
+        </button>
+        <div class="creator-block">
+          <div class="creator-name">Savely_Gerov</div>
+          <div class="creator-role">бывший глава администрации ЮР</div>
         </div>
       </div>
-      
-      <nav class="sidebar-menu">
-        <button class="menu-item active" data-tab="home" id="tab-btn-home">
-          <i class="fa-solid fa-house"></i>
-          <span>Главная</span>
-        </button>
-        <button class="menu-item" data-tab="lectures" id="tab-btn-lectures">
-          <i class="fa-solid fa-book-open"></i>
-          <span>Лекционный раздел</span>
-        </button>
-        <button class="menu-item disabled" title="Будет добавлено позже">
-          <i class="fa-solid fa-gavel"></i>
-          <span>Уставы и правила <span class="badge">Скоро</span></span>
-        </button>
-      </nav>
-      
-      <div class="sidebar-footer">
-        <button id="theme-toggle" class="theme-toggle-btn">
-          <i class="fa-solid fa-moon"></i>
-          <span>Темная тема</span>
-        </button>
-        <div class="author-info">
-          <div class="author-label">Создатель</div>
-          <div class="author-name">Savely_Gerov</div>
-          <div class="author-status">бывший глава администрации ЮР</div>
-        </div>
-      </div>
+
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="content-area">
-      
-      <!-- Tab: Home -->
-      <section id="tab-home" class="tab-content active">
-        <div class="welcome-banner">
-          <div class="banner-body">
-            <h1 class="welcome-title">Единый Информационный Портал</h1>
-            <p class="welcome-desc">Удобная база знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей и быстрого доступа к лекциям для голосового чата.</p>
-          </div>
-        </div>
+    <!-- ═══ MAIN ═══ -->
+    <main class="main" id="main-content">
 
-        <div class="home-grid">
-          
-          <!-- Creator Info Card -->
-          <div class="info-card">
-            <div class="card-content">
-              <h3>О портале</h3>
-              <p class="creator-bio">Разработан <strong>Savely_Gerov</strong> для обеспечения удобного и быстрого доступа к лекционным и справочным материалам. Интерфейс минималистичен и не отвлекает от чтения.</p>
-            </div>
-          </div>
+      <!-- HOME TAB -->
+      <section id="tab-home" class="tab active">
+        <header class="page-header">
+          <h1 class="page-title">Информационный портал</h1>
+          <p class="page-sub">Здесь собраны все лекции и полезные материалы. Читайте — просто и удобно.</p>
+        </header>
 
-          <!-- Feature Highlight Card -->
-          <div class="info-card feature-card" id="go-to-lectures-card">
-            <div class="card-content">
-              <h3>Лекционный раздел</h3>
-              <p>Удобный инструмент для просмотра лекций. Все тексты адаптированы для чтения в голосовой чат, без лишних игровых команд.</p>
-              <span class="card-link">Перейти к лекциям <i class="fa-solid fa-arrow-right"></i></span>
-            </div>
+        <div class="cards-grid">
+          <div class="card">
+            <div class="card-icon"><i class="fa-regular fa-circle-info"></i></div>
+            <h3>О портале</h3>
+            <p>Разработан <strong>Savely_Gerov</strong> для обеспечения быстрого и удобного доступа к лекционным и справочным материалам.</p>
           </div>
-
+          <div class="card card-action" id="goto-lectures">
+            <div class="card-icon"><i class="fa-regular fa-book-open"></i></div>
+            <h3>Лекционный раздел</h3>
+            <p>Весь текст лекций в удобном формате для чтения в голосовом чате. Быстрый поиск и навигация по категориям.</p>
+            <span class="card-cta">Открыть лекции <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+          <div class="card card-muted">
+            <div class="card-icon"><i class="fa-regular fa-gavel"></i></div>
+            <h3>Уставы и правила</h3>
+            <p>Нормативная база и регламенты. Раздел находится в разработке и будет доступен в ближайшее время.</p>
+            <span class="soon-pill" style="margin-top:12px;display:inline-block;">Скоро</span>
+          </div>
         </div>
       </section>
 
-      <!-- Tab: Lectures -->
-      <section id="tab-lectures" class="tab-content">
-        <div class="section-header">
-          <div class="header-left">
-            <h2 class="section-title">Лекционный раздел</h2>
-            <p class="section-subtitle">База лекций в текстовом формате, адаптированная для чтения.</p>
+      <!-- LECTURES TAB -->
+      <section id="tab-lectures" class="tab">
+        <header class="page-header row">
+          <div>
+            <h1 class="page-title">Лекции</h1>
+            <p class="page-sub">Выберите лекцию — текст откроется справа.</p>
           </div>
-          
-          <!-- Search Controls -->
-          <div class="controls-container">
-            <div class="search-wrapper">
-              <i class="fa-solid fa-magnifying-glass search-icon"></i>
-              <input type="text" id="lecture-search" placeholder="Поиск по названию или тексту...">
-            </div>
+          <div class="search-box">
+            <i class="fa-regular fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Поиск по лекциям…" autocomplete="off">
           </div>
-        </div>
+        </header>
 
-        <div class="lectures-layout">
-          <!-- Left column: Lectures List -->
-          <div class="lectures-sidebar">
-            <div class="category-filters" id="category-filters-list">
-              <!-- Dynamically generated category tabs -->
-            </div>
-            <div class="lectures-list" id="lectures-list-container">
-              <!-- Dynamically generated list items -->
-            </div>
+        <div class="lectures-wrap">
+
+          <!-- List panel -->
+          <div class="lectures-list-panel">
+            <div id="category-filters" class="filters"></div>
+            <div id="lectures-list" class="lec-list"></div>
           </div>
 
-          <!-- Right column: Active Lecture Viewer -->
-          <div class="lecture-viewer" id="active-lecture-viewer">
-            <div class="viewer-empty-state">
-              <i class="fa-solid fa-book-open"></i>
-              <h3>Выберите лекцию из списка</h3>
-              <p>Выберите лекцию слева для чтения текста.</p>
+          <!-- Viewer panel -->
+          <div class="lectures-viewer-panel" id="lecture-viewer">
+            <div class="empty-state">
+              <i class="fa-light fa-book-blank"></i>
+              <p>Выберите лекцию слева</p>
             </div>
           </div>
+
         </div>
       </section>
 
     </main>
   </div>
 
-  <!-- Toast notification -->
-  <div class="toast" id="copy-toast">
-    <span id="toast-message">Текст скопирован</span>
-  </div>
+  <div class="toast" id="toast"><i class="fa-solid fa-check"></i> <span id="toast-msg">Скопировано</span></div>
 
-  <!-- Import JS files -->
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>

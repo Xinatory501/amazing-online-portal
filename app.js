@@ -1,211 +1,156 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // --- DOM Elements ---
-  const tabBtns = document.querySelectorAll('.menu-item[data-tab]');
-  const tabContents = document.querySelectorAll('.tab-content');
-  const goToLecturesCard = document.getElementById('go-to-lectures-card');
-  const themeToggleBtn = document.getElementById('theme-toggle');
-  const htmlRoot = document.documentElement;
-  
-  const lecturesListContainer = document.getElementById('lectures-list-container');
-  const categoryFiltersList = document.getElementById('category-filters-list');
-  const activeLectureViewer = document.getElementById('active-lecture-viewer');
-  const searchInput = document.getElementById('lecture-search');
-  const toast = document.getElementById('copy-toast');
-  const toastMessage = document.getElementById('toast-message');
 
-  // --- State ---
-  let activeCategory = 'Все';
-  let activeLectureId = null;
+  // ── DOM refs ─────────────────────────────
+  const html          = document.documentElement;
+  const themeBtn      = document.getElementById('theme-toggle');
+  const themeIcon     = document.getElementById('theme-icon');
+  const themeLabel    = document.getElementById('theme-label');
 
-  // --- Theme Toggle Logic ---
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  setTheme(savedTheme);
+  const navItems      = document.querySelectorAll('.nav-item[data-tab]');
+  const tabs          = document.querySelectorAll('.tab');
+  const gotoLectures  = document.getElementById('goto-lectures');
 
-  themeToggleBtn.addEventListener('click', () => {
-    const currentTheme = htmlRoot.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
+  const searchInput   = document.getElementById('search-input');
+  const filtersEl     = document.getElementById('category-filters');
+  const listEl        = document.getElementById('lectures-list');
+  const viewerEl      = document.getElementById('lecture-viewer');
+
+  const toast         = document.getElementById('toast');
+  const toastMsg      = document.getElementById('toast-msg');
+
+  // ── State ─────────────────────────────────
+  let activeCategory  = 'Все';
+  let activeLecId     = null;
+  let toastTimer      = null;
+
+  // ── Theme ─────────────────────────────────
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  applyTheme(savedTheme);
+
+  themeBtn.addEventListener('click', () => {
+    const current = html.getAttribute('data-theme');
+    applyTheme(current === 'dark' ? 'light' : 'dark');
   });
 
-  function setTheme(theme) {
-    htmlRoot.setAttribute('data-theme', theme);
+  function applyTheme(theme) {
+    html.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
-    
-    // Update button content
-    const icon = themeToggleBtn.querySelector('i');
-    const text = themeToggleBtn.querySelector('span');
-    
     if (theme === 'dark') {
-      icon.className = 'fa-solid fa-sun';
-      text.textContent = 'Светлая тема';
+      themeIcon.className  = 'fa-regular fa-sun';
+      themeLabel.textContent = 'Светлая тема';
     } else {
-      icon.className = 'fa-solid fa-moon';
-      text.textContent = 'Темная тема';
+      themeIcon.className  = 'fa-regular fa-moon';
+      themeLabel.textContent = 'Тёмная тема';
     }
   }
 
-  // --- Tab Navigation ---
-  function switchTab(tabId) {
-    // Update buttons
-    tabBtns.forEach(btn => {
-      if (btn.dataset.tab === tabId) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-
-    // Update content panels
-    tabContents.forEach(content => {
-      if (content.id === `tab-${tabId}`) {
-        content.classList.add('active');
-      } else {
-        content.classList.remove('active');
-      }
-    });
+  // ── Tab navigation ─────────────────────────
+  function switchTab(id) {
+    navItems.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+    tabs.forEach(t => t.classList.toggle('active', t.id === `tab-${id}`));
   }
 
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (!btn.classList.contains('disabled')) {
-        switchTab(btn.dataset.tab);
-      }
-    });
+  navItems.forEach(btn => {
+    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
   });
 
-  if (goToLecturesCard) {
-    goToLecturesCard.addEventListener('click', () => switchTab('lectures'));
+  if (gotoLectures) {
+    gotoLectures.addEventListener('click', () => switchTab('lectures'));
   }
 
-  // --- Toast Notification ---
-  function showToast(message) {
-    toastMessage.textContent = message;
+  // ── Toast ──────────────────────────────────
+  function showToast(msg) {
+    toastMsg.textContent = msg;
     toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2500);
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
   }
 
-  // --- Copy Functionality ---
-  function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-      showToast('Текст скопирован!');
-    }).catch(err => {
-      console.error('Ошибка копирования: ', err);
-      showToast('Ошибка при копировании');
-    });
+  function copyText(text) {
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Скопировано!'))
+      .catch(() => showToast('Ошибка копирования'));
   }
 
-  // --- Render Categories ---
-  function renderCategories() {
-    // Get unique categories
-    const categories = ['Все', ...new Set(lecturesData.map(l => l.category))];
-    
-    categoryFiltersList.innerHTML = '';
-    categories.forEach(cat => {
+  // ── Categories ────────────────────────────
+  function buildCategories() {
+    const cats = ['Все', ...new Set(lecturesData.map(l => l.category))];
+    filtersEl.innerHTML = '';
+    cats.forEach(cat => {
       const btn = document.createElement('button');
-      btn.className = `category-tab ${cat === activeCategory ? 'active' : ''}`;
+      btn.className = `filter-btn ${cat === activeCategory ? 'active' : ''}`;
       btn.textContent = cat;
       btn.addEventListener('click', () => {
         activeCategory = cat;
-        // Update active class
-        document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        renderLecturesList();
+        buildList();
       });
-      categoryFiltersList.appendChild(btn);
+      filtersEl.appendChild(btn);
     });
   }
 
-  // --- Render Lectures List ---
-  function renderLecturesList() {
-    const query = searchInput.value.toLowerCase().trim();
-    
-    // Filter data
-    const filteredLectures = lecturesData.filter(lecture => {
-      const matchCategory = activeCategory === 'Все' || lecture.category === activeCategory;
-      const matchSearch = lecture.title.toLowerCase().includes(query) || 
-                          lecture.text.toLowerCase().includes(query);
-      return matchCategory && matchSearch;
+  // ── Lectures List ─────────────────────────
+  function buildList() {
+    const q = (searchInput.value || '').trim().toLowerCase();
+    const filtered = lecturesData.filter(l => {
+      const catOk = activeCategory === 'Все' || l.category === activeCategory;
+      const qOk = !q || l.title.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
+      return catOk && qOk;
     });
 
-    lecturesListContainer.innerHTML = '';
-
-    if (filteredLectures.length === 0) {
-      lecturesListContainer.innerHTML = `
-        <div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 13px;">
-          Ничего не найдено
-        </div>
-      `;
+    listEl.innerHTML = '';
+    if (!filtered.length) {
+      listEl.innerHTML = `<div style="padding:16px;font-size:13px;color:var(--text-muted)">Ничего не найдено</div>`;
       return;
     }
 
-    filteredLectures.forEach(lecture => {
-      const item = document.createElement('div');
-      item.className = `lecture-item ${lecture.id === activeLectureId ? 'active' : ''}`;
-      item.innerHTML = `
-        <div class="item-meta">
-          <span class="item-badge">${lecture.category}</span>
-        </div>
-        <h4>${lecture.title}</h4>
-        <p>${lecture.description}</p>
+    filtered.forEach(lec => {
+      const el = document.createElement('div');
+      el.className = `lec-item ${lec.id === activeLecId ? 'active' : ''}`;
+      el.innerHTML = `
+        <div class="lec-item-cat">${lec.category}</div>
+        <div class="lec-item-title">${lec.title}</div>
       `;
-      
-      item.addEventListener('click', () => {
-        activeLectureId = lecture.id;
-        // Update active classes
-        document.querySelectorAll('.lecture-item').forEach(el => el.classList.remove('active'));
-        item.classList.add('active');
-        renderActiveLecture();
+      el.addEventListener('click', () => {
+        activeLecId = lec.id;
+        document.querySelectorAll('.lec-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+        renderViewer(lec);
       });
-      
-      lecturesListContainer.appendChild(item);
+      listEl.appendChild(el);
     });
   }
 
-  // --- Render Active Lecture ---
-  function renderActiveLecture() {
-    if (!activeLectureId) return;
-
-    const lecture = lecturesData.find(l => l.id === activeLectureId);
-    if (!lecture) return;
-
-    activeLectureViewer.innerHTML = `
-      <div class="lecture-view-container animation-fade-in">
+  // ── Lecture Viewer ─────────────────────────
+  function renderViewer(lec) {
+    viewerEl.innerHTML = `
+      <div class="viewer-inner">
         <div class="viewer-header">
-          <div class="header-meta">
-            <span class="meta-badge">${lecture.category}</span>
-            <h2 class="viewer-title">${lecture.title}</h2>
-          </div>
+          <div class="viewer-cat">${lec.category}</div>
+          <h2 class="viewer-title">${lec.title}</h2>
+          <p class="viewer-desc">${lec.description}</p>
         </div>
-
         <div class="viewer-actions">
-          <button class="btn btn-primary" id="copy-full-btn">
-            <i class="fa-solid fa-copy"></i> Скопировать весь текст
+          <button class="btn btn-primary" id="copy-btn">
+            <i class="fa-regular fa-copy"></i> Скопировать текст
           </button>
         </div>
-
-        <div class="lecture-body">
-          <textarea class="lecture-textarea-field" id="lecture-textarea" readonly></textarea>
+        <div>
+          <textarea class="lecture-text-area" readonly id="lec-textarea">${lec.text}</textarea>
         </div>
       </div>
     `;
-
-    const textarea = document.getElementById('lecture-textarea');
-    textarea.value = lecture.text;
-
-    // Set up copy button event
-    document.getElementById('copy-full-btn').addEventListener('click', () => {
-      copyToClipboard(textarea.value);
+    document.getElementById('copy-btn').addEventListener('click', () => {
+      copyText(document.getElementById('lec-textarea').value);
     });
   }
 
-  // --- Event Listeners ---
-  searchInput.addEventListener('input', () => {
-    renderLecturesList();
-  });
+  // ── Search ────────────────────────────────
+  searchInput.addEventListener('input', buildList);
 
-  // --- Initialization ---
-  renderCategories();
-  renderLecturesList();
+  // ── Init ──────────────────────────────────
+  buildCategories();
+  buildList();
+
 });
