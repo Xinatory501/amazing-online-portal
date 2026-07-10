@@ -706,6 +706,18 @@ p { max-width: 60ch; }
   margin-bottom: 24px;
 }
 
+.viewer-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  transition: border-color var(--transition);
+}
+
+.viewer-footer .btn-back {
+  margin-bottom: 0;
+}
+
 
 /* ── TOAST ────────────────────────────────── */
 .toast {

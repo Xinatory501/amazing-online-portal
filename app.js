@@ -224,11 +224,18 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="lecture-reader-body" id="reader-body" style="font-size: ${currentFontSize}px;">
           ${paragraphsHtml}
         </div>
+
+        <div class="viewer-footer">
+          <button class="btn btn-secondary btn-back" id="back-to-grid-btn-bottom">
+            <i class="fa-solid fa-arrow-left"></i> Назад к списку
+          </button>
+        </div>
       </div>
     `;
 
-    // Back event
+    // Back events
     document.getElementById('back-to-grid-btn').addEventListener('click', closeReader);
+    document.getElementById('back-to-grid-btn-bottom').addEventListener('click', closeReader);
 
     // Copy event
     document.getElementById('copy-btn').addEventListener('click', () => {
