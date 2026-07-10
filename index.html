@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портал материалов | Savely Gerov</title>
-  <!-- Google Fonts: Inter -->
+  <title>Портал материалов | Южный Район</title>
+  <!-- Google Fonts: Inter & Lora (Serif) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
   <!-- FontAwesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
@@ -19,7 +19,6 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo-container">
-          <i class="fa-solid fa-shield-halved logo-icon"></i>
           <div class="logo-text">
             <span class="logo-title">ПОРТАЛ ЮР</span>
           </div>
@@ -43,7 +42,7 @@
       
       <div class="sidebar-footer">
         <div class="author-info">
-          <div class="author-label">РАЗРАБОТЧИК</div>
+          <div class="author-label">Создатель</div>
           <div class="author-name">Savely_Gerov</div>
           <div class="author-status">бывший глава администрации ЮР</div>
         </div>
@@ -58,32 +57,25 @@
         <div class="welcome-banner">
           <div class="banner-body">
             <h1 class="welcome-title">Информационный портал Южного Района</h1>
-            <p class="welcome-desc">Добро пожаловать на единую базу знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей и удобной работы с лекциями.</p>
+            <p class="welcome-desc">Единая база знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей и удобной работы с лекциями.</p>
           </div>
         </div>
 
         <div class="home-grid">
           
           <!-- Creator Info Card -->
-          <div class="info-card creator-card">
-            <div class="card-icon-wrapper">
-              <i class="fa-solid fa-user"></i>
-            </div>
+          <div class="info-card">
             <div class="card-content">
               <h3>Создатель портала</h3>
-              <p class="creator-bio">Портал разработан <strong>Savely_Gerov</strong>, бывшим главой администрации ЮР. Сайт спроектирован для удобного доступа к лекциям и справочным материалам.</p>
-              <div class="creator-badge">бывший глава администрации ЮР</div>
+              <p class="creator-bio">Портал разработан Savely_Gerov. Проект создан с целью обеспечить удобный и быстрый доступ к лекционным и справочным материалам.</p>
             </div>
           </div>
 
           <!-- Feature Highlight Card -->
           <div class="info-card feature-card" id="go-to-lectures-card">
-            <div class="card-icon-wrapper">
-              <i class="fa-solid fa-book-open"></i>
-            </div>
             <div class="card-content">
               <h3>Лекционный раздел</h3>
-              <p>Удобный инструмент для просмотра и копирования лекций. Все материалы представлены в виде простого текста с возможностью быстрой автонастройки префиксов рации.</p>
+              <p>Удобный инструмент для просмотра и копирования лекций. Все материалы представлены в виде простого текста с возможностью автонастройки префиксов.</p>
               <span class="card-link">Перейти к лекциям <i class="fa-solid fa-arrow-right"></i></span>
             </div>
           </div>
@@ -135,8 +127,7 @@
 
   <!-- Toast notification -->
   <div class="toast" id="copy-toast">
-    <i class="fa-solid fa-circle-check"></i>
-    <span id="toast-message">Текст скопирован!</span>
+    <span id="toast-message">Текст скопирован</span>
   </div>
 
   <!-- Import JS files -->
