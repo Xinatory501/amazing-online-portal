@@ -3,17 +3,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── DOM refs ─────────────────────────────
   const html          = document.documentElement;
   const themeBtn      = document.getElementById('theme-toggle');
-  const themeIcon     = document.getElementById('theme-icon');
-  const themeLabel    = document.getElementById('theme-label');
+  const themeIcon     = themeBtn.querySelector('i');
+  const themeLabel    = themeBtn.querySelector('span');
 
   const navItems      = document.querySelectorAll('.nav-item[data-tab]');
   const tabs          = document.querySelectorAll('.tab');
   const gotoLectures  = document.getElementById('goto-lectures');
 
-  const searchInput   = document.getElementById('search-input');
-  const filtersEl     = document.getElementById('category-filters');
-  const listEl        = document.getElementById('lectures-list');
-  const viewerEl      = document.getElementById('lecture-viewer');
+  // Lectures tab DOM refs
+  const lecturesHeader = document.getElementById('lectures-dashboard-header');
+  const searchInput    = document.getElementById('search-input');
+  const filtersEl      = document.getElementById('category-filters');
+  const gridEl         = document.getElementById('lectures-grid');
+  const viewerEl       = document.getElementById('lecture-viewer');
 
   const toast         = document.getElementById('toast');
   const toastMsg      = document.getElementById('toast-msg');
@@ -49,6 +51,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function switchTab(id) {
     navItems.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
     tabs.forEach(t => t.classList.toggle('active', t.id === `tab-${id}`));
+    
+    // Reset reader view when leaving or entering the lectures tab
+    if (id === 'lectures') {
+      closeReader();
+    }
   }
 
   navItems.forEach(btn => {
@@ -85,14 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
         activeCategory = cat;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        buildList();
+        buildGrid();
       });
       filtersEl.appendChild(btn);
     });
   }
 
-  // ── Lectures List ─────────────────────────
-  function buildList() {
+  // ── Lectures Grid ─────────────────────────
+  function buildGrid() {
     const q = (searchInput.value || '').trim().toLowerCase();
     const filtered = lecturesData.filter(l => {
       const catOk = activeCategory === 'Все' || l.category === activeCategory;
@@ -100,27 +107,68 @@ document.addEventListener('DOMContentLoaded', () => {
       return catOk && qOk;
     });
 
-    listEl.innerHTML = '';
+    gridEl.innerHTML = '';
     if (!filtered.length) {
-      listEl.innerHTML = `<div style="padding:16px;font-size:13px;color:var(--text-muted)">Ничего не найдено</div>`;
+      gridEl.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1; min-height: 250px;">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <p>Ничего не найдено. Попробуйте изменить запрос.</p>
+        </div>
+      `;
       return;
     }
 
     filtered.forEach(lec => {
-      const el = document.createElement('div');
-      el.className = `lec-item ${lec.id === activeLecId ? 'active' : ''}`;
-      el.innerHTML = `
-        <div class="lec-item-cat">${lec.category}</div>
-        <div class="lec-item-title">${lec.title}</div>
+      const card = document.createElement('div');
+      card.className = 'card card-action';
+      card.innerHTML = `
+        <div class="lec-item-cat" style="color: var(--accent); margin-bottom: 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;">
+          ${lec.category}
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; font-family: 'DM Serif Display', serif;">
+          ${lec.title}
+        </h3>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 16px;">
+          ${lec.description}
+        </p>
+        <span class="card-cta" style="font-size: 13px; font-weight: 500; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; margin-top: auto;">
+          Читать лекцию <i class="fa-solid fa-arrow-right"></i>
+        </span>
       `;
-      el.addEventListener('click', () => {
+      
+      card.addEventListener('click', () => {
         activeLecId = lec.id;
-        document.querySelectorAll('.lec-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-        renderViewer(lec);
+        openReader(lec);
       });
-      listEl.appendChild(el);
+      gridEl.appendChild(card);
     });
+  }
+
+  // ── Reader View Toggle ────────────────────
+  function openReader(lec) {
+    // Hide grid elements
+    lecturesHeader.style.display = 'none';
+    filtersEl.style.display = 'none';
+    gridEl.style.display = 'none';
+
+    // Show viewer
+    viewerEl.classList.remove('hidden');
+    renderViewer(lec);
+  }
+
+  function closeReader() {
+    activeLecId = null;
+    
+    // Hide viewer
+    viewerEl.classList.add('hidden');
+    viewerEl.innerHTML = '';
+
+    // Show grid elements
+    lecturesHeader.style.display = 'flex';
+    filtersEl.style.display = 'flex';
+    gridEl.style.display = 'grid';
+    
+    buildGrid(); // Re-render grid to reflect search/filter state
   }
 
   // ── Lecture Viewer ─────────────────────────
@@ -133,6 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     viewerEl.innerHTML = `
       <div class="viewer-inner">
+        <button class="btn btn-secondary btn-back" id="back-to-grid-btn">
+          <i class="fa-solid fa-arrow-left"></i> Назад к списку
+        </button>
+
         <div class="viewer-header">
           <div class="viewer-cat">${lec.category}</div>
           <h2 class="viewer-title">${lec.title}</h2>
@@ -164,6 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       </div>
     `;
+
+    // Back event
+    document.getElementById('back-to-grid-btn').addEventListener('click', closeReader);
 
     // Copy event
     document.getElementById('copy-btn').addEventListener('click', () => {
@@ -203,10 +258,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Search ────────────────────────────────
-  searchInput.addEventListener('input', buildList);
+  searchInput.addEventListener('input', buildGrid);
 
   // ── Init ──────────────────────────────────
   buildCategories();
-  buildList();
+  buildGrid();
 
 });

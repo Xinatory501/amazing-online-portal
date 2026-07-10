@@ -8,9 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <!-- FontAwesome FREE only (fa-solid works, fa-regular/fa-light requires Pro) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=1.2">
+  <link rel="stylesheet" href="style.css?v=1.3">
 </head>
 <body>
 
@@ -89,10 +88,11 @@
 
       <!-- LECTURES TAB -->
       <section id="tab-lectures" class="tab">
-        <header class="page-header row">
+        <!-- Dashboard Header (hidden in Reader mode) -->
+        <header class="page-header row" id="lectures-dashboard-header">
           <div>
-            <h1 class="page-title">Лекции</h1>
-            <p class="page-sub">Выберите лекцию из списка слева для чтения.</p>
+            <h1 class="page-title">Лекционный раздел</h1>
+            <p class="page-sub">Выберите лекцию для чтения. Доступен поиск и фильтрация по темам.</p>
           </div>
           <div class="search-box">
             <i class="fa-solid fa-magnifying-glass"></i>
@@ -100,21 +100,14 @@
           </div>
         </header>
 
-        <div class="lectures-wrap">
-          <!-- List panel -->
-          <div class="lectures-list-panel">
-            <div id="category-filters" class="filters"></div>
-            <div id="lectures-list" class="lec-list"></div>
-          </div>
+        <!-- Dashboard Filters (hidden in Reader mode) -->
+        <div id="category-filters" class="filters"></div>
 
-          <!-- Viewer panel -->
-          <div class="lectures-viewer-panel" id="lecture-viewer">
-            <div class="empty-state">
-              <i class="fa-solid fa-book-open"></i>
-              <p>Выберите лекцию слева</p>
-            </div>
-          </div>
-        </div>
+        <!-- Lectures Grid (hidden in Reader mode) -->
+        <div id="lectures-grid" class="lectures-grid"></div>
+
+        <!-- Full-screen Reader Panel (hidden in Grid mode) -->
+        <div id="lecture-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
     </main>
@@ -125,7 +118,7 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <script src="data.js?v=1.2"></script>
-  <script src="app.js?v=1.2"></script>
+  <script src="data.js?v=1.3"></script>
+  <script src="app.js?v=1.3"></script>
 </body>
 </html>
