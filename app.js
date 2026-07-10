@@ -1,189 +1,177 @@
-document.addEventListener("DOMContentLoaded", () => {
-  // --- STATE ---
-  let activeTab = "home";
-  let activeCategory = "Все";
+document.addEventListener('DOMContentLoaded', () => {
+  // --- DOM Elements ---
+  const tabBtns = document.querySelectorAll('.menu-item[data-tab]');
+  const tabContents = document.querySelectorAll('.tab-content');
+  const goToLecturesCard = document.getElementById('go-to-lectures-card');
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const htmlRoot = document.documentElement;
+  
+  const lecturesListContainer = document.getElementById('lectures-list-container');
+  const categoryFiltersList = document.getElementById('category-filters-list');
+  const activeLectureViewer = document.getElementById('active-lecture-viewer');
+  const searchInput = document.getElementById('lecture-search');
+  const toast = document.getElementById('copy-toast');
+  const toastMessage = document.getElementById('toast-message');
+
+  // --- State ---
+  let activeCategory = 'Все';
   let activeLectureId = null;
-  let searchQuery = "";
-  
-  // --- DOM ELEMENTS ---
-  const tabButtons = document.querySelectorAll(".menu-item[data-tab]");
-  const tabContents = document.querySelectorAll(".tab-content");
-  const homeLecturesCard = document.getElementById("go-to-lectures-card");
-  
-  const searchInput = document.getElementById("lecture-search");
-  const categoriesContainer = document.getElementById("category-filters-list");
-  const lecturesListContainer = document.getElementById("lectures-list-container");
-  const activeLectureViewer = document.getElementById("active-lecture-viewer");
-  
-  const toast = document.getElementById("copy-toast");
-  const toastMessage = document.getElementById("toast-message");
 
-  // --- TAB NAVIGATION ---
-  function switchTab(tabId) {
-    activeTab = tabId;
-    
-    tabButtons.forEach(btn => {
-      if (btn.getAttribute("data-tab") === tabId) {
-        btn.classList.add("active");
-      } else {
-        btn.classList.remove("active");
-      }
-    });
-    
-    tabContents.forEach(content => {
-      if (content.id === `tab-${tabId}`) {
-        content.classList.add("active");
-      } else {
-        content.classList.remove("active");
-      }
-    });
+  // --- Theme Toggle Logic ---
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  setTheme(savedTheme);
 
-    if (tabId === "lectures") {
-      renderCategoryFilters();
-      renderLecturesList();
-      renderActiveLecture();
+  themeToggleBtn.addEventListener('click', () => {
+    const currentTheme = htmlRoot.getAttribute('data-theme');
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  });
+
+  function setTheme(theme) {
+    htmlRoot.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+    
+    // Update button content
+    const icon = themeToggleBtn.querySelector('i');
+    const text = themeToggleBtn.querySelector('span');
+    
+    if (theme === 'dark') {
+      icon.className = 'fa-solid fa-sun';
+      text.textContent = 'Светлая тема';
+    } else {
+      icon.className = 'fa-solid fa-moon';
+      text.textContent = 'Темная тема';
     }
   }
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      switchTab(btn.getAttribute("data-tab"));
+  // --- Tab Navigation ---
+  function switchTab(tabId) {
+    // Update buttons
+    tabBtns.forEach(btn => {
+      if (btn.dataset.tab === tabId) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    // Update content panels
+    tabContents.forEach(content => {
+      if (content.id === `tab-${tabId}`) {
+        content.classList.add('active');
+      } else {
+        content.classList.remove('active');
+      }
+    });
+  }
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (!btn.classList.contains('disabled')) {
+        switchTab(btn.dataset.tab);
+      }
     });
   });
 
-  if (homeLecturesCard) {
-    homeLecturesCard.addEventListener("click", () => {
-      switchTab("lectures");
-    });
+  if (goToLecturesCard) {
+    goToLecturesCard.addEventListener('click', () => switchTab('lectures'));
   }
 
-  // --- TOAST NOTIFICATIONS ---
-  let toastTimeout;
+  // --- Toast Notification ---
   function showToast(message) {
     toastMessage.textContent = message;
-    toast.classList.add("show");
-    
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-      toast.classList.remove("show");
-    }, 2000);
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2500);
   }
 
-  // --- CLIPBOARD ACTIONS ---
-  async function copyToClipboard(text) {
-    try {
-      await navigator.clipboard.writeText(text);
-      return true;
-    } catch (err) {
-      const textarea = document.createElement("textarea");
-      textarea.value = text;
-      textarea.style.position = "fixed";
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand("copy");
-        document.body.removeChild(textarea);
-        return true;
-      } catch (e) {
-        document.body.removeChild(textarea);
-        console.error("Не удалось скопировать: ", e);
-        return false;
-      }
-    }
-  }
-
-  // --- DATA PROCESSING ---
-  function getCategories() {
-    const categories = new Set();
-    lecturesData.forEach(lec => {
-      if (lec.category) categories.add(lec.category);
-    });
-    return ["Все", ...Array.from(categories)];
-  }
-
-  function getFilteredLectures() {
-    return lecturesData.filter(lec => {
-      const matchesCategory = activeCategory === "Все" || lec.category === activeCategory;
-      const matchesSearch = lec.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            lec.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            lec.text.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+  // --- Copy Functionality ---
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Текст скопирован!');
+    }).catch(err => {
+      console.error('Ошибка копирования: ', err);
+      showToast('Ошибка при копировании');
     });
   }
 
-  // --- RENDER FUNCTIONS ---
-  
-  function renderCategoryFilters() {
-    if (!categoriesContainer) return;
-    const categories = getCategories();
+  // --- Render Categories ---
+  function renderCategories() {
+    // Get unique categories
+    const categories = ['Все', ...new Set(lecturesData.map(l => l.category))];
     
-    categoriesContainer.innerHTML = categories.map(cat => `
-      <button class="category-tab ${activeCategory === cat ? 'active' : ''}" data-cat="${cat}">
-        ${cat}
-      </button>
-    `).join("");
-
-    categoriesContainer.querySelectorAll(".category-tab").forEach(tab => {
-      tab.addEventListener("click", () => {
-        activeCategory = tab.getAttribute("data-cat");
-        renderCategoryFilters();
+    categoryFiltersList.innerHTML = '';
+    categories.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = `category-tab ${cat === activeCategory ? 'active' : ''}`;
+      btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        activeCategory = cat;
+        // Update active class
+        document.querySelectorAll('.category-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         renderLecturesList();
       });
+      categoryFiltersList.appendChild(btn);
     });
   }
 
+  // --- Render Lectures List ---
   function renderLecturesList() {
-    if (!lecturesListContainer) return;
-    const filtered = getFilteredLectures();
+    const query = searchInput.value.toLowerCase().trim();
     
-    if (filtered.length === 0) {
+    // Filter data
+    const filteredLectures = lecturesData.filter(lecture => {
+      const matchCategory = activeCategory === 'Все' || lecture.category === activeCategory;
+      const matchSearch = lecture.title.toLowerCase().includes(query) || 
+                          lecture.text.toLowerCase().includes(query);
+      return matchCategory && matchSearch;
+    });
+
+    lecturesListContainer.innerHTML = '';
+
+    if (filteredLectures.length === 0) {
       lecturesListContainer.innerHTML = `
-        <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
+        <div style="padding: 20px; text-align: center; color: var(--text-secondary); font-size: 13px;">
           Ничего не найдено
         </div>
       `;
       return;
     }
 
-    lecturesListContainer.innerHTML = filtered.map(lec => `
-      <div class="lecture-item ${activeLectureId === lec.id ? 'active' : ''}" data-id="${lec.id}">
+    filteredLectures.forEach(lecture => {
+      const item = document.createElement('div');
+      item.className = `lecture-item ${lecture.id === activeLectureId ? 'active' : ''}`;
+      item.innerHTML = `
         <div class="item-meta">
-          <span class="item-badge">${lec.category}</span>
+          <span class="item-badge">${lecture.category}</span>
         </div>
-        <h4>${lec.title}</h4>
-        <p>${lec.description}</p>
-      </div>
-    `).join("");
-
-    lecturesListContainer.querySelectorAll(".lecture-item").forEach(item => {
-      item.addEventListener("click", () => {
-        activeLectureId = item.getAttribute("data-id");
-        document.querySelectorAll(".lecture-item").forEach(i => i.classList.remove("active"));
-        item.classList.add("active");
+        <h4>${lecture.title}</h4>
+        <p>${lecture.description}</p>
+      `;
+      
+      item.addEventListener('click', () => {
+        activeLectureId = lecture.id;
+        // Update active classes
+        document.querySelectorAll('.lecture-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
         renderActiveLecture();
       });
+      
+      lecturesListContainer.appendChild(item);
     });
   }
 
+  // --- Render Active Lecture ---
   function renderActiveLecture() {
-    if (!activeLectureViewer) return;
-    
+    if (!activeLectureId) return;
+
     const lecture = lecturesData.find(l => l.id === activeLectureId);
-    
-    if (!lecture) {
-      activeLectureViewer.innerHTML = `
-        <div class="viewer-empty-state">
-          <i class="fa-solid fa-book-open"></i>
-          <h3>Выберите лекцию из списка</h3>
-          <p>Выберите лекцию слева для просмотра текста и копирования.</p>
-        </div>
-      `;
-      return;
-    }
+    if (!lecture) return;
 
     activeLectureViewer.innerHTML = `
-      <div class="lecture-view-container">
-        
+      <div class="lecture-view-container animation-fade-in">
         <div class="viewer-header">
           <div class="header-meta">
             <span class="meta-badge">${lecture.category}</span>
@@ -191,88 +179,33 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        <!-- Copy Settings Panel -->
-        <div class="copy-config-panel">
-          <div class="panel-title">Настройки текста</div>
-          <div class="config-row">
-            <label class="checkbox-label">
-              <input type="checkbox" id="prefix-enable" checked>
-              <span>Префикс рации (/r)</span>
-            </label>
-            <div class="input-group">
-              <label for="prefix-text">Текст:</label>
-              <input type="text" id="prefix-text" value="/r [Лектор]" placeholder="/r [Лектор]">
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
         <div class="viewer-actions">
-          <button class="btn btn-primary" id="btn-copy-all">
-            <i class="fa-solid fa-copy"></i>
-            <span>Скопировать текст</span>
+          <button class="btn btn-primary" id="copy-full-btn">
+            <i class="fa-solid fa-copy"></i> Скопировать весь текст
           </button>
         </div>
 
-        <!-- Plain Text Viewer -->
         <div class="lecture-body">
-          <textarea id="lecture-textarea" readonly class="lecture-textarea-field"></textarea>
+          <textarea class="lecture-textarea-field" id="lecture-textarea" readonly></textarea>
         </div>
-
       </div>
     `;
 
-    setupLectureViewListeners(lecture);
-  }
+    const textarea = document.getElementById('lecture-textarea');
+    textarea.value = lecture.text;
 
-  function setupLectureViewListeners(lecture) {
-    const prefixEnable = document.getElementById("prefix-enable");
-    const prefixText = document.getElementById("prefix-text");
-    const btnCopyAll = document.getElementById("btn-copy-all");
-    const textarea = document.getElementById("lecture-textarea");
-
-    function updateTextareaContent() {
-      if (!textarea) return;
-      
-      const lines = lecture.text.split("\n");
-      const usePrefix = prefixEnable && prefixEnable.checked;
-      const prefix = prefixText ? prefixText.value : "";
-      
-      if (usePrefix && prefix) {
-        textarea.value = lines.map(line => `${prefix} ${line}`).join("\n");
-      } else {
-        textarea.value = lecture.text;
-      }
-    }
-
-    // Initialize content
-    updateTextareaContent();
-
-    // Event listeners for real-time formatting updates
-    if (prefixEnable) {
-      prefixEnable.addEventListener("change", updateTextareaContent);
-    }
-    if (prefixText) {
-      prefixText.addEventListener("input", updateTextareaContent);
-    }
-
-    // Copy action
-    if (btnCopyAll) {
-      btnCopyAll.addEventListener("click", async () => {
-        if (!textarea) return;
-        const success = await copyToClipboard(textarea.value);
-        if (success) {
-          showToast("Текст лекции скопирован!");
-        }
-      });
-    }
-  }
-
-  // --- SEARCH EVENTS ---
-  if (searchInput) {
-    searchInput.addEventListener("input", (e) => {
-      searchQuery = e.target.value;
-      renderLecturesList();
+    // Set up copy button event
+    document.getElementById('copy-full-btn').addEventListener('click', () => {
+      copyToClipboard(textarea.value);
     });
   }
+
+  // --- Event Listeners ---
+  searchInput.addEventListener('input', () => {
+    renderLecturesList();
+  });
+
+  // --- Initialization ---
+  renderCategories();
+  renderLecturesList();
 });

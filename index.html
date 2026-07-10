@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портал материалов | Южный Район</title>
-  <!-- Google Fonts: Inter & Lora (Serif) -->
+  <title>Информационный Портал | Savely Gerov</title>
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
@@ -19,8 +19,9 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo-container">
+          <i class="fa-solid fa-layer-group logo-icon"></i>
           <div class="logo-text">
-            <span class="logo-title">ПОРТАЛ ЮР</span>
+            <span class="logo-title">ПОРТАЛ ЗНАНИЙ</span>
           </div>
         </div>
       </div>
@@ -41,6 +42,10 @@
       </nav>
       
       <div class="sidebar-footer">
+        <button id="theme-toggle" class="theme-toggle-btn">
+          <i class="fa-solid fa-moon"></i>
+          <span>Темная тема</span>
+        </button>
         <div class="author-info">
           <div class="author-label">Создатель</div>
           <div class="author-name">Savely_Gerov</div>
@@ -56,8 +61,8 @@
       <section id="tab-home" class="tab-content active">
         <div class="welcome-banner">
           <div class="banner-body">
-            <h1 class="welcome-title">Информационный портал Южного Района</h1>
-            <p class="welcome-desc">Единая база знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей и удобной работы с лекциями.</p>
+            <h1 class="welcome-title">Единый Информационный Портал</h1>
+            <p class="welcome-desc">Удобная база знаний и полезных материалов. Здесь собрано всё необходимое для качественного выполнения служебных обязанностей и быстрого доступа к лекциям для голосового чата.</p>
           </div>
         </div>
 
@@ -66,8 +71,8 @@
           <!-- Creator Info Card -->
           <div class="info-card">
             <div class="card-content">
-              <h3>Создатель портала</h3>
-              <p class="creator-bio">Портал разработан Savely_Gerov. Проект создан с целью обеспечить удобный и быстрый доступ к лекционным и справочным материалам.</p>
+              <h3>О портале</h3>
+              <p class="creator-bio">Разработан <strong>Savely_Gerov</strong> для обеспечения удобного и быстрого доступа к лекционным и справочным материалам. Интерфейс минималистичен и не отвлекает от чтения.</p>
             </div>
           </div>
 
@@ -75,7 +80,7 @@
           <div class="info-card feature-card" id="go-to-lectures-card">
             <div class="card-content">
               <h3>Лекционный раздел</h3>
-              <p>Удобный инструмент для просмотра и копирования лекций. Все материалы представлены в виде простого текста с возможностью автонастройки префиксов.</p>
+              <p>Удобный инструмент для просмотра лекций. Все тексты адаптированы для чтения в голосовой чат, без лишних игровых команд.</p>
               <span class="card-link">Перейти к лекциям <i class="fa-solid fa-arrow-right"></i></span>
             </div>
           </div>
@@ -88,7 +93,7 @@
         <div class="section-header">
           <div class="header-left">
             <h2 class="section-title">Лекционный раздел</h2>
-            <p class="section-subtitle">База лекций в текстовом формате для быстрого копирования.</p>
+            <p class="section-subtitle">База лекций в текстовом формате, адаптированная для чтения.</p>
           </div>
           
           <!-- Search Controls -->
@@ -116,7 +121,7 @@
             <div class="viewer-empty-state">
               <i class="fa-solid fa-book-open"></i>
               <h3>Выберите лекцию из списка</h3>
-              <p>Выберите лекцию слева для просмотра текста и копирования.</p>
+              <p>Выберите лекцию слева для чтения текста.</p>
             </div>
           </div>
         </div>

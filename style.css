@@ -6,7 +6,7 @@
 }
 
 :root {
-  /* Warm Editorial Colors */
+  /* Warm Editorial Colors - Light Theme */
   --bg-canvas: #FBF9F6;
   --bg-surface: #FFFFFF;
   --bg-surface-alt: #F9F6F0;
@@ -30,6 +30,25 @@
   --radius-sm: 4px;
 }
 
+[data-theme="dark"] {
+  /* Elegant Dark Theme */
+  --bg-canvas: #121212;
+  --bg-surface: #1A1A1A;
+  --bg-surface-alt: #242424;
+  
+  --text-primary: #EBEBEB;
+  --text-secondary: #A0A0A0;
+  
+  --border-light: #333333;
+  
+  --accent-brand: #D97753;
+  --accent-brand-hover: #CC6B49;
+  
+  --btn-bg: #EBEBEB;
+  --btn-text: #191919;
+  --btn-hover: #FFFFFF;
+}
+
 body {
   background-color: var(--bg-canvas);
   color: var(--text-primary);
@@ -38,6 +57,7 @@ body {
   display: flex;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Typography Architecture */
@@ -47,6 +67,7 @@ h1, h2, h3, h4, h5, h6, .logo-title {
   letter-spacing: normal;
   line-height: 1.6;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 p {
@@ -63,11 +84,11 @@ p {
   background: var(--bg-canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #d4cfc5;
+  background: var(--border-light);
   border-radius: var(--radius-sm);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #beb8ac;
+  background: var(--text-secondary);
 }
 
 /* App Container Layout */
@@ -88,6 +109,7 @@ p {
   height: 100%;
   flex-shrink: 0;
   z-index: 10;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .sidebar-header {
@@ -97,10 +119,16 @@ p {
 .logo-container {
   display: flex;
   align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 18px;
+  color: var(--text-primary);
 }
 
 .logo-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -146,7 +174,7 @@ p {
   color: var(--text-primary);
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
-  box-shadow: 0 1px 2px rgba(25, 25, 25, 0.02);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
   font-weight: 500;
 }
 
@@ -169,6 +197,28 @@ p {
   padding: 32px;
   border-top: 1px solid var(--border-light);
   background-color: var(--bg-canvas);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 24px;
+  background-color: var(--bg-surface-alt);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--border-light);
 }
 
 .author-info {
@@ -204,6 +254,7 @@ p {
   overflow-y: auto;
   height: 100%;
   background-color: var(--bg-surface);
+  transition: background-color 0.3s ease;
 }
 
 /* Tab Switching Control */
@@ -249,7 +300,7 @@ p {
   border: 1px solid var(--border-light);
   border-radius: var(--radius-xl);
   padding: 32px;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.3s ease;
 }
 
 .card-content h3 {
@@ -271,7 +322,7 @@ p {
 }
 
 .feature-card:hover {
-  border-color: #d4cfc5;
+  border-color: var(--text-secondary);
 }
 
 .card-link {
@@ -407,7 +458,7 @@ p {
 }
 
 .lecture-item:hover {
-  border-color: #d4cfc5;
+  border-color: var(--text-secondary);
   background-color: var(--bg-canvas);
 }
 
@@ -454,7 +505,7 @@ p {
 
 .viewer-empty-state i {
   font-size: 24px;
-  color: #d4cfc5;
+  color: var(--border-light);
   margin-bottom: 16px;
 }
 
@@ -473,7 +524,7 @@ p {
 .lecture-view-container {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
 }
 
 .viewer-header {
@@ -495,69 +546,6 @@ p {
 
 .viewer-title {
   font-size: 32px;
-}
-
-/* Copy Config Panel */
-.copy-config-panel {
-  background-color: var(--bg-canvas);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-}
-
-.panel-title {
-  font-size: 14px;
-  font-family: 'Lora', serif;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-}
-
-.config-row {
-  display: flex;
-  gap: 32px;
-  align-items: center;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  color: var(--text-secondary);
-}
-
-.checkbox-label input {
-  accent-color: var(--accent-brand);
-  width: 16px;
-  height: 16px;
-}
-
-.input-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.input-group label {
-  font-size: 14px;
-  color: var(--text-secondary);
-}
-
-.input-group input {
-  padding: 10px 16px;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  color: var(--text-primary);
-  font-size: 14px;
-  outline: none;
-  width: 160px;
-  transition: border-color 0.2s ease;
-}
-
-.input-group input:focus {
-  border-color: var(--accent-brand);
 }
 
 /* Copy Action Buttons */
@@ -606,6 +594,7 @@ p {
   resize: vertical;
   outline: none;
   font-family: 'Inter', sans-serif;
+  transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .lecture-textarea-field:focus {
