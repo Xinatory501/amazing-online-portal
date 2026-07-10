@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let activeCategory  = 'Все';
   let activeLecId     = null;
   let toastTimer      = null;
+  let currentFontSize = parseInt(localStorage.getItem('reader-font-size')) || 18;
 
   // ── Theme ─────────────────────────────────
   const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -36,10 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
     html.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     if (theme === 'dark') {
-      themeIcon.className  = 'fa-regular fa-sun';
+      themeIcon.className  = 'fa-solid fa-sun';
       themeLabel.textContent = 'Светлая тема';
     } else {
-      themeIcon.className  = 'fa-regular fa-moon';
+      themeIcon.className  = 'fa-solid fa-moon';
       themeLabel.textContent = 'Тёмная тема';
     }
   }
@@ -124,6 +125,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Lecture Viewer ─────────────────────────
   function renderViewer(lec) {
+    const paragraphsHtml = lec.text.split('\n')
+      .map(p => p.trim())
+      .filter(p => p.length > 0)
+      .map(p => `<p class="reader-para">${p}</p>`)
+      .join('');
+
     viewerEl.innerHTML = `
       <div class="viewer-inner">
         <div class="viewer-header">
@@ -131,18 +138,67 @@ document.addEventListener('DOMContentLoaded', () => {
           <h2 class="viewer-title">${lec.title}</h2>
           <p class="viewer-desc">${lec.description}</p>
         </div>
+
         <div class="viewer-actions">
           <button class="btn btn-primary" id="copy-btn">
-            <i class="fa-regular fa-copy"></i> Скопировать текст
+            <i class="fa-solid fa-copy"></i> Скопировать весь текст
           </button>
+          
+          <div class="font-controls">
+            <button class="btn btn-secondary btn-icon" id="font-decrease" title="Уменьшить шрифт">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span class="font-label">А</span>
+            <button class="btn btn-secondary btn-icon" id="font-increase" title="Увеличить шрифт">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <span class="reader-hint">
+            <i class="fa-solid fa-circle-info"></i> Кликните на абзац, чтобы выделить его при чтении
+          </span>
         </div>
-        <div>
-          <textarea class="lecture-text-area" readonly id="lec-textarea">${lec.text}</textarea>
+
+        <div class="lecture-reader-body" id="reader-body" style="font-size: ${currentFontSize}px;">
+          ${paragraphsHtml}
         </div>
       </div>
     `;
+
+    // Copy event
     document.getElementById('copy-btn').addEventListener('click', () => {
-      copyText(document.getElementById('lec-textarea').value);
+      copyText(lec.text);
+    });
+
+    // Font size controls
+    const readerBody = document.getElementById('reader-body');
+    
+    document.getElementById('font-increase').addEventListener('click', () => {
+      if (currentFontSize < 32) {
+        currentFontSize += 2;
+        readerBody.style.fontSize = `${currentFontSize}px`;
+        localStorage.setItem('reader-font-size', currentFontSize);
+      }
+    });
+
+    document.getElementById('font-decrease').addEventListener('click', () => {
+      if (currentFontSize > 14) {
+        currentFontSize -= 2;
+        readerBody.style.fontSize = `${currentFontSize}px`;
+        localStorage.setItem('reader-font-size', currentFontSize);
+      }
+    });
+
+    // Click to highlight paragraph
+    const paras = readerBody.querySelectorAll('.reader-para');
+    paras.forEach(para => {
+      para.addEventListener('click', () => {
+        const wasActive = para.classList.contains('active-para');
+        paras.forEach(p => p.classList.remove('active-para'));
+        if (!wasActive) {
+          para.classList.add('active-para');
+        }
+      });
     });
   }
 

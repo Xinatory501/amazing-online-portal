@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Информационный Портал | Savely Gerov</title>
-  <meta name="description" content="Единая база знаний и лекций Южного Района. Разработан Savely_Gerov.">
+  <meta name="description" content="Единая база знаний и лекций. Разработан Savely_Gerov.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Styrene+A+LC:wght@400;500&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet">
-  <!-- fallback if Styrene not available -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome FREE only (fa-solid works, fa-regular/fa-light requires Pro) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -18,27 +17,27 @@
   <div class="layout">
 
     <!-- ═══ SIDEBAR ═══ -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar">
 
       <div class="sidebar-top">
         <div class="wordmark">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="wordmark-icon">
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="wordmark-icon">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <span>Портал знаний</span>
         </div>
 
         <nav class="nav">
           <button class="nav-item active" data-tab="home">
-            <i class="fa-regular fa-house-blank"></i>
+            <i class="fa-solid fa-house"></i>
             <span>Главная</span>
           </button>
           <button class="nav-item" data-tab="lectures">
-            <i class="fa-regular fa-book-open"></i>
+            <i class="fa-solid fa-book-open"></i>
             <span>Лекции</span>
           </button>
           <button class="nav-item disabled">
-            <i class="fa-regular fa-file-lines"></i>
+            <i class="fa-solid fa-scale-balanced"></i>
             <span>Уставы <em class="soon-pill">скоро</em></span>
           </button>
         </nav>
@@ -46,7 +45,7 @@
 
       <div class="sidebar-bottom">
         <button id="theme-toggle" class="theme-btn">
-          <i class="fa-regular fa-moon" id="theme-icon"></i>
+          <i class="fa-solid fa-moon" id="theme-icon"></i>
           <span id="theme-label">Светлая тема</span>
         </button>
         <div class="creator-block">
@@ -58,32 +57,32 @@
     </aside>
 
     <!-- ═══ MAIN ═══ -->
-    <main class="main" id="main-content">
+    <main class="main">
 
       <!-- HOME TAB -->
       <section id="tab-home" class="tab active">
         <header class="page-header">
           <h1 class="page-title">Информационный портал</h1>
-          <p class="page-sub">Здесь собраны все лекции и полезные материалы. Читайте — просто и удобно.</p>
+          <p class="page-sub">Здесь собраны все лекции и полезные материалы для удобного чтения в голосовом чате.</p>
         </header>
 
         <div class="cards-grid">
           <div class="card">
-            <div class="card-icon"><i class="fa-regular fa-circle-info"></i></div>
+            <div class="card-icon"><i class="fa-solid fa-circle-info"></i></div>
             <h3>О портале</h3>
-            <p>Разработан <strong>Savely_Gerov</strong> для обеспечения быстрого и удобного доступа к лекционным и справочным материалам.</p>
+            <p>Разработан <strong>Savely_Gerov</strong> — бывшим главой администрации ЮР. Портал создан для удобного доступа к лекционным и справочным материалам.</p>
           </div>
           <div class="card card-action" id="goto-lectures">
-            <div class="card-icon"><i class="fa-regular fa-book-open"></i></div>
+            <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
             <h3>Лекционный раздел</h3>
-            <p>Весь текст лекций в удобном формате для чтения в голосовом чате. Быстрый поиск и навигация по категориям.</p>
+            <p>Весь текст лекций в удобном формате для чтения. Быстрый поиск и навигация по категориям.</p>
             <span class="card-cta">Открыть лекции <i class="fa-solid fa-arrow-right"></i></span>
           </div>
           <div class="card card-muted">
-            <div class="card-icon"><i class="fa-regular fa-gavel"></i></div>
+            <div class="card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
             <h3>Уставы и правила</h3>
-            <p>Нормативная база и регламенты. Раздел находится в разработке и будет доступен в ближайшее время.</p>
-            <span class="soon-pill" style="margin-top:12px;display:inline-block;">Скоро</span>
+            <p>Нормативная база и регламенты. Раздел находится в разработке.</p>
+            <span class="soon-pill" style="margin-top:14px;display:inline-block;">Скоро</span>
           </div>
         </div>
       </section>
@@ -93,16 +92,15 @@
         <header class="page-header row">
           <div>
             <h1 class="page-title">Лекции</h1>
-            <p class="page-sub">Выберите лекцию — текст откроется справа.</p>
+            <p class="page-sub">Выберите лекцию из списка слева для чтения.</p>
           </div>
           <div class="search-box">
-            <i class="fa-regular fa-magnifying-glass"></i>
+            <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" id="search-input" placeholder="Поиск по лекциям…" autocomplete="off">
           </div>
         </header>
 
         <div class="lectures-wrap">
-
           <!-- List panel -->
           <div class="lectures-list-panel">
             <div id="category-filters" class="filters"></div>
@@ -112,18 +110,20 @@
           <!-- Viewer panel -->
           <div class="lectures-viewer-panel" id="lecture-viewer">
             <div class="empty-state">
-              <i class="fa-light fa-book-blank"></i>
+              <i class="fa-solid fa-book-open"></i>
               <p>Выберите лекцию слева</p>
             </div>
           </div>
-
         </div>
       </section>
 
     </main>
   </div>
 
-  <div class="toast" id="toast"><i class="fa-solid fa-check"></i> <span id="toast-msg">Скопировано</span></div>
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-check"></i>
+    <span id="toast-msg">Скопировано</span>
+  </div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>

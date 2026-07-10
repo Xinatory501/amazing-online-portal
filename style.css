@@ -565,25 +565,111 @@ p { max-width: 60ch; }
   background: var(--border);
 }
 
-.lecture-text-area {
-  width: 100%;
-  min-height: 380px;
-  padding: 24px 28px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  color: var(--text-primary);
-  font-size: 15px;
-  font-family: 'Inter', sans-serif;
-  line-height: 1.85;
-  resize: vertical;
-  outline: none;
-  transition: border-color var(--transition), background var(--transition), color var(--transition);
+/* ── LECTURE READER ───────────────────────── */
+.viewer-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-.lecture-text-area:focus {
-  border-color: var(--accent);
+.font-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  padding: 2px;
+  border-radius: var(--r-md);
 }
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none !important;
+  background: transparent !important;
+  color: var(--text-secondary);
+}
+
+.btn-icon:hover {
+  color: var(--text-primary);
+  background: var(--bg-input) !important;
+}
+
+.font-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 0 8px;
+  user-select: none;
+}
+
+.reader-hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .reader-hint {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+.reader-hint i {
+  color: var(--accent);
+}
+
+.lecture-reader-body {
+  width: 100%;
+  max-width: 65ch;
+  line-height: 1.85;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  transition: font-size 0.15s ease;
+  margin-top: 12px;
+}
+
+.reader-para {
+  padding: 12px 18px;
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: text;
+}
+
+.reader-para:hover {
+  background: var(--bg-elevated);
+  border-left-color: var(--text-muted);
+}
+
+/* Highlighted paragraph for reading */
+.reader-para.active-para {
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Fade out other paragraphs when one is active to focus reading */
+.lecture-reader-body:has(.active-para) .reader-para:not(.active-para) {
+  opacity: 0.4;
+}
+
+.lecture-reader-body:has(.active-para) .reader-para:not(.active-para):hover {
+  opacity: 0.8;
+}
+
 
 /* ── TOAST ────────────────────────────────── */
 .toast {
