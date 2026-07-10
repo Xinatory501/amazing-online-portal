@@ -3,8 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── DOM refs ─────────────────────────────
   const html          = document.documentElement;
   const themeBtn      = document.getElementById('theme-toggle');
-  const themeIcon     = themeBtn.querySelector('i');
-  const themeLabel    = themeBtn.querySelector('span');
+  const themeBtnMobile = document.getElementById('theme-toggle-mobile');
 
   const navItems      = document.querySelectorAll('.nav-item[data-tab]');
   const tabs          = document.querySelectorAll('.tab');
@@ -30,20 +29,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const savedTheme = localStorage.getItem('theme') || 'dark';
   applyTheme(savedTheme);
 
-  themeBtn.addEventListener('click', () => {
-    const current = html.getAttribute('data-theme');
-    applyTheme(current === 'dark' ? 'light' : 'dark');
+  [themeBtn, themeBtnMobile].forEach(btn => {
+    if (btn) {
+      btn.addEventListener('click', () => {
+        const current = html.getAttribute('data-theme');
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    }
   });
 
   function applyTheme(theme) {
     html.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    
+    const icon = themeBtn ? themeBtn.querySelector('i') : null;
+    const label = themeBtn ? themeBtn.querySelector('span') : null;
+    const mobileIcon = themeBtnMobile ? themeBtnMobile.querySelector('i') : null;
+
     if (theme === 'dark') {
-      themeIcon.className  = 'fa-solid fa-sun';
-      themeLabel.textContent = 'Светлая тема';
+      if (icon) icon.className = 'fa-solid fa-sun';
+      if (label) label.textContent = 'Светлая тема';
+      if (mobileIcon) mobileIcon.className = 'fa-solid fa-sun';
     } else {
-      themeIcon.className  = 'fa-solid fa-moon';
-      themeLabel.textContent = 'Тёмная тема';
+      if (icon) icon.className = 'fa-solid fa-moon';
+      if (label) label.textContent = 'Тёмная тема';
+      if (mobileIcon) mobileIcon.className = 'fa-solid fa-moon';
     }
   }
 
