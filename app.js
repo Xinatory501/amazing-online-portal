@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  const gotoLectures  = document.getElementById('goto-lectures');
   const gotoHints     = document.getElementById('goto-hints');
 
   // Hints DOM refs
