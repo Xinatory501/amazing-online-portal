@@ -716,6 +716,39 @@ p { max-width: 60ch; }
   cursor: zoom-out;
 }
 
+/* ── SEARCH HIGHLIGHT & BADGE ────────────── */
+mark.search-highlight {
+  background: rgba(245, 158, 11, 0.28);
+  color: #f59e0b;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border-bottom: 2px solid #f59e0b;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+  display: inline-block;
+  line-height: 1.2;
+}
+
+[data-theme="light"] mark.search-highlight {
+  background: rgba(217, 119, 6, 0.2);
+  color: #b45309;
+  border-bottom-color: #b45309;
+}
+
+.search-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+}
+
 .copyright-notice {
   margin-top: 32px;
   padding: 16px 20px;

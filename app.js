@@ -173,9 +173,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── Helper functions for Search Highlighting ──
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function highlightText(text, searchQuery) {
+    const escaped = escapeHtml(text);
+    if (!searchQuery || !searchQuery.trim()) return escaped;
+    const q = searchQuery.trim();
+    const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${safeQ})`, 'gi');
+    return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
+  }
+
   // ── Lectures Grid ─────────────────────────
   function buildGrid() {
-    const q = (searchInput.value || '').trim().toLowerCase();
+    const rawQ = (searchInput.value || '').trim();
+    const q = rawQ.toLowerCase();
     const filtered = lecturesData.filter(l => {
       const catOk = activeCategory === 'Все' || l.category === activeCategory;
       const qOk = !q || l.title.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
@@ -213,14 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       card.addEventListener('click', () => {
         activeLecId = lec.id;
-        openReader(lec);
+        openReader(lec, rawQ);
       });
       gridEl.appendChild(card);
     });
   }
 
   // ── Reader View Toggle ────────────────────
-  function openReader(lec) {
+  function openReader(lec, searchQuery = '') {
     // Hide grid elements
     lecturesHeader.style.display = 'none';
     filtersEl.style.display = 'none';
@@ -228,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show viewer
     viewerEl.classList.remove('hidden');
-    renderViewer(lec);
+    renderViewer(lec, searchQuery);
   }
 
   function closeReader() {
@@ -247,12 +266,18 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Lecture Viewer ─────────────────────────
-  function renderViewer(lec) {
+  function renderViewer(lec, searchQuery = '') {
     const paragraphsHtml = lec.text.split('\n')
       .map(p => p.trim())
       .filter(p => p.length > 0)
-      .map(p => `<p class="reader-para">${p}</p>`)
+      .map(p => `<p class="reader-para">${highlightText(p, searchQuery)}</p>`)
       .join('');
+
+    const searchBadgeHtml = searchQuery.trim() ? `
+      <div class="search-badge">
+        <i class="fa-solid fa-magnifying-glass"></i> Найдено по запросу: "${escapeHtml(searchQuery.trim())}"
+      </div>
+    ` : '';
 
     viewerEl.innerHTML = `
       <div class="viewer-inner">
@@ -264,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="viewer-cat">${lec.category}</div>
           <h2 class="viewer-title">${lec.title}</h2>
           <p class="viewer-desc">${lec.description}</p>
+          ${searchBadgeHtml}
         </div>
 
         <div class="viewer-actions">
@@ -322,6 +348,15 @@ document.addEventListener('DOMContentLoaded', () => {
     readerBody.addEventListener('copy', (e) => e.preventDefault());
     readerBody.addEventListener('contextmenu', (e) => e.preventDefault());
     readerBody.addEventListener('selectstart', (e) => e.preventDefault());
+
+    if (searchQuery.trim()) {
+      setTimeout(() => {
+        const firstMatch = readerBody.querySelector('.search-highlight');
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+    }
   }
 
   // ── Search ────────────────────────────────
@@ -362,7 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function buildLawsGrid() {
     if (!lawsGridEl || typeof lawsData === 'undefined') return;
-    const q = (lawSearchInput ? lawSearchInput.value || '' : '').trim().toLowerCase();
+    const rawQ = (lawSearchInput ? lawSearchInput.value || '' : '').trim();
+    const q = rawQ.toLowerCase();
     const filtered = lawsData.filter(l => {
       const catOk = activeLawCategory === 'Все' || l.category === activeLawCategory;
       const qOk = !q || l.title.toLowerCase().includes(q) || l.description.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
@@ -399,19 +435,19 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       card.addEventListener('click', () => {
         activeLawId = law.id;
-        openLawReader(law);
+        openLawReader(law, rawQ);
       });
       lawsGridEl.appendChild(card);
     });
   }
 
-  function openLawReader(law) {
+  function openLawReader(law, searchQuery = '') {
     if (!lawsHeader || !lawFiltersEl || !lawsGridEl || !lawViewerEl) return;
     lawsHeader.style.display = 'none';
     lawFiltersEl.style.display = 'none';
     lawsGridEl.style.display = 'none';
     lawViewerEl.classList.remove('hidden');
-    renderLawViewer(law);
+    renderLawViewer(law, searchQuery);
   }
 
   function closeLawReader() {
@@ -425,12 +461,18 @@ document.addEventListener('DOMContentLoaded', () => {
     buildLawsGrid();
   }
 
-  function renderLawViewer(law) {
+  function renderLawViewer(law, searchQuery = '') {
     const paragraphsHtml = law.text.split('\n')
       .map(p => p.trim())
       .filter(p => p.length > 0)
-      .map(p => `<p class="reader-para">${p}</p>`)
+      .map(p => `<p class="reader-para">${highlightText(p, searchQuery)}</p>`)
       .join('');
+
+    const searchBadgeHtml = searchQuery.trim() ? `
+      <div class="search-badge">
+        <i class="fa-solid fa-magnifying-glass"></i> Найдено по запросу: "${escapeHtml(searchQuery.trim())}"
+      </div>
+    ` : '';
 
     lawViewerEl.innerHTML = `
       <div class="viewer-inner">
@@ -442,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="viewer-cat">${law.category}</div>
           <h2 class="viewer-title">${law.title}</h2>
           <p class="viewer-desc">${law.description}</p>
+          ${searchBadgeHtml}
         </div>
 
         <div class="viewer-actions">
@@ -497,6 +540,15 @@ document.addEventListener('DOMContentLoaded', () => {
     lawReaderBody.addEventListener('copy', (e) => e.preventDefault());
     lawReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
     lawReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
+
+    if (searchQuery.trim()) {
+      setTimeout(() => {
+        const firstMatch = lawReaderBody.querySelector('.search-highlight');
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+    }
   }
 
   if (lawSearchInput) {
