@@ -34,11 +34,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма адвоката",
-            "url": "assets/images/forma_advokat_stock.jpg"
+            "url": "assets/images/forma_advokat_hd_v10.jpg"
           },
           {
             "title": "Форма сотрудника АР по должности",
-            "url": "assets/images/forma_ar_stock.jpg"
+            "url": "assets/images/forma_ar_hd_v10.jpg"
           }
         ]
       },
@@ -48,11 +48,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ЮР по должности",
-            "url": "assets/images/forma_ur_stock.jpg"
+            "url": "assets/images/forma_ur_hd_v10.jpg"
           },
           {
             "title": "Форма сотрудника БР по должности",
-            "url": "assets/images/forma_br_stock.jpg"
+            "url": "assets/images/forma_br_hd_v10.jpg"
           }
         ]
       },
@@ -62,7 +62,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ООК по должности",
-            "url": "assets/images/forma_ook_stock.jpg"
+            "url": "assets/images/forma_ook_hd_v10.jpg"
           }
         ]
       },
@@ -72,11 +72,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма руководства области",
-            "url": "assets/images/forma_gov_obl_stock.jpg"
+            "url": "assets/images/forma_gov_obl_hd_v10.jpg"
           },
           {
             "title": "Форма руководства районов и АП, ООК",
-            "url": "assets/images/forma_gov_rayons_stock.jpg"
+            "url": "assets/images/forma_gov_rayons_hd_v10.jpg"
           }
         ]
       },
@@ -86,11 +86,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудницы по должности",
-            "url": "assets/images/forma_female_stock.jpg"
+            "url": "assets/images/forma_female_hd_v10.jpg"
           },
           {
             "title": "Форма сотрудницы руководящего состава",
-            "url": "assets/images/forma_female_lead_stock.jpg"
+            "url": "assets/images/forma_female_lead_hd_v10.jpg"
           }
         ]
       }
@@ -108,7 +108,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост А1 - А2 (Вход в Правительство)",
-            "url": "assets/images/forum_img_37_stock.jpg"
+            "url": "assets/images/forum_img_37_hd_v10.jpg"
           }
         ]
       },
@@ -118,7 +118,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост В1 - В2 (Холл Правительства)",
-            "url": "assets/images/forum_img_38_stock.jpg"
+            "url": "assets/images/forum_img_38_hd_v10.jpg"
           }
         ]
       },
@@ -128,7 +128,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост С1 - С2 (Задний вход / парковка)",
-            "url": "assets/images/forum_img_39_stock.jpg"
+            "url": "assets/images/forum_img_39_hd_v10.jpg"
           }
         ]
       },
@@ -138,7 +138,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост D1 - D2 (Ворота на парковку)",
-            "url": "assets/images/forum_img_40_stock.jpg"
+            "url": "assets/images/forum_img_40_hd_v10.jpg"
           }
         ]
       },
@@ -148,7 +148,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост E1 - E2 (Около кабинета Губернатора)",
-            "url": "assets/images/forum_img_41_stock.jpg"
+            "url": "assets/images/forum_img_41_hd_v10.jpg"
           }
         ]
       }
