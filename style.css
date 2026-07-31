@@ -842,12 +842,13 @@ mark.search-highlight {
 
 .instruction-img {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
   height: auto;
   object-fit: contain;
   border-radius: 8px;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  image-rendering: -webkit-optimize-contrast;
   transition: transform 0.3s ease, max-height 0.3s ease;
 }
 
