@@ -534,12 +534,58 @@ document.addEventListener('DOMContentLoaded', () => {
     buildLawsGrid();
   }
 
+  function formatLawContent(text, searchQuery) {
+    const lines = text.split('\n').map(s => s.trim()).filter(Boolean);
+    let html = '';
+    let currentBoxLines = [];
+
+    function flushBox() {
+      if (currentBoxLines.length > 0) {
+        const boxText = currentBoxLines.join('\n');
+        const hasSearchMatch = searchQuery.trim() && matchesQuery(boxText, searchQuery);
+        
+        const boxParagraphs = currentBoxLines
+          .map((p, idx) => {
+            const highlighted = highlightText(p, searchQuery);
+            if (idx === 0 && (p.startsWith('Статья') || /^\d+\.\d+/.test(p))) {
+              return `<div class="law-box-title">${highlighted}</div>`;
+            }
+            return `<div class="law-box-text">${highlighted}</div>`;
+          })
+          .join('');
+
+        const activeClass = hasSearchMatch ? ' search-matched-box' : '';
+        html += `<div class="law-article-box${activeClass}">${boxParagraphs}</div>`;
+        currentBoxLines = [];
+      }
+    }
+
+    lines.forEach(line => {
+      if (/^Глава\s+\d+/i.test(line)) {
+        flushBox();
+        const highlightedCh = highlightText(line, searchQuery);
+        html += `
+          <div class="law-chapter-header">
+            <i class="fa-solid fa-bookmark"></i>
+            <span>${highlightedCh}</span>
+          </div>
+        `;
+      } 
+      else if (/^(Статья\s+\d+|Статья\s+[\d\.]+|\d+\.\d+)/i.test(line)) {
+        flushBox();
+        currentBoxLines.push(line);
+      } 
+      else {
+        currentBoxLines.push(line);
+      }
+    });
+
+    flushBox();
+    return html;
+  }
+
   function renderLawViewer(law, searchQuery = '') {
-    const paragraphsHtml = law.text.split('\n')
-      .map(p => p.trim())
-      .filter(p => p.length > 0)
-      .map(p => `<p class="reader-para">${highlightText(p, searchQuery)}</p>`)
-      .join('');
+    const paragraphsHtml = formatLawContent(law.text, searchQuery);
 
     const searchBadgeHtml = searchQuery.trim() ? `
       <div class="search-badge">

@@ -749,6 +749,71 @@ mark.search-highlight {
   border: 1px solid var(--border);
 }
 
+/* ── LAW READER CARDS & BOXES ────────────── */
+.law-chapter-header {
+  margin-top: 28px;
+  margin-bottom: 16px;
+  padding: 14px 20px;
+  background: var(--accent-dim);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--r-md);
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.law-chapter-header i {
+  font-size: 18px;
+}
+
+.law-article-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.law-article-box:hover {
+  border-color: rgba(212, 165, 116, 0.4);
+}
+
+.law-article-box.search-matched-box {
+  border-color: var(--accent);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.05);
+}
+
+.law-box-title {
+  font-weight: 600;
+  font-size: 1.05em;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+.law-box-text {
+  font-size: 0.96em;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-top: 6px;
+}
+
+.law-box-text:first-child {
+  margin-top: 0;
+  color: var(--text-primary);
+}
+
 .copyright-notice {
   margin-top: 32px;
   padding: 16px 20px;
