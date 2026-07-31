@@ -20,11 +20,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма охранника по должности",
-            "url": "assets/images/forma_ohranka_hd_v2.jpg"
+            "url": "assets/images/forma_ohranka_v5_hd.jpg"
           },
           {
             "title": "Форма руководящего состава",
-            "url": "assets/images/forma_rbp_lead_hd_v2.jpg"
+            "url": "assets/images/forma_rbp_lead_v5_hd.jpg"
           }
         ]
       },
@@ -34,11 +34,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма адвоката",
-            "url": "assets/images/forma_advokat_hd_v2.jpg"
+            "url": "assets/images/forma_advokat_v5_hd.jpg"
           },
           {
             "title": "Форма сотрудника АР по должности",
-            "url": "assets/images/forma_ar_hd_v2.jpg"
+            "url": "assets/images/forma_ar_v5_hd.jpg"
           }
         ]
       },
@@ -48,11 +48,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ЮР по должности",
-            "url": "assets/images/forma_ur_hd_v2.jpg"
+            "url": "assets/images/forma_ur_v5_hd.jpg"
           },
           {
             "title": "Форма сотрудника БР по должности",
-            "url": "assets/images/forma_br_hd_v2.jpg"
+            "url": "assets/images/forma_br_v5_hd.jpg"
           }
         ]
       },
@@ -62,7 +62,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ООК по должности",
-            "url": "assets/images/forma_ook_hd_v2.jpg"
+            "url": "assets/images/forma_ook_v5_hd.jpg"
           }
         ]
       },
@@ -72,11 +72,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма руководства области",
-            "url": "assets/images/forma_gov_obl_hd_v2.jpg"
+            "url": "assets/images/forma_gov_obl_v5_hd.jpg"
           },
           {
             "title": "Форма руководства районов и АП, ООК",
-            "url": "assets/images/forma_gov_rayons_hd_v2.jpg"
+            "url": "assets/images/forma_gov_rayons_v5_hd.jpg"
           }
         ]
       },
@@ -86,11 +86,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудницы по должности",
-            "url": "assets/images/forma_female_hd_v2.jpg"
+            "url": "assets/images/forma_female_v5_hd.jpg"
           },
           {
             "title": "Форма сотрудницы руководящего состава",
-            "url": "assets/images/forma_female_lead_hd_v2.jpg"
+            "url": "assets/images/forma_female_lead_v5_hd.jpg"
           }
         ]
       }
@@ -108,7 +108,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост А1 - А2 (Вход в Правительство)",
-            "url": "assets/images/forum_img_37_hd_v2.jpg"
+            "url": "assets/images/forum_img_37_v5_hd.jpg"
           }
         ]
       },
@@ -118,7 +118,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост В1 - В2 (Холл Правительства)",
-            "url": "assets/images/forum_img_38_hd_v2.jpg"
+            "url": "assets/images/forum_img_38_v5_hd.jpg"
           }
         ]
       },
@@ -128,7 +128,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост С1 - С2 (Задний вход / парковка)",
-            "url": "assets/images/forum_img_39_hd_v2.jpg"
+            "url": "assets/images/forum_img_39_v5_hd.jpg"
           }
         ]
       },
@@ -138,7 +138,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост D1 - D2 (Ворота на парковку)",
-            "url": "assets/images/forum_img_40_hd_v2.jpg"
+            "url": "assets/images/forum_img_40_v5_hd.jpg"
           }
         ]
       },
@@ -148,7 +148,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост E1 - E2 (Около кабинета Губернатора)",
-            "url": "assets/images/forum_img_41_hd_v2.jpg"
+            "url": "assets/images/forum_img_41_v5_hd.jpg"
           }
         ]
       }
@@ -166,7 +166,7 @@ const instructionsData = [
       },
       {
         "subtitle": "2. Порядок действий при правонарушениях",
-        "text": "При возникновеннии хулиганства, проявлении агрессии или незаконном проникновении сотрудники РБП должны зафиксировать нарушение, применить физическую силу или спецсредства согласно закону и незамедлительно передать нарушителя сотрудникам МВД или ФСБ."
+        "text": "При возникновении хулиганства, проявлении агрессии или незаконном проникновении сотрудники РБП должны зафиксировать нарушение, применить физическую силу или спецсредства согласно закону и незамедлительно передать нарушителя сотрудникам МВД или ФСБ."
       },
       {
         "subtitle": "3. Порядок эвакуации при ЧС",
@@ -189,8 +189,8 @@ const instructionsData = [
         "text": "— Местоположение: вокзал города Арзамас.\n— Название поста: ВА\n— Официальный адрес: ул. Мира, д. 3\n— Задачи: непрерывный контроль входящего потока граждан на вокзале, досмотр багажа при подозрениях и пресечение хулиганства.",
         "images": [
           {
-            "title": "Пост ВА (Вокзал г. Арзамас - HD)",
-            "url": "assets/images/pps_post_va_hd_v4.jpg"
+            "title": "Пост ВА (Вокзал г. Арзамас)",
+            "url": "assets/images/pps_post_va_v5_hd.jpg"
           }
         ]
       },
@@ -199,8 +199,8 @@ const instructionsData = [
         "text": "— Местоположение: КПП-1 воинской части в ПГТ. Батырево.\n— Название поста: ВЧ\n— Официальный адрес: воинская часть №1\n— Задачи: контроль проезда военной и служебной техники, оказание содействия военнослужащим при пропускном режиме.",
         "images": [
           {
-            "title": "Пост ВЧ (КПП-1 Воинской части - HD)",
-            "url": "assets/images/pps_post_vch_hd_v4.jpg"
+            "title": "Пост ВЧ (КПП-1 Воинской части)",
+            "url": "assets/images/pps_post_vch_v5_hd.jpg"
           }
         ]
       },
@@ -209,8 +209,8 @@ const instructionsData = [
         "text": "— Местоположение: центральный рынок в ПГТ. Батырево.\n— Название поста: ЦР\n— Официальный адрес: ул. Ворошилова, д. 18\n— Задачи: пресечение несанкционированной торговли, карманных краж и охрана порядка среди посетителей рынка.",
         "images": [
           {
-            "title": "Пост ЦР (Центральный рынок - HD)",
-            "url": "assets/images/pps_post_cr_hd_v4.jpg"
+            "title": "Пост ЦР (Центральный рынок)",
+            "url": "assets/images/pps_post_cr_v5_hd.jpg"
           }
         ]
       },
@@ -219,8 +219,8 @@ const instructionsData = [
         "text": "— Местоположение: вокзал города Южный около здания УМВД.\n— Название поста: ВЮ\n— Официальный адрес: ул. Заводская, д. 7\n— Задачи: патрулирование привокзальной площади и оперативное реагирование на происшествия вблизи УМВД.",
         "images": [
           {
-            "title": "Пост ВЮ (Вокзал г. Южный - HD)",
-            "url": "assets/images/pps_post_vyu_hd_v4.jpg"
+            "title": "Пост ВЮ (Вокзал г. Южный)",
+            "url": "assets/images/pps_post_vyu_v5_hd.jpg"
           }
         ]
       },
@@ -229,8 +229,8 @@ const instructionsData = [
         "text": "— Местоположение: территория напротив здания Единой Службы Спасения.\n— Название поста: ЕСС\n— Официальный адрес: ул. Алексеевская, д. 12\n— Задачи: обеспечение безопасности бригад скорой помощи и беспрепятственного выезда спецтранспорта.",
         "images": [
           {
-            "title": "Пост ЕСС (Напротив ЕСС - HD)",
-            "url": "assets/images/pps_post_ess_hd_v4.jpg"
+            "title": "Пост ЕСС (Напротив ЕСС)",
+            "url": "assets/images/pps_post_ess_v5_hd.jpg"
           }
         ]
       },
@@ -239,8 +239,8 @@ const instructionsData = [
         "text": "— Местоположение: внутри здания Правительства напротив вокзала пгт. Батырево.\n— Название поста: ПР\n— Официальный адрес: ул. Ленина, д. 1\n— Задачи: охрана административного объекта, проверка документов и поддержание порядка в правительственном холле.",
         "images": [
           {
-            "title": "Пост ПР (Здание Правительства - HD)",
-            "url": "assets/images/pps_post_pr_hd_v4.jpg"
+            "title": "Пост ПР (Здание Правительства)",
+            "url": "assets/images/pps_post_pr_v5_hd.jpg"
           }
         ]
       },
@@ -249,8 +249,8 @@ const instructionsData = [
         "text": "— Местоположение: внутри приемного холла здания ЕСС.\n— Название поста: ХЕСС\n— Официальный адрес: ул. Дорогобужская, д. 1\n— Задачи: защита медицинского персонала и посетителей больницы, предотвращение конфликтов.",
         "images": [
           {
-            "title": "Пост ХЕСС (Холл ЕСС - HD)",
-            "url": "assets/images/pps_post_hess_hd_v4.jpg"
+            "title": "Пост ХЕСС (Холл ЕСС)",
+            "url": "assets/images/pps_post_hess_v5_hd.jpg"
           }
         ]
       },
@@ -259,8 +259,8 @@ const instructionsData = [
         "text": "— Местоположение: внутри здания УМВД около камер КПЗ.\n— Название поста: КПЗ\n— Официальный адрес: Ленинский бульвар, д. 17\n— Задачи: охрана задержанных лиц, надзор за соблюдением условий содержания и предотвращение побегов.",
         "images": [
           {
-            "title": "Пост КПЗ (Внутри УМВД - HD)",
-            "url": "assets/images/pps_post_kpz_hd_v4.jpg"
+            "title": "Пост КПЗ (Внутри УМВД)",
+            "url": "assets/images/pps_post_kpz_v5_hd.jpg"
           }
         ]
       },
@@ -269,8 +269,8 @@ const instructionsData = [
         "text": "— Местоположение: внутри здания военкомата в ПГТ. Батырево.\n— Название поста: ВК\n— Официальный адрес: ул. Ленина, д. 4\n— Задачи: обеспечение порядка во время призывных мероприятий и досмотр призывников.",
         "images": [
           {
-            "title": "Пост ВК (Военкомат - HD)",
-            "url": "assets/images/pps_post_vk_hd_v4.jpg"
+            "title": "Пост ВК (Военкомат)",
+            "url": "assets/images/pps_post_vk_v5_hd.jpg"
           }
         ]
       }
