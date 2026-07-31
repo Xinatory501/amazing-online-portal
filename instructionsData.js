@@ -20,11 +20,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма охранника по должности",
-            "url": "assets/images/forma_ohranka_stock.jpg"
+            "url": "assets/images/forma_ohranka_gemini_hd.jpg"
           },
           {
             "title": "Форма руководящего состава",
-            "url": "assets/images/forma_rbp_lead_stock.jpg"
+            "url": "assets/images/forma_rbp_lead_gemini_hd.jpg"
           }
         ]
       },
