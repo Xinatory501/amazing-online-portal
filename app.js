@@ -217,6 +217,11 @@ document.addEventListener('DOMContentLoaded', () => {
           ${paragraphsHtml}
         </div>
 
+        <div class="copyright-notice">
+          <i class="fa-solid fa-shield-halved"></i>
+          <p>© Все материалы данного раздела охраняются законом об интеллектуальной собственности и авторском праве. Категорически запрещено любое копирование, брание без спроса или использование материалов. Авторство принадлежит <strong>Savely_Gerov</strong> (бывшему главе администрации ЮР).</p>
+        </div>
+
         <div class="viewer-footer">
           <button class="btn btn-secondary btn-back" id="back-to-grid-btn-bottom">
             <i class="fa-solid fa-arrow-left"></i> Назад к списку
