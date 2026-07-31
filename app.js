@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── Helper functions for Search Highlighting ──
+  // ── Helper functions for Smart Search & Highlighting ──
   function escapeHtml(str) {
     return str
       .replace(/&/g, '&amp;')
@@ -182,22 +182,96 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/"/g, '&quot;');
   }
 
+  function normalizeSearchQuery(query) {
+    if (!query || !query.trim()) return '';
+    return query.trim().toLowerCase()
+      .replace(/\bгл\.?\b|\bглава\b/gi, 'глава')
+      .replace(/\bст\.?\b|\bстатья\b/gi, 'статья')
+      .replace(/\bп\.?\b|\bпункт\b/gi, 'пункт')
+      .replace(/(\d+)[\.,\s\-]+(\d+)/g, '$1.$2');
+  }
+
+  function buildSearchRegex(query) {
+    if (!query || !query.trim()) return null;
+    const q = normalizeSearchQuery(query);
+    if (!q) return null;
+
+    const patterns = [];
+
+    // 1. Chapter and Article combination e.g. "глава 1 статья 1" or "глава 1 ст 1"
+    const chArtMatch = q.match(/глава\s*(\d+)\s*статья\s*(\d+(?:\.\d+)?)/);
+    if (chArtMatch) {
+      patterns.push(`(?:глава|гл)[\\s\\.,\\-]*${chArtMatch[1]}`);
+      patterns.push(`(?:статья|ст)[\\s\\.,\\-]*${chArtMatch[2]}`);
+    } else {
+      // Check chapter e.g. "глава 1" or "гл 1"
+      const chMatch = q.match(/глава\s*(\d+)/);
+      if (chMatch) {
+        patterns.push(`(?:глава|гл)[\\s\\.,\\-]*${chMatch[1]}`);
+      }
+
+      // Check article e.g. "статья 3.1", "статья 1", "3.1", "3,1", "3 1"
+      const artMatch = q.match(/статья\s*(\d+(?:\.\d+)?)/);
+      if (artMatch) {
+        const artNum = artMatch[1];
+        if (artNum.includes('.')) {
+          const [n1, n2] = artNum.split('.');
+          patterns.push(`(?:статья|ст)?[\\s\\.,\\-]*${n1}[\\.,\\s\\-]+${n2}`);
+        } else {
+          patterns.push(`(?:статья|ст)[\\s\\.,\\-]*${artNum}`);
+        }
+      } else {
+        // Check number pattern e.g. "3.1", "3,1", "3-1", "3 1"
+        const dotNums = q.match(/\d+\.\d+/g);
+        if (dotNums) {
+          dotNums.forEach(dn => {
+            const [n1, n2] = dn.split('.');
+            patterns.push(`(?:статья|ст)?[\\s\\.,\\-]*${n1}[\\.,\\s\\-]+${n2}`);
+          });
+        }
+      }
+    }
+
+    // Fallback to remaining word terms (e.g. "убийство", "субординация")
+    const words = q.split(/\s+/).filter(w => w.length >= 2 && !['глава', 'статья', 'пункт'].includes(w));
+    words.forEach(w => {
+      if (!/^\d+(\.\d+)?$/.test(w)) {
+        patterns.push(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      }
+    });
+
+    if (!patterns.length) {
+      patterns.push(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    }
+
+    try {
+      return new RegExp(`(${patterns.join('|')})`, 'gi');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function matchesQuery(content, searchQuery) {
+    if (!searchQuery || !searchQuery.trim()) return true;
+    const rx = buildSearchRegex(searchQuery);
+    if (rx && rx.test(content)) return true;
+    return content.toLowerCase().includes(searchQuery.trim().toLowerCase());
+  }
+
   function highlightText(text, searchQuery) {
     const escaped = escapeHtml(text);
     if (!searchQuery || !searchQuery.trim()) return escaped;
-    const q = searchQuery.trim();
-    const safeQ = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${safeQ})`, 'gi');
-    return escaped.replace(regex, '<mark class="search-highlight">$1</mark>');
+    const rx = buildSearchRegex(searchQuery);
+    if (!rx) return escaped;
+    return escaped.replace(rx, '<mark class="search-highlight">$1</mark>');
   }
 
   // ── Lectures Grid ─────────────────────────
   function buildGrid() {
     const rawQ = (searchInput.value || '').trim();
-    const q = rawQ.toLowerCase();
     const filtered = lecturesData.filter(l => {
       const catOk = activeCategory === 'Все' || l.category === activeCategory;
-      const qOk = !q || l.title.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
+      const qOk = matchesQuery(l.title + ' ' + l.description + ' ' + l.text, rawQ);
       return catOk && qOk;
     });
 
@@ -398,10 +472,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function buildLawsGrid() {
     if (!lawsGridEl || typeof lawsData === 'undefined') return;
     const rawQ = (lawSearchInput ? lawSearchInput.value || '' : '').trim();
-    const q = rawQ.toLowerCase();
     const filtered = lawsData.filter(l => {
       const catOk = activeLawCategory === 'Все' || l.category === activeLawCategory;
-      const qOk = !q || l.title.toLowerCase().includes(q) || l.description.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
+      const qOk = matchesQuery(l.title + ' ' + l.description + ' ' + l.text, rawQ);
       return catOk && qOk;
     });
 
