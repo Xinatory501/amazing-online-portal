@@ -20,11 +20,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма охранника по должности",
-            "url": "assets/images/forma_ohranka_v5_hd.jpg"
+            "url": "assets/images/forma_ohranka_stock.jpg"
           },
           {
             "title": "Форма руководящего состава",
-            "url": "assets/images/forma_rbp_lead_v5_hd.jpg"
+            "url": "assets/images/forma_rbp_lead_stock.jpg"
           }
         ]
       },
@@ -34,11 +34,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма адвоката",
-            "url": "assets/images/forma_advokat_v5_hd.jpg"
+            "url": "assets/images/forma_advokat_stock.jpg"
           },
           {
             "title": "Форма сотрудника АР по должности",
-            "url": "assets/images/forma_ar_v5_hd.jpg"
+            "url": "assets/images/forma_ar_stock.jpg"
           }
         ]
       },
@@ -48,11 +48,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ЮР по должности",
-            "url": "assets/images/forma_ur_v5_hd.jpg"
+            "url": "assets/images/forma_ur_stock.jpg"
           },
           {
             "title": "Форма сотрудника БР по должности",
-            "url": "assets/images/forma_br_v5_hd.jpg"
+            "url": "assets/images/forma_br_stock.jpg"
           }
         ]
       },
@@ -62,7 +62,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ООК по должности",
-            "url": "assets/images/forma_ook_v5_hd.jpg"
+            "url": "assets/images/forma_ook_stock.jpg"
           }
         ]
       },
@@ -72,11 +72,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма руководства области",
-            "url": "assets/images/forma_gov_obl_v5_hd.jpg"
+            "url": "assets/images/forma_gov_obl_stock.jpg"
           },
           {
             "title": "Форма руководства районов и АП, ООК",
-            "url": "assets/images/forma_gov_rayons_v5_hd.jpg"
+            "url": "assets/images/forma_gov_rayons_stock.jpg"
           }
         ]
       },
@@ -86,11 +86,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудницы по должности",
-            "url": "assets/images/forma_female_v5_hd.jpg"
+            "url": "assets/images/forma_female_stock.jpg"
           },
           {
             "title": "Форма сотрудницы руководящего состава",
-            "url": "assets/images/forma_female_lead_v5_hd.jpg"
+            "url": "assets/images/forma_female_lead_stock.jpg"
           }
         ]
       }
@@ -108,7 +108,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост А1 - А2 (Вход в Правительство)",
-            "url": "assets/images/forum_img_37_v5_hd.jpg"
+            "url": "assets/images/forum_img_37_stock.jpg"
           }
         ]
       },
@@ -118,7 +118,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост В1 - В2 (Холл Правительства)",
-            "url": "assets/images/forum_img_38_v5_hd.jpg"
+            "url": "assets/images/forum_img_38_stock.jpg"
           }
         ]
       },
@@ -128,7 +128,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост С1 - С2 (Задний вход / парковка)",
-            "url": "assets/images/forum_img_39_v5_hd.jpg"
+            "url": "assets/images/forum_img_39_stock.jpg"
           }
         ]
       },
@@ -138,7 +138,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост D1 - D2 (Ворота на парковку)",
-            "url": "assets/images/forum_img_40_v5_hd.jpg"
+            "url": "assets/images/forum_img_40_stock.jpg"
           }
         ]
       },
@@ -148,7 +148,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост E1 - E2 (Около кабинета Губернатора)",
-            "url": "assets/images/forum_img_41_v5_hd.jpg"
+            "url": "assets/images/forum_img_41_stock.jpg"
           }
         ]
       }
@@ -190,7 +190,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВА (Вокзал г. Арзамас)",
-            "url": "assets/images/pps_post_va_v5_hd.jpg"
+            "url": "assets/images/pps_post_va_stock.jpg"
           }
         ]
       },
@@ -200,7 +200,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЧ (КПП-1 Воинской части)",
-            "url": "assets/images/pps_post_vch_v5_hd.jpg"
+            "url": "assets/images/pps_post_vch_stock.jpg"
           }
         ]
       },
@@ -210,7 +210,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЦР (Центральный рынок)",
-            "url": "assets/images/pps_post_cr_v5_hd.jpg"
+            "url": "assets/images/pps_post_cr_stock.jpg"
           }
         ]
       },
@@ -220,7 +220,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЮ (Вокзал г. Южный)",
-            "url": "assets/images/pps_post_vyu_v5_hd.jpg"
+            "url": "assets/images/pps_post_vyu_stock.jpg"
           }
         ]
       },
@@ -230,7 +230,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЕСС (Напротив ЕСС)",
-            "url": "assets/images/pps_post_ess_v5_hd.jpg"
+            "url": "assets/images/pps_post_ess_stock.jpg"
           }
         ]
       },
@@ -240,7 +240,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ПР (Здание Правительства)",
-            "url": "assets/images/pps_post_pr_v5_hd.jpg"
+            "url": "assets/images/pps_post_pr_stock.jpg"
           }
         ]
       },
@@ -250,7 +250,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ХЕСС (Холл ЕСС)",
-            "url": "assets/images/pps_post_hess_v5_hd.jpg"
+            "url": "assets/images/pps_post_hess_stock.jpg"
           }
         ]
       },
@@ -260,7 +260,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост КПЗ (Внутри УМВД)",
-            "url": "assets/images/pps_post_kpz_v5_hd.jpg"
+            "url": "assets/images/pps_post_kpz_stock.jpg"
           }
         ]
       },
@@ -270,7 +270,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВК (Военкомат)",
-            "url": "assets/images/pps_post_vk_v5_hd.jpg"
+            "url": "assets/images/pps_post_vk_stock.jpg"
           }
         ]
       }
