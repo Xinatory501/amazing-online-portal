@@ -92,6 +92,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'laws') {
       closeLawReader();
     }
+    if (id === 'instructions') {
+      closeInstructionViewer();
+    }
   }
 
   navItems.forEach(btn => {
@@ -104,6 +107,211 @@ document.addEventListener('DOMContentLoaded', () => {
   if (gotoHints) {
     gotoHints.addEventListener('click', () => switchTab('hints'));
   }
+  if (gotoLaws) {
+    gotoLaws.addEventListener('click', () => switchTab('laws'));
+  }
+
+  // ── INSTRUCTIONS SECTION ────────────────────
+  const gotoInstructions = document.getElementById('goto-instructions');
+  const instructionsHeader = document.getElementById('instructions-dashboard-header');
+  const instructionSearchInput = document.getElementById('instruction-search-input');
+  const instructionFiltersEl = document.getElementById('instruction-category-filters');
+  const instructionsGridEl = document.getElementById('instructions-grid');
+  const instructionViewerEl = document.getElementById('instruction-viewer');
+
+  let activeInstructionCategory = 'Все';
+  let activeInstructionId = null;
+
+  if (gotoInstructions) {
+    gotoInstructions.addEventListener('click', () => switchTab('instructions'));
+  }
+
+  function buildInstructionCategories() {
+    if (!instructionFiltersEl || typeof instructionsData === 'undefined') return;
+    const cats = ['Все', ...new Set(instructionsData.map(i => i.category))];
+    instructionFiltersEl.innerHTML = '';
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = `filter-btn ${cat === activeInstructionCategory ? 'active' : ''}`;
+      btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        activeInstructionCategory = cat;
+        document.querySelectorAll('#instruction-category-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        buildInstructionsGrid();
+      });
+      instructionFiltersEl.appendChild(btn);
+    });
+  }
+
+  function buildInstructionsGrid() {
+    if (!instructionsGridEl || typeof instructionsData === 'undefined') return;
+    const rawQ = (instructionSearchInput ? instructionSearchInput.value || '' : '').trim();
+    const filtered = instructionsData.filter(inst => {
+      const catOk = activeInstructionCategory === 'Все' || inst.category === activeInstructionCategory;
+      const fullText = inst.title + ' ' + inst.description + ' ' + (inst.sections ? inst.sections.map(s => s.subtitle + ' ' + s.text).join(' ') : '');
+      const qOk = matchesQuery(fullText, rawQ);
+      return catOk && qOk;
+    });
+
+    instructionsGridEl.innerHTML = '';
+    if (!filtered.length) {
+      instructionsGridEl.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1; min-height: 250px;">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <p>По вашему запросу инструкций не найдено.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filtered.forEach(inst => {
+      const card = document.createElement('div');
+      card.className = 'card card-action';
+      card.innerHTML = `
+        <div class="lec-item-cat" style="color: var(--accent); margin-bottom: 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;">
+          ${inst.category}
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; font-family: 'DM Serif Display', serif;">
+          ${inst.title}
+        </h3>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 16px;">
+          ${inst.description}
+        </p>
+        <span class="card-cta" style="font-size: 13px; font-weight: 500; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; margin-top: auto;">
+          Открыть инструкцию <i class="fa-solid fa-arrow-right"></i>
+        </span>
+      `;
+      card.addEventListener('click', () => {
+        activeInstructionId = inst.id;
+        openInstructionReader(inst, rawQ);
+      });
+      instructionsGridEl.appendChild(card);
+    });
+  }
+
+  function openInstructionReader(inst, searchQuery = '') {
+    if (!instructionsHeader || !instructionFiltersEl || !instructionsGridEl || !instructionViewerEl) return;
+    instructionsHeader.style.display = 'none';
+    instructionFiltersEl.style.display = 'none';
+    instructionsGridEl.style.display = 'none';
+    instructionViewerEl.classList.remove('hidden');
+    renderInstructionViewer(inst, searchQuery);
+  }
+
+  function closeInstructionViewer() {
+    activeInstructionId = null;
+    if (!instructionsHeader || !instructionFiltersEl || !instructionsGridEl || !instructionViewerEl) return;
+    instructionViewerEl.classList.add('hidden');
+    instructionViewerEl.innerHTML = '';
+    instructionsHeader.style.display = 'flex';
+    instructionFiltersEl.style.display = 'flex';
+    instructionsGridEl.style.display = 'grid';
+    buildInstructionsGrid();
+  }
+
+  function renderInstructionViewer(inst, searchQuery = '') {
+    let sectionsHtml = '';
+    if (inst.sections && inst.sections.length) {
+      sectionsHtml = inst.sections.map(sec => {
+        let imgsHtml = '';
+        if (sec.images && sec.images.length) {
+          imgsHtml = `
+            <div class="instruction-gallery">
+              ${sec.images.map(img => `
+                <div class="instruction-img-card">
+                  <img src="${img.url}" alt="${escapeHtml(img.title)}" class="instruction-img" onclick="this.classList.toggle('zoomed')">
+                  <div class="instruction-img-title">${escapeHtml(img.title)}</div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        const subtitleH = highlightText(sec.subtitle, searchQuery);
+        const textH = highlightText(sec.text, searchQuery);
+        const hasSearchMatch = searchQuery.trim() && matchesQuery(sec.subtitle + ' ' + sec.text, searchQuery);
+
+        return `
+          <div class="law-article-box ${hasSearchMatch ? 'search-matched-box' : ''}">
+            <div class="law-box-title">${subtitleH}</div>
+            <div class="law-box-text">${textH}</div>
+            ${imgsHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    const searchBadgeHtml = searchQuery.trim() ? `
+      <div class="search-badge">
+        <i class="fa-solid fa-magnifying-glass"></i> Найдено по запросу: "${escapeHtml(searchQuery.trim())}"
+      </div>
+    ` : '';
+
+    instructionViewerEl.innerHTML = `
+      <div class="viewer-inner">
+        <button class="btn btn-secondary btn-back" id="back-to-instructions-btn">
+          <i class="fa-solid fa-arrow-left"></i> Назад к инструкциям
+        </button>
+
+        <div class="viewer-header">
+          <div class="viewer-cat">${inst.category}</div>
+          <h2 class="viewer-title">${inst.title}</h2>
+          <p class="viewer-desc">${inst.description}</p>
+          ${searchBadgeHtml}
+        </div>
+
+        <div class="lecture-reader-body" id="instruction-reader-body" style="font-size: ${currentFontSize}px;">
+          ${sectionsHtml}
+        </div>
+
+        <div class="copyright-notice">
+          <i class="fa-solid fa-shield-halved"></i>
+          <p>© Утвержденные инструкции и материалы Нижегородской области. Опубликовано на портале <strong>Savely_Gerov</strong> (бывшего главы администрации ЮР).</p>
+        </div>
+
+        <div class="viewer-footer">
+          <button class="btn btn-secondary btn-back" id="back-to-instructions-btn-bottom">
+            <i class="fa-solid fa-arrow-left"></i> Назад к инструкциям
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('back-to-instructions-btn').addEventListener('click', closeInstructionViewer);
+    document.getElementById('back-to-instructions-btn-bottom').addEventListener('click', closeInstructionViewer);
+
+    const instReaderBody = document.getElementById('instruction-reader-body');
+    instReaderBody.addEventListener('copy', (e) => e.preventDefault());
+    instReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
+    instReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
+
+    if (searchQuery.trim()) {
+      setTimeout(() => {
+        const firstMatch = instReaderBody.querySelector('.search-highlight');
+        if (firstMatch) {
+          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 150);
+    }
+  }
+
+  if (instructionSearchInput) {
+    instructionSearchInput.addEventListener('input', buildInstructionsGrid);
+  }
+
+  if (typeof lawSearchInput !== 'undefined' && lawSearchInput) {
+    lawSearchInput.addEventListener('input', buildLawsGrid);
+  }
+
+  // ── Init ──────────────────────────────────
+  buildCategories();
+  buildGrid();
+  // Assuming buildLawCategories and buildLawsGrid exist elsewhere in global scope/referenced files
+  if (typeof buildLawCategories === 'function') buildLawCategories();
+  if (typeof buildLawsGrid === 'function') buildLawsGrid();
+  buildInstructionCategories();
+  buildInstructionsGrid();
 
   // ── Hint Viewer Handlers ──────────────────
   function openHintViewer() {

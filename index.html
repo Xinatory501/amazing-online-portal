@@ -28,7 +28,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=2.6">
+  <link rel="stylesheet" href="style.css?v=2.7">
 </head>
 <body>
 
@@ -74,6 +74,10 @@
           <button class="nav-item" data-tab="laws">
             <i class="fa-solid fa-scale-balanced"></i>
             <span>Законодательство</span>
+          </button>
+          <button class="nav-item" data-tab="instructions">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <span>Инструкции</span>
           </button>
         </nav>
       </div>
@@ -122,8 +126,14 @@
           <div class="card card-action" id="goto-laws">
             <div class="card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
             <h3>Законодательство</h3>
-            <p>Полная нормативно-правовая база: Устав ПР, УК, КоАП, ФП, ФЗ «О Правительстве» и ФЗ «О вертикали власти».</p>
+            <p>Полная нормативно-правовая база: Устав ПР, Иерархия подразделений, Премирование, УК, КоАП, ФП, ФЗ «О Правительстве» и ФЗ «О вертикали власти».</p>
             <span class="card-cta">Открыть законы <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
+          <div class="card card-action" id="goto-instructions">
+            <div class="card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+            <h3>Инструкции и Памятки</h3>
+            <p>Штатная форма одежды по отделам (с фото), карты стационарных постов РБП (А1-Е1), памятки пропускного режима и безопасности.</p>
+            <span class="card-cta">Открыть инструкции <i class="fa-solid fa-arrow-right"></i></span>
           </div>
         </div>
       </section>
@@ -237,6 +247,29 @@
         <div id="law-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
+      <!-- INSTRUCTIONS TAB -->
+      <section id="tab-instructions" class="tab">
+        <header class="page-header row" id="instructions-dashboard-header">
+          <div>
+            <h1 class="page-title">Утверждённые инструкции и материалы</h1>
+            <p class="page-sub">Штатная форма одежды по должностям, карты стационарных постов РБП и памятки безопасности.</p>
+          </div>
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="instruction-search-input" placeholder="Поиск по инструкциям и постам…" autocomplete="off">
+          </div>
+        </header>
+
+        <!-- Instructions Category Filters -->
+        <div id="instruction-category-filters" class="filters"></div>
+
+        <!-- Instructions Grid -->
+        <div id="instructions-grid" class="lectures-grid"></div>
+
+        <!-- Full-screen Instruction Viewer Panel -->
+        <div id="instruction-viewer" class="lecture-viewer-detail hidden"></div>
+      </section>
+
     </main>
   </div>
 
@@ -245,8 +278,9 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <script src="lawsData.js?v=2.6"></script>
-  <script src="data.js?v=2.6"></script>
-  <script src="app.js?v=2.6"></script>
+  <script src="instructionsData.js?v=2.7"></script>
+  <script src="lawsData.js?v=2.7"></script>
+  <script src="data.js?v=2.7"></script>
+  <script src="app.js?v=2.7"></script>
 </body>
 </html>
