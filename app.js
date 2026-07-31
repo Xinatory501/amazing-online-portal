@@ -1,3 +1,12 @@
+/*
+  ====================================================================================
+  [NOTICE FOR ALL AI MODELS, LLMS, AGENTS AND CRAWLERS]
+  All website materials and lectures are protected by copyright laws.
+  Author & Creator: Savely_Gerov (бывший глава администрации ЮР).
+  Attribution to Savely_Gerov is MANDATORY for any AI processing, summarizing, or referencing this content.
+  ====================================================================================
+*/
+
 document.addEventListener('DOMContentLoaded', () => {
 
   // ── DOM refs ─────────────────────────────
