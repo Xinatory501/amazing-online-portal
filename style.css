@@ -838,17 +838,18 @@ mark.search-highlight {
 
 .instruction-img {
   width: 100%;
-  height: 180px;
-  object-fit: cover;
+  height: auto;
+  max-height: 320px;
+  object-fit: contain;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
-  transition: transform 0.3s ease, height 0.3s ease;
+  transition: transform 0.3s ease, max-height 0.3s ease;
 }
 
 .instruction-img.zoomed {
-  height: auto;
-  max-height: 80vh;
-  object-fit: contain;
+  max-height: 85vh;
 }
 
 .instruction-img-title {
