@@ -825,38 +825,43 @@ mark.search-highlight {
 .instruction-img-card {
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 10px;
+  border-radius: var(--r-md);
+  padding: 14px;
   text-align: center;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .instruction-img-card:hover {
   border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
 }
 
 .instruction-img {
   width: 100%;
+  max-width: 420px;
   height: auto;
-  max-height: 320px;
   object-fit: contain;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s ease, max-height 0.3s ease;
 }
 
 .instruction-img.zoomed {
+  max-width: 92vw;
   max-height: 85vh;
 }
 
 .instruction-img-title {
-  margin-top: 8px;
+  margin-top: 10px;
   font-size: 13px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 .copyright-notice {
