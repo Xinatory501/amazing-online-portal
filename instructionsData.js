@@ -178,7 +178,7 @@ const instructionsData = [
     "id": "pps_posts",
     "title": "Стационарные посты сотрудников УМВД (ППС)",
     "category": "ППС (УМВД)",
-    "description": "Полный перечень стационарных постов УМВД по Нижегородской области: 5 уличных постов (ВА, ВЧ, ЦР, ВЮ, ЕСС) и 4 внутренних поста (ПР, ХЕСС, КПЗ, ВК).",
+    "description": "Ультра-четкие снимки высокого разрешения (HD) всех стационарных постов УМВД по Нижегородской области: 5 уличных постов (ВА, ВЧ, ЦР, ВЮ, ЕСС) и 4 внутренних поста (ПР, ХЕСС, КПЗ, ВК).",
     "sections": [
       {
         "subtitle": "ОБЩИЕ ПОЛОЖЕНИЯ И ЗАДАЧИ ПОСТОВ",
@@ -190,7 +190,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВА (Вокзал г. Арзамас)",
-            "url": "assets/images/pps_post_va_stock.jpg"
+            "url": "assets/images/pps_post_va_gemini_hd.jpg"
           }
         ]
       },
@@ -200,7 +200,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЧ (КПП-1 Воинской части)",
-            "url": "assets/images/pps_post_vch_stock.jpg"
+            "url": "assets/images/pps_post_vch_gemini_hd.jpg"
           }
         ]
       },
@@ -210,7 +210,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЦР (Центральный рынок)",
-            "url": "assets/images/pps_post_cr_stock.jpg"
+            "url": "assets/images/pps_post_cr_gemini_hd.jpg"
           }
         ]
       },
@@ -220,7 +220,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЮ (Вокзал г. Южный)",
-            "url": "assets/images/pps_post_vyu_stock.jpg"
+            "url": "assets/images/pps_post_vyu_gemini_hd.jpg"
           }
         ]
       },
@@ -230,7 +230,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЕСС (Напротив ЕСС)",
-            "url": "assets/images/pps_post_ess_stock.jpg"
+            "url": "assets/images/pps_post_ess_gemini_hd.jpg"
           }
         ]
       },
@@ -240,7 +240,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ПР (Здание Правительства)",
-            "url": "assets/images/pps_post_pr_stock.jpg"
+            "url": "assets/images/pps_post_pr_gemini_hd.jpg"
           }
         ]
       },
@@ -250,7 +250,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ХЕСС (Холл ЕСС)",
-            "url": "assets/images/pps_post_hess_stock.jpg"
+            "url": "assets/images/pps_post_hess_gemini_hd.jpg"
           }
         ]
       },
@@ -260,7 +260,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост КПЗ (Внутри УМВД)",
-            "url": "assets/images/pps_post_kpz_stock.jpg"
+            "url": "assets/images/pps_post_kpz_gemini_hd.jpg"
           }
         ]
       },
@@ -270,7 +270,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВК (Военкомат)",
-            "url": "assets/images/pps_post_vk_stock.jpg"
+            "url": "assets/images/pps_post_vk_gemini_hd.jpg"
           }
         ]
       }
