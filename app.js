@@ -202,10 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="viewer-actions">
-          <button class="btn btn-primary" id="copy-btn">
-            <i class="fa-solid fa-copy"></i> Скопировать весь текст
-          </button>
-          
           <div class="font-controls">
             <button class="btn btn-secondary btn-icon" id="font-decrease" title="Уменьшить шрифт">
               <i class="fa-solid fa-minus"></i>
@@ -215,10 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
               <i class="fa-solid fa-plus"></i>
             </button>
           </div>
-
-          <span class="reader-hint">
-            <i class="fa-solid fa-circle-info"></i> Кликните на абзац, чтобы выделить его при чтении
-          </span>
         </div>
 
         <div class="lecture-reader-body" id="reader-body" style="font-size: ${currentFontSize}px;">
@@ -236,11 +228,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Back events
     document.getElementById('back-to-grid-btn').addEventListener('click', closeReader);
     document.getElementById('back-to-grid-btn-bottom').addEventListener('click', closeReader);
-
-    // Copy event
-    document.getElementById('copy-btn').addEventListener('click', () => {
-      copyText(lec.text);
-    });
 
     // Font size controls
     const readerBody = document.getElementById('reader-body');
@@ -261,17 +248,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Click to highlight paragraph
-    const paras = readerBody.querySelectorAll('.reader-para');
-    paras.forEach(para => {
-      para.addEventListener('click', () => {
-        const wasActive = para.classList.contains('active-para');
-        paras.forEach(p => p.classList.remove('active-para'));
-        if (!wasActive) {
-          para.classList.add('active-para');
-        }
-      });
-    });
+    // Disable copy & contextmenu on reader body
+    readerBody.addEventListener('copy', (e) => e.preventDefault());
+    readerBody.addEventListener('contextmenu', (e) => e.preventDefault());
+    readerBody.addEventListener('selectstart', (e) => e.preventDefault());
   }
 
   // ── Search ────────────────────────────────
