@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hintImgElement.addEventListener('click', () => {
       const link = document.createElement('a');
       link.href = 'f1_help_overlay.png';
-      link.download = '1_оверлей_Жуков.png';
+      link.download = 'f1_help_overlay.png';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
