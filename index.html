@@ -71,9 +71,9 @@
             <i class="fa-solid fa-lightbulb"></i>
             <span>Подсказки</span>
           </button>
-          <button class="nav-item disabled">
+          <button class="nav-item" data-tab="laws">
             <i class="fa-solid fa-scale-balanced"></i>
-            <span>Уставы <em class="soon-pill">скоро</em></span>
+            <span>Законодательство</span>
           </button>
         </nav>
       </div>
@@ -119,11 +119,11 @@
             <p>Полезные оверлеи, шпаргалки и справочные материалы. Доступна «Подсказка Жукова».</p>
             <span class="card-cta">Открыть подсказки <i class="fa-solid fa-arrow-right"></i></span>
           </div>
-          <div class="card card-muted">
+          <div class="card card-action" id="goto-laws">
             <div class="card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
-            <h3>Уставы и правила</h3>
-            <p>Нормативная база и регламенты. Раздел находится в разработке.</p>
-            <span class="soon-pill" style="margin-top:14px;display:inline-block;">Скоро</span>
+            <h3>Законодательство</h3>
+            <p>Полная нормативно-правовая база: Устав ПР, УК, КоАП, ФП, ФЗ «О Правительстве» и ФЗ «О вертикали власти».</p>
+            <span class="card-cta">Открыть законы <i class="fa-solid fa-arrow-right"></i></span>
           </div>
         </div>
       </section>
@@ -214,6 +214,29 @@
         </div>
       </section>
 
+      <!-- LAWS TAB -->
+      <section id="tab-laws" class="tab">
+        <header class="page-header row" id="laws-dashboard-header">
+          <div>
+            <h1 class="page-title">Законодательство</h1>
+            <p class="page-sub">Полная официальная база нормативно-правовых актов. Быстрый поиск по кодексам и статьям.</p>
+          </div>
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="law-search-input" placeholder="Поиск по законам и статьям…" autocomplete="off">
+          </div>
+        </header>
+
+        <!-- Laws Category Filters (hidden in Law Reader mode) -->
+        <div id="law-category-filters" class="filters"></div>
+
+        <!-- Laws Grid (hidden in Law Reader mode) -->
+        <div id="laws-grid" class="lectures-grid"></div>
+
+        <!-- Full-screen Law Reader Panel (hidden in Grid mode) -->
+        <div id="law-viewer" class="lecture-viewer-detail hidden"></div>
+      </section>
+
     </main>
   </div>
 
@@ -222,7 +245,8 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <script src="data.js?v=2.2"></script>
-  <script src="app.js?v=2.2"></script>
+  <script src="lawsData.js?v=2.3"></script>
+  <script src="data.js?v=2.3"></script>
+  <script src="app.js?v=2.3"></script>
 </body>
 </html>

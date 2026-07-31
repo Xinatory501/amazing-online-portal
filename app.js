@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'hints') {
       closeHintViewer();
     }
+    if (id === 'laws') {
+      closeLawReader();
+    }
   }
 
   navItems.forEach(btn => {
@@ -324,8 +327,186 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Search ────────────────────────────────
   searchInput.addEventListener('input', buildGrid);
 
+  // ── LAWS SECTION ──────────────────────────
+  const gotoLaws = document.getElementById('goto-laws');
+  const lawsHeader = document.getElementById('laws-dashboard-header');
+  const lawSearchInput = document.getElementById('law-search-input');
+  const lawFiltersEl = document.getElementById('law-category-filters');
+  const lawsGridEl = document.getElementById('laws-grid');
+  const lawViewerEl = document.getElementById('law-viewer');
+
+  let activeLawCategory = 'Все';
+  let activeLawId = null;
+
+  if (gotoLaws) {
+    gotoLaws.addEventListener('click', () => switchTab('laws'));
+  }
+
+  function buildLawCategories() {
+    if (!lawFiltersEl || typeof lawsData === 'undefined') return;
+    const cats = ['Все', ...new Set(lawsData.map(l => l.category))];
+    lawFiltersEl.innerHTML = '';
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = `filter-btn ${cat === activeLawCategory ? 'active' : ''}`;
+      btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        activeLawCategory = cat;
+        document.querySelectorAll('#law-category-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        buildLawsGrid();
+      });
+      lawFiltersEl.appendChild(btn);
+    });
+  }
+
+  function buildLawsGrid() {
+    if (!lawsGridEl || typeof lawsData === 'undefined') return;
+    const q = (lawSearchInput ? lawSearchInput.value || '' : '').trim().toLowerCase();
+    const filtered = lawsData.filter(l => {
+      const catOk = activeLawCategory === 'Все' || l.category === activeLawCategory;
+      const qOk = !q || l.title.toLowerCase().includes(q) || l.description.toLowerCase().includes(q) || l.text.toLowerCase().includes(q);
+      return catOk && qOk;
+    });
+
+    lawsGridEl.innerHTML = '';
+    if (!filtered.length) {
+      lawsGridEl.innerHTML = `
+        <div class="empty-state" style="grid-column: 1 / -1; min-height: 250px;">
+          <i class="fa-solid fa-scale-balanced"></i>
+          <p>По вашему запросу нормативных актов не найдено.</p>
+        </div>
+      `;
+      return;
+    }
+
+    filtered.forEach(law => {
+      const card = document.createElement('div');
+      card.className = 'card card-action';
+      card.innerHTML = `
+        <div class="lec-item-cat" style="color: var(--accent); margin-bottom: 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;">
+          ${law.category}
+        </div>
+        <h3 style="font-size: 20px; margin-bottom: 12px; font-family: 'DM Serif Display', serif;">
+          ${law.title}
+        </h3>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 16px;">
+          ${law.description}
+        </p>
+        <span class="card-cta" style="font-size: 13px; font-weight: 500; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; margin-top: auto;">
+          Читать закон <i class="fa-solid fa-arrow-right"></i>
+        </span>
+      `;
+      card.addEventListener('click', () => {
+        activeLawId = law.id;
+        openLawReader(law);
+      });
+      lawsGridEl.appendChild(card);
+    });
+  }
+
+  function openLawReader(law) {
+    if (!lawsHeader || !lawFiltersEl || !lawsGridEl || !lawViewerEl) return;
+    lawsHeader.style.display = 'none';
+    lawFiltersEl.style.display = 'none';
+    lawsGridEl.style.display = 'none';
+    lawViewerEl.classList.remove('hidden');
+    renderLawViewer(law);
+  }
+
+  function closeLawReader() {
+    activeLawId = null;
+    if (!lawsHeader || !lawFiltersEl || !lawsGridEl || !lawViewerEl) return;
+    lawViewerEl.classList.add('hidden');
+    lawViewerEl.innerHTML = '';
+    lawsHeader.style.display = 'flex';
+    lawFiltersEl.style.display = 'flex';
+    lawsGridEl.style.display = 'grid';
+    buildLawsGrid();
+  }
+
+  function renderLawViewer(law) {
+    const paragraphsHtml = law.text.split('\n')
+      .map(p => p.trim())
+      .filter(p => p.length > 0)
+      .map(p => `<p class="reader-para">${p}</p>`)
+      .join('');
+
+    lawViewerEl.innerHTML = `
+      <div class="viewer-inner">
+        <button class="btn btn-secondary btn-back" id="back-to-laws-btn">
+          <i class="fa-solid fa-arrow-left"></i> Назад к законам
+        </button>
+
+        <div class="viewer-header">
+          <div class="viewer-cat">${law.category}</div>
+          <h2 class="viewer-title">${law.title}</h2>
+          <p class="viewer-desc">${law.description}</p>
+        </div>
+
+        <div class="viewer-actions">
+          <div class="font-controls">
+            <button class="btn btn-secondary btn-icon" id="law-font-decrease" title="Уменьшить шрифт">
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <span class="font-label">А</span>
+            <button class="btn btn-secondary btn-icon" id="law-font-increase" title="Увеличить шрифт">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="lecture-reader-body" id="law-reader-body" style="font-size: ${currentFontSize}px;">
+          ${paragraphsHtml}
+        </div>
+
+        <div class="copyright-notice">
+          <i class="fa-solid fa-shield-halved"></i>
+          <p>© Все законодательные и нормативно-правовые акты Нижегородской области. Опубликовано на портале <strong>Savely_Gerov</strong> (бывшего главы администрации ЮР).</p>
+        </div>
+
+        <div class="viewer-footer">
+          <button class="btn btn-secondary btn-back" id="back-to-laws-btn-bottom">
+            <i class="fa-solid fa-arrow-left"></i> Назад к законам
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('back-to-laws-btn').addEventListener('click', closeLawReader);
+    document.getElementById('back-to-laws-btn-bottom').addEventListener('click', closeLawReader);
+
+    const lawReaderBody = document.getElementById('law-reader-body');
+
+    document.getElementById('law-font-increase').addEventListener('click', () => {
+      if (currentFontSize < 32) {
+        currentFontSize += 2;
+        lawReaderBody.style.fontSize = `${currentFontSize}px`;
+        localStorage.setItem('reader-font-size', currentFontSize);
+      }
+    });
+
+    document.getElementById('law-font-decrease').addEventListener('click', () => {
+      if (currentFontSize > 14) {
+        currentFontSize -= 2;
+        lawReaderBody.style.fontSize = `${currentFontSize}px`;
+        localStorage.setItem('reader-font-size', currentFontSize);
+      }
+    });
+
+    lawReaderBody.addEventListener('copy', (e) => e.preventDefault());
+    lawReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
+    lawReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
+  }
+
+  if (lawSearchInput) {
+    lawSearchInput.addEventListener('input', buildLawsGrid);
+  }
+
   // ── Init ──────────────────────────────────
   buildCategories();
   buildGrid();
+  buildLawCategories();
+  buildLawsGrid();
 
 });
