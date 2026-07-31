@@ -67,6 +67,10 @@
             <i class="fa-solid fa-book-open"></i>
             <span>Лекции</span>
           </button>
+          <button class="nav-item" data-tab="hints">
+            <i class="fa-solid fa-lightbulb"></i>
+            <span>Подсказки</span>
+          </button>
           <button class="nav-item disabled">
             <i class="fa-solid fa-scale-balanced"></i>
             <span>Уставы <em class="soon-pill">скоро</em></span>
@@ -109,6 +113,12 @@
             <p>Весь текст лекций в удобном формате для чтения. Быстрый поиск и навигация по категориям.</p>
             <span class="card-cta">Открыть лекции <i class="fa-solid fa-arrow-right"></i></span>
           </div>
+          <div class="card card-action" id="goto-hints">
+            <div class="card-icon"><i class="fa-solid fa-lightbulb"></i></div>
+            <h3>Раздел подсказок</h3>
+            <p>Полезные оверлеи, шпаргалки и справочные материалы. Доступна «Подсказка Жукова».</p>
+            <span class="card-cta">Открыть подсказки <i class="fa-solid fa-arrow-right"></i></span>
+          </div>
           <div class="card card-muted">
             <div class="card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
             <h3>Уставы и правила</h3>
@@ -142,6 +152,62 @@
         <div id="lecture-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
+      <!-- HINTS TAB -->
+      <section id="tab-hints" class="tab">
+        <header class="page-header row" id="hints-dashboard-header">
+          <div>
+            <h1 class="page-title">Раздел подсказок</h1>
+            <p class="page-sub">Полезные памятки, шпаргалки и справочные оверлеи.</p>
+          </div>
+        </header>
+
+        <!-- Hints Grid -->
+        <div id="hints-grid" class="lectures-grid">
+          <div class="card card-action" id="hint-zhukov-card">
+            <div class="lec-item-cat" style="color: var(--accent); margin-bottom: 8px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;">
+              Оверлей / Шпаргалка
+            </div>
+            <h3 style="font-size: 20px; margin-bottom: 12px; font-family: 'DM Serif Display', serif;">
+              Подсказка Жукова
+            </h3>
+            <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+              Полный оверлей по ФЗ о Правительстве, Оружии, Территориях, Уголовному кодексу, ФП, юридическим услугам и внутреннему уставу.
+            </p>
+            <span class="card-cta" style="font-size: 13px; font-weight: 500; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; margin-top: auto;">
+              Открыть подсказку <i class="fa-solid fa-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+
+        <!-- Full-screen Hint Viewer -->
+        <div id="hint-viewer" class="lecture-viewer-detail hidden">
+          <button class="btn btn-secondary btn-back" id="back-from-hint-btn">
+            <i class="fa-solid fa-arrow-left"></i> Назад к подсказкам
+          </button>
+
+          <div class="viewer-header">
+            <div class="viewer-cat">Оверлей / Шпаргалка</div>
+            <h2 class="viewer-title">Подсказка Жукова</h2>
+            <p class="viewer-desc">Нажмите на изображение для увеличения. Полный справочник по статьям и нормативным актам.</p>
+          </div>
+
+          <div class="hint-image-container">
+            <img src="f1_help_overlay.png" alt="Подсказка Жукова" class="hint-img" id="hint-img-element">
+          </div>
+
+          <div class="copyright-notice" style="margin-top: 24px;">
+            <i class="fa-solid fa-shield-halved"></i>
+            <p>© Справочные материалы «Подсказка Жукова». Все права защищены. Разработано и опубликовано для портала <strong>Savely_Gerov</strong> (бывшего главы администрации ЮР).</p>
+          </div>
+
+          <div class="viewer-footer">
+            <button class="btn btn-secondary btn-back" id="back-from-hint-btn-bottom">
+              <i class="fa-solid fa-arrow-left"></i> Назад к подсказкам
+            </button>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -150,7 +216,7 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <script src="data.js?v=1.6"></script>
-  <script src="app.js?v=1.6"></script>
+  <script src="data.js?v=1.7"></script>
+  <script src="app.js?v=1.7"></script>
 </body>
 </html>

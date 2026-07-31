@@ -688,6 +688,34 @@ p { max-width: 60ch; }
   margin-bottom: 24px;
 }
 
+/* ── HINT IMAGE VIEWER ────────────────────── */
+.hint-image-container {
+  margin-top: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hint-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--r-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, max-width 0.2s ease;
+  cursor: zoom-in;
+}
+
+.hint-img.zoomed {
+  max-width: none;
+  width: 100%;
+  cursor: zoom-out;
+}
+
 .copyright-notice {
   margin-top: 32px;
   padding: 16px 20px;

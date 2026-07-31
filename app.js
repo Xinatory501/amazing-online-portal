@@ -66,14 +66,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  const gotoLectures  = document.getElementById('goto-lectures');
+  const gotoHints     = document.getElementById('goto-hints');
+
+  // Hints DOM refs
+  const hintsHeader    = document.getElementById('hints-dashboard-header');
+  const hintsGrid      = document.getElementById('hints-grid');
+  const hintViewer     = document.getElementById('hint-viewer');
+  const hintZhukovCard = document.getElementById('hint-zhukov-card');
+  const backFromHintBtn = document.getElementById('back-from-hint-btn');
+  const backFromHintBtnBottom = document.getElementById('back-from-hint-btn-bottom');
+  const hintImgElement = document.getElementById('hint-img-element');
+
   // ── Tab navigation ─────────────────────────
   function switchTab(id) {
     navItems.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
     tabs.forEach(t => t.classList.toggle('active', t.id === `tab-${id}`));
     
-    // Reset reader view when leaving or entering the lectures tab
+    // Reset views when switching tabs
     if (id === 'lectures') {
       closeReader();
+    }
+    if (id === 'hints') {
+      closeHintViewer();
     }
   }
 
@@ -83,6 +98,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (gotoLectures) {
     gotoLectures.addEventListener('click', () => switchTab('lectures'));
+  }
+  if (gotoHints) {
+    gotoHints.addEventListener('click', () => switchTab('hints'));
+  }
+
+  // ── Hint Viewer Handlers ──────────────────
+  function openHintViewer() {
+    hintsHeader.style.display = 'none';
+    hintsGrid.style.display = 'none';
+    hintViewer.classList.remove('hidden');
+  }
+
+  function closeHintViewer() {
+    hintsHeader.style.display = 'flex';
+    hintsGrid.style.display = 'grid';
+    hintViewer.classList.add('hidden');
+    if (hintImgElement) {
+      hintImgElement.classList.remove('zoomed');
+    }
+  }
+
+  if (hintZhukovCard) {
+    hintZhukovCard.addEventListener('click', openHintViewer);
+  }
+  if (backFromHintBtn) {
+    backFromHintBtn.addEventListener('click', closeHintViewer);
+  }
+  if (backFromHintBtnBottom) {
+    backFromHintBtnBottom.addEventListener('click', closeHintViewer);
+  }
+  if (hintImgElement) {
+    hintImgElement.addEventListener('click', () => {
+      hintImgElement.classList.toggle('zoomed');
+    });
   }
 
   // ── Toast ──────────────────────────────────
