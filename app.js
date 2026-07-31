@@ -129,7 +129,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   if (hintImgElement) {
     hintImgElement.addEventListener('click', () => {
-      hintImgElement.classList.toggle('zoomed');
+      const link = document.createElement('a');
+      link.href = 'f1_help_overlay.png';
+      link.download = 'Подсказка_Жукова.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     });
   }
 
