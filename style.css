@@ -1211,6 +1211,11 @@ mark.search-highlight {
   }
 }
 
+/* ── UTILITY ─────────────────────────────────── */
+.hidden {
+  display: none !important;
+}
+
 /* ── AUTH MODAL & PROFILE WIDGET ─────────────── */
 .auth-modal-overlay {
   position: fixed;
