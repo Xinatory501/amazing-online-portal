@@ -1284,18 +1284,83 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── ADMIN PANEL CONTROLLER ────────────────────
+  // ── GLOBAL ANNOUNCEMENT BANNER ─────────────────
+  async function renderGlobalAnnouncement() {
+    const container = document.getElementById('global-announcement-container');
+    if (!container || typeof AuthService === 'undefined') return;
+
+    try {
+      const ann = await AuthService.getAnnouncement();
+      if (ann && ann.content) {
+        container.innerHTML = `
+          <div style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(180, 139, 36, 0.06)); border: 1px solid var(--accent); border-radius: var(--r-lg); padding: 18px 24px; margin-bottom: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+              <i class="fa-solid fa-scroll" style="color: var(--accent); font-size: 18px;"></i>
+              <strong style="font-size: 15px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em;">Указ Губернатора / Важное объявление</strong>
+            </div>
+            <div style="font-size: 14px; color: var(--text-primary); line-height: 1.6; white-space: pre-wrap;">${escapeHtml(ann.content)}</div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 10px; text-align: right;">Опубликовал: ${escapeHtml(ann.createdBy)}</div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+      }
+    } catch (e) {
+      container.innerHTML = '';
+    }
+  }
+
+  // ── ADMIN PANEL ADVANCED CONTROLLER ─────────────
   let adminUsersList = [];
+  let adminGuestsList = [];
 
   const adminUsersGrid = document.getElementById('admin-users-grid');
   const adminUserSearch = document.getElementById('admin-user-search');
   const adminDeptFilter = document.getElementById('admin-dept-filter');
   const adminRefreshBtn = document.getElementById('admin-refresh-btn');
+  const adminExportCsvBtn = document.getElementById('admin-export-csv-btn');
 
+  // Subtabs
+  const btnSubtabUsers = document.getElementById('admin-subtab-users-btn');
+  const btnSubtabGuests = document.getElementById('admin-subtab-guests-btn');
+  const btnSubtabAnnouncement = document.getElementById('admin-subtab-announcement-btn');
+
+  const viewSubtabUsers = document.getElementById('admin-view-users');
+  const viewSubtabGuests = document.getElementById('admin-view-guests');
+  const viewSubtabAnnouncement = document.getElementById('admin-view-announcement');
+
+  function showAdminSubtab(tabName) {
+    [btnSubtabUsers, btnSubtabGuests, btnSubtabAnnouncement].forEach(b => b?.classList.remove('active'));
+    [viewSubtabUsers, viewSubtabGuests, viewSubtabAnnouncement].forEach(v => v?.classList.add('hidden'));
+
+    if (tabName === 'users') {
+      btnSubtabUsers?.classList.add('active');
+      viewSubtabUsers?.classList.remove('hidden');
+    } else if (tabName === 'guests') {
+      btnSubtabGuests?.classList.add('active');
+      viewSubtabGuests?.classList.remove('hidden');
+      loadGuestVisits();
+    } else if (tabName === 'announcement') {
+      btnSubtabAnnouncement?.classList.add('active');
+      viewSubtabAnnouncement?.classList.remove('hidden');
+      loadAnnouncementData();
+    }
+  }
+
+  if (btnSubtabUsers) btnSubtabUsers.addEventListener('click', () => showAdminSubtab('users'));
+  if (btnSubtabGuests) btnSubtabGuests.addEventListener('click', () => showAdminSubtab('guests'));
+  if (btnSubtabAnnouncement) btnSubtabAnnouncement.addEventListener('click', () => showAdminSubtab('announcement'));
+
+  // Modals
   const adminEditModal = document.getElementById('admin-edit-modal');
   const adminEditCloseBtn = document.getElementById('admin-edit-close-btn');
   const adminEditForm = document.getElementById('admin-edit-form');
   const adminDeleteUserBtn = document.getElementById('admin-delete-user-btn');
+
+  const adminCreateModal = document.getElementById('admin-create-user-modal');
+  const adminCreateOpenBtn = document.getElementById('admin-open-create-btn');
+  const adminCreateCloseBtn = document.getElementById('admin-create-close-btn');
+  const adminCreateForm = document.getElementById('admin-create-user-form');
 
   function openAdminEditModal(user) {
     if (!adminEditModal) return;
@@ -1311,10 +1376,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (adminEditModal) adminEditModal.classList.remove('active');
   }
 
+  function openAdminCreateModal() {
+    if (adminCreateModal) adminCreateModal.classList.add('active');
+  }
+
+  function closeAdminCreateModal() {
+    if (adminCreateModal) adminCreateModal.classList.remove('active');
+  }
+
   if (adminEditCloseBtn) adminEditCloseBtn.addEventListener('click', closeAdminEditModal);
   if (adminEditModal) {
     adminEditModal.addEventListener('click', (e) => {
       if (e.target === adminEditModal) closeAdminEditModal();
+    });
+  }
+
+  if (adminCreateOpenBtn) adminCreateOpenBtn.addEventListener('click', openAdminCreateModal);
+  if (adminCreateCloseBtn) adminCreateCloseBtn.addEventListener('click', closeAdminCreateModal);
+  if (adminCreateModal) {
+    adminCreateModal.addEventListener('click', (e) => {
+      if (e.target === adminCreateModal) closeAdminCreateModal();
     });
   }
 
@@ -1331,6 +1412,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       adminUsersList = await AuthService.adminGetAllUsers();
       renderAdminUsers();
+      loadGuestVisitsCount();
     } catch (err) {
       if (adminUsersGrid) {
         adminUsersGrid.innerHTML = `
@@ -1341,6 +1423,64 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }
     }
+  }
+
+  async function loadGuestVisitsCount() {
+    try {
+      const guests = await AuthService.adminGetGuestVisits();
+      adminGuestsList = guests;
+      const guestsStatEl = document.getElementById('admin-stat-guests');
+      if (guestsStatEl) guestsStatEl.textContent = guests.length;
+    } catch (e) {}
+  }
+
+  async function loadGuestVisits() {
+    const container = document.getElementById('admin-guests-list');
+    if (!container) return;
+
+    try {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+          <i class="fa-solid fa-spinner fa-spin"></i> Загрузка списка гостей...
+        </div>
+      `;
+      const guests = await AuthService.adminGetGuestVisits();
+      adminGuestsList = guests;
+      const guestsStatEl = document.getElementById('admin-stat-guests');
+      if (guestsStatEl) guestsStatEl.textContent = guests.length;
+
+      if (!guests.length) {
+        container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--text-muted);">Нет зарегистрированных визитов гостей</div>';
+        return;
+      }
+
+      container.innerHTML = guests.map(g => `
+        <div class="lec-item" style="cursor: default; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 188, 212, 0.1); color: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+              <i class="fa-solid fa-user-secret"></i>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Анонимный гость (${escapeHtml(g.id)})</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.userAgent)}</div>
+            </div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; font-weight: 500; color: var(--accent);">${escapeHtml(g.page)}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.lastActive)}</div>
+          </div>
+        </div>
+      `).join('');
+    } catch (err) {
+      container.innerHTML = `<div style="color: #ff5252; text-align: center; padding: 20px;">Ошибка: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  async function loadAnnouncementData() {
+    const input = document.getElementById('admin-announcement-text');
+    if (!input || typeof AuthService === 'undefined') return;
+    const ann = await AuthService.getAnnouncement();
+    input.value = ann ? ann.content : '';
   }
 
   function renderAdminUsers() {
@@ -1417,6 +1557,57 @@ document.addEventListener('DOMContentLoaded', () => {
   if (adminDeptFilter) adminDeptFilter.addEventListener('change', renderAdminUsers);
   if (adminRefreshBtn) adminRefreshBtn.addEventListener('click', loadAdminData);
 
+  // CSV Export Handler
+  if (adminExportCsvBtn) {
+    adminExportCsvBtn.addEventListener('click', () => {
+      if (!adminUsersList.length) {
+        alert('Список пользователей пуст');
+        return;
+      }
+      let csv = '\uFEFFСотрудник,Должность,Отдел\n';
+      adminUsersList.forEach(u => {
+        csv += `"${u.username}","${u.rank}","${u.department}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `amazing_employees_${Date.now()}.csv`;
+      link.click();
+      showToast('Список сотрудников экспортирован в CSV!');
+    });
+  }
+
+  // Create User Handler
+  if (adminCreateForm) {
+    adminCreateForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('admin-create-username').value.trim();
+      const password = document.getElementById('admin-create-password').value;
+      const rank = document.getElementById('admin-create-rank').value;
+      const department = document.getElementById('admin-create-department').value;
+      const submitBtn = document.getElementById('admin-create-submit-btn');
+
+      if (!username || !password || !submitBtn) return;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Создаем...';
+
+        await AuthService.adminCreateUser(username, password, rank, department);
+        showToast(`Сотрудник ${username} создан!`);
+        closeAdminCreateModal();
+        adminCreateForm.reset();
+        loadAdminData();
+      } catch (err) {
+        alert(err.message || 'Ошибка создания сотрудника');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Создать аккаунт';
+      }
+    });
+  }
+
+  // Edit User Handler
   if (adminEditForm) {
     adminEditForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1468,6 +1659,49 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Announcement Form Handler
+  const adminAnnForm = document.getElementById('admin-announcement-form');
+  const adminClearAnnBtn = document.getElementById('admin-clear-announcement-btn');
+
+  if (adminAnnForm) {
+    adminAnnForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = document.getElementById('admin-announcement-text').value;
+      const saveBtn = document.getElementById('admin-save-announcement-btn');
+
+      try {
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Публикация...';
+        }
+        await AuthService.adminSetAnnouncement(text);
+        showToast('Глобальный указ опубликован на портале!');
+        renderGlobalAnnouncement();
+      } catch (err) {
+        alert(err.message || 'Ошибка публикации');
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Опубликовать указ';
+        }
+      }
+    });
+  }
+
+  if (adminClearAnnBtn) {
+    adminClearAnnBtn.addEventListener('click', async () => {
+      if (!confirm('Вы действительно хотите снять глобальное объявление?')) return;
+      try {
+        await AuthService.adminSetAnnouncement('');
+        document.getElementById('admin-announcement-text').value = '';
+        showToast('Объявление снято');
+        renderGlobalAnnouncement();
+      } catch (err) {
+        alert(err.message || 'Ошибка снятия');
+      }
+    });
+  }
+
   const adminNavItem = document.getElementById('nav-item-admin');
   if (adminNavItem) {
     adminNavItem.addEventListener('click', () => {
@@ -1489,5 +1723,6 @@ document.addEventListener('DOMContentLoaded', () => {
   buildInstructionCategories();
   buildInstructionsGrid();
   updateSidebarUserUI();
+  renderGlobalAnnouncement();
 
 });

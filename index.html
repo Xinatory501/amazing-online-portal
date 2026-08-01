@@ -122,6 +122,9 @@
           <p class="page-sub">Здесь собраны все лекции и полезные материалы для удобного чтения в голосовом чате.</p>
         </header>
 
+        <!-- Global Announcement Banner -->
+        <div id="global-announcement-container"></div>
+
         <div class="cards-grid">
           <div class="card">
             <div class="card-icon"><i class="fa-solid fa-circle-info"></i></div>
@@ -332,52 +335,112 @@
         <header class="page-header row">
           <div>
             <h1 class="page-title"><i class="fa-solid fa-user-shield" style="color: var(--accent); margin-right: 10px;"></i> Панель администратора</h1>
-            <p class="page-sub">Управление сотрудниками, назначение должностей, отделов и паролей в системе.</p>
+            <p class="page-sub">Управление сотрудниками, гостевая аналитика, рассылка указов и отчёты.</p>
           </div>
-          <button class="btn btn-primary" id="admin-refresh-btn" style="font-size: 13px;">
-            <i class="fa-solid fa-rotate-right"></i> Обновить данные
-          </button>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn btn-primary" id="admin-open-create-btn" style="font-size: 13px;">
+              <i class="fa-solid fa-user-plus"></i> + Создать сотрудника
+            </button>
+            <button class="btn btn-secondary" id="admin-export-csv-btn" style="font-size: 13px;">
+              <i class="fa-solid fa-file-csv"></i> Экспорт в CSV
+            </button>
+            <button class="btn btn-secondary" id="admin-refresh-btn" style="font-size: 13px;">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
         </header>
 
         <!-- Admin Overview Cards -->
-        <div class="cards-grid" style="margin-bottom: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
-          <div class="card" style="padding: 20px;">
-            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Всего пользователей</div>
-            <div style="font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px;" id="admin-stat-total">0</div>
+        <div class="cards-grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+          <div class="card" style="padding: 18px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Зарегистрировано</div>
+            <div style="font-size: 26px; font-weight: 700; color: var(--accent); margin-top: 4px;" id="admin-stat-total">0</div>
           </div>
-          <div class="card" style="padding: 20px;">
-            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Руководство / Админы</div>
-            <div style="font-size: 28px; font-weight: 700; color: #ffc107; margin-top: 4px;" id="admin-stat-admins">0</div>
+          <div class="card" style="padding: 18px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Незарегистрированные гости</div>
+            <div style="font-size: 26px; font-weight: 700; color: #00bcd4; margin-top: 4px;" id="admin-stat-guests">0</div>
           </div>
-          <div class="card" style="padding: 20px;">
-            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Распределено по отделам</div>
-            <div style="font-size: 28px; font-weight: 700; color: #4caf50; margin-top: 4px;" id="admin-stat-depts">0</div>
+          <div class="card" style="padding: 18px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Администрация</div>
+            <div style="font-size: 26px; font-weight: 700; color: #ffc107; margin-top: 4px;" id="admin-stat-admins">0</div>
           </div>
-        </div>
-
-        <!-- Admin Controls & Search -->
-        <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center;">
-          <div class="search-box" style="flex: 1; min-width: 250px;">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="admin-user-search" placeholder="Поиск по никнейму сотрудника…" autocomplete="off" style="width: 100%;">
-          </div>
-          <div style="width: 220px;">
-            <select id="admin-dept-filter" class="auth-form-select" style="padding: 10px 14px;">
-              <option value="ALL">Все отделы</option>
-              <option value="Региональная безопасность">Региональная безопасность</option>
-              <option value="Адвокатская палата">Адвокатская палата</option>
-              <option value="ООК">ООК</option>
-              <option value="Южный район">Южный район</option>
-              <option value="Арзамасский район">Арзамасский район</option>
-              <option value="Батыревский район">Батыревский район</option>
-              <option value="Не назначен">Не назначен</option>
-              <option value="Отсутствует">Отсутствует</option>
-            </select>
+          <div class="card" style="padding: 18px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">По отделам</div>
+            <div style="font-size: 26px; font-weight: 700; color: #4caf50; margin-top: 4px;" id="admin-stat-depts">0</div>
           </div>
         </div>
 
-        <!-- Admin Users Grid -->
-        <div id="admin-users-grid" class="cards-grid"></div>
+        <!-- Admin Sub-Navigation Tabs -->
+        <div class="auth-tabs" style="margin-bottom: 24px;">
+          <button class="auth-tab-btn active" id="admin-subtab-users-btn">
+            <i class="fa-solid fa-users"></i> Сотрудники
+          </button>
+          <button class="auth-tab-btn" id="admin-subtab-guests-btn">
+            <i class="fa-solid fa-user-secret"></i> Гости без аккаунта
+          </button>
+          <button class="auth-tab-btn" id="admin-subtab-announcement-btn">
+            <i class="fa-solid fa-bullhorn"></i> Объявление / Указ
+          </button>
+        </div>
+
+        <!-- SUBTAB 1: USERS -->
+        <div id="admin-view-users">
+          <!-- Admin Controls & Search -->
+          <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center;">
+            <div class="search-box" style="flex: 1; min-width: 250px;">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="admin-user-search" placeholder="Поиск по никнейму сотрудника…" autocomplete="off" style="width: 100%;">
+            </div>
+            <div style="width: 220px;">
+              <select id="admin-dept-filter" class="auth-form-select" style="padding: 10px 14px;">
+                <option value="ALL">Все отделы</option>
+                <option value="Региональная безопасность">Региональная безопасность</option>
+                <option value="Адвокатская палата">Адвокатская палата</option>
+                <option value="ООК">ООК</option>
+                <option value="Южный район">Южный район</option>
+                <option value="Арзамасский район">Арзамасский район</option>
+                <option value="Батыревский район">Батыревский район</option>
+                <option value="Не назначен">Не назначен</option>
+                <option value="Отсутствует">Отсутствует</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Admin Users Grid -->
+          <div id="admin-users-grid" class="cards-grid"></div>
+        </div>
+
+        <!-- SUBTAB 2: GUESTS -->
+        <div id="admin-view-guests" class="hidden">
+          <div class="card" style="padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 8px;"><i class="fa-solid fa-eye" style="color: #00bcd4; margin-right: 8px;"></i> Незарегистрированные посетители</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Список незарегистрированных анонимных гостей, просматривающих портал прямо сейчас.</p>
+            <div id="admin-guests-list" class="lec-list"></div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 3: ANNOUNCEMENT -->
+        <div id="admin-view-announcement" class="hidden">
+          <div class="card" style="padding: 28px;">
+            <h3 style="font-size: 20px; margin-bottom: 8px;"><i class="fa-solid fa-scroll" style="color: var(--accent); margin-right: 8px;"></i> Глобальное объявление / Указ</h3>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">Опубликуйте важное сообщение или указ. Оно появится в самом верху главной страницы портала у всех пользователей.</p>
+
+            <form id="admin-announcement-form">
+              <div class="auth-form-group">
+                <label>Текст сообщения / Указа</label>
+                <textarea id="admin-announcement-text" class="auth-form-input" rows="4" placeholder="Введите текст объявления или указа губернатора..." style="resize: vertical; font-family: inherit;"></textarea>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn btn-primary" id="admin-save-announcement-btn">
+                  <i class="fa-solid fa-paper-plane"></i> Опубликовать указ
+                </button>
+                <button type="button" class="btn btn-secondary" id="admin-clear-announcement-btn" style="color: #ff5252;">
+                  <i class="fa-solid fa-trash"></i> Снять объявление
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -563,6 +626,66 @@
         </div>
         <button type="submit" class="btn btn-primary auth-submit-btn" id="settings-submit-btn">
           <i class="fa-solid fa-floppy-disk"></i> Сохранить изменения
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN CREATE USER MODAL -->
+  <div class="auth-modal-overlay" id="admin-create-user-modal">
+    <div class="auth-modal-card">
+      <button class="auth-modal-close" id="admin-create-close-btn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px;">
+        <i class="fa-solid fa-user-plus" style="color: var(--accent); margin-right: 8px;"></i> Создать нового сотрудника
+      </h2>
+
+      <form id="admin-create-user-form">
+        <div class="auth-form-group">
+          <label>Игровой ник в игре</label>
+          <input type="text" id="admin-create-username" class="auth-form-input" placeholder="Например: Ivan_Ivanov" required autocomplete="off">
+        </div>
+
+        <div class="auth-form-group">
+          <label>Пароль для входа</label>
+          <input type="password" id="admin-create-password" class="auth-form-input" placeholder="Минимум 4 символа" required autocomplete="new-password">
+        </div>
+
+        <div class="auth-form-group">
+          <label>Должность</label>
+          <select id="admin-create-rank" class="auth-form-select">
+            <option value="Охранник">Охранник</option>
+            <option value="Начальник охраны">Начальник охраны</option>
+            <option value="Адвокат">Адвокат</option>
+            <option value="Инспектор">Инспектор</option>
+            <option value="Советник">Советник</option>
+            <option value="Заместитель министра">Заместитель министра</option>
+            <option value="Министр">Министр</option>
+            <option value="Глава администрации">Глава администрации</option>
+            <option value="Вице-губернатор">Вице-губернатор</option>
+            <option value="Губернатор">Губернатор</option>
+            <option value="Администратор портала">Администратор портала</option>
+          </select>
+        </div>
+
+        <div class="auth-form-group">
+          <label>Отдел</label>
+          <select id="admin-create-department" class="auth-form-select">
+            <option value="Отсутствует">Отсутствует</option>
+            <option value="Региональная безопасность">Региональная безопасность</option>
+            <option value="Адвокатская палата">Адвокатская палата</option>
+            <option value="ООК">ООК</option>
+            <option value="Южный район">Южный район</option>
+            <option value="Арзамасский район">Арзамасский район</option>
+            <option value="Батыревский район">Батыревский район</option>
+            <option value="Не назначен">Не назначен</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary auth-submit-btn" id="admin-create-submit-btn">
+          <i class="fa-solid fa-user-plus"></i> Создать аккаунт
         </button>
       </form>
     </div>

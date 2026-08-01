@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication & Turso DB API Module (With Admin Panel API)
+ * Amazing Online Portal - Authentication, Admin API & Guest Analytics Module
  */
 
 const TURSO_CONFIG = {
@@ -80,6 +80,15 @@ function generateUUID() {
   return 'u_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
 }
 
+function getGuestSessionId() {
+  let gid = localStorage.getItem('amazing_guest_session');
+  if (!gid) {
+    gid = 'guest_' + Math.random().toString(36).substr(2, 8);
+    localStorage.setItem('amazing_guest_session', gid);
+  }
+  return gid;
+}
+
 const AuthService = {
   currentUser: null,
   ranks: OFFICIAL_RANKS,
@@ -95,6 +104,7 @@ const AuthService = {
         localStorage.removeItem('amazing_portal_user');
       }
     }
+    this.logGuestVisit('Главная');
     return this.currentUser;
   },
 
@@ -107,6 +117,27 @@ const AuthService = {
     const rank = (this.currentUser.rank || '').toLowerCase();
     const name = (this.currentUser.username || '').toLowerCase();
     return rank === 'администратор портала' || rank === 'губернатор' || name === 'savely_gerov';
+  },
+
+  async logGuestVisit(pageName = 'Портал') {
+    if (this.currentUser) return; // Don't log as guest if logged in
+    try {
+      const gid = getGuestSessionId();
+      const ua = navigator.userAgent ? navigator.userAgent.substring(0, 80) : 'Browser';
+      await executeTursoQuery([
+        {
+          sql: 'INSERT INTO guest_visits (id, user_agent, page, last_active) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET page = ?, last_active = CURRENT_TIMESTAMP',
+          args: [
+            { type: 'text', value: gid },
+            { type: 'text', value: ua },
+            { type: 'text', value: pageName },
+            { type: 'text', value: pageName }
+          ]
+        }
+      ]);
+    } catch (e) {
+      // Ignore background analytics logging errors
+    }
   },
 
   async register(username, password, rank = 'Охранник', department = 'Отсутствует') {
@@ -222,7 +253,7 @@ const AuthService = {
     return this.currentUser;
   },
 
-  // ── ADMIN PANEL METHODS ─────────────────────────
+  // ── ADMIN PANEL ADVANCED API ─────────────────────
   async adminGetAllUsers() {
     if (!this.isAdmin()) {
       throw new Error('Доступ запрещен. Требуются права администратора.');
@@ -241,6 +272,68 @@ const AuthService = {
       rank: r[2]?.value || r[4]?.value || 'Охранник',
       department: r[3]?.value || 'Отсутствует'
     }));
+  },
+
+  async adminGetGuestVisits() {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    const res = await executeTursoQuery([
+      {
+        sql: 'SELECT id, user_agent, page, last_active FROM guest_visits ORDER BY last_active DESC LIMIT 50'
+      }
+    ]);
+
+    const rows = res[0]?.response?.result?.rows || [];
+    return rows.map(r => ({
+      id: r[0]?.value || '',
+      userAgent: r[1]?.value || 'Браузер',
+      page: r[2]?.value || 'Главная',
+      lastActive: r[3]?.value || ''
+    }));
+  },
+
+  async adminCreateUser(username, password, rank, department) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    const cleanUser = username.trim();
+    if (!cleanUser || cleanUser.length < 3) {
+      throw new Error('Имя пользователя должно быть не менее 3 символов');
+    }
+    if (!password || password.length < 4) {
+      throw new Error('Пароль должен содержать минимум 4 символа');
+    }
+
+    const passwordHash = await sha256(password);
+    const userId = generateUUID();
+
+    const checkRes = await executeTursoQuery([
+      {
+        sql: 'SELECT id FROM users WHERE LOWER(username) = LOWER(?)',
+        args: [{ type: 'text', value: cleanUser }]
+      }
+    ]);
+
+    if ((checkRes[0]?.response?.result?.rows || []).length > 0) {
+      throw new Error('Сотрудник с таким никнеймом уже зарегистрирован');
+    }
+
+    await executeTursoQuery([
+      {
+        sql: 'INSERT INTO users (id, username, password_hash, role, rank, department) VALUES (?, ?, ?, ?, ?, ?)',
+        args: [
+          { type: 'text', value: userId },
+          { type: 'text', value: cleanUser },
+          { type: 'text', value: passwordHash },
+          { type: 'text', value: rank },
+          { type: 'text', value: rank },
+          { type: 'text', value: department }
+        ]
+      }
+    ]);
   },
 
   async adminUpdateUser(userId, { rank, department, newPassword }) {
@@ -276,7 +369,6 @@ const AuthService = {
 
     await executeTursoQuery(statements);
 
-    // If editing self, update local state
     if (this.currentUser && this.currentUser.id === userId) {
       this.currentUser.rank = rank;
       this.currentUser.department = department;
@@ -293,6 +385,52 @@ const AuthService = {
       {
         sql: 'DELETE FROM users WHERE id = ?',
         args: [{ type: 'text', value: userId }]
+      }
+    ]);
+  },
+
+  async getAnnouncement() {
+    try {
+      const res = await executeTursoQuery([
+        {
+          sql: 'SELECT content, created_by, created_at FROM announcements ORDER BY created_at DESC LIMIT 1'
+        }
+      ]);
+      const rows = res[0]?.response?.result?.rows || [];
+      if (!rows.length) return null;
+      return {
+        content: rows[0][0]?.value || '',
+        createdBy: rows[0][1]?.value || '',
+        createdAt: rows[0][2]?.value || ''
+      };
+    } catch (e) {
+      return null;
+    }
+  },
+
+  async adminSetAnnouncement(content) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    const clean = content.trim();
+    if (!clean) {
+      await executeTursoQuery([{ sql: 'DELETE FROM announcements' }]);
+      return;
+    }
+
+    const id = 'ann_' + Date.now();
+    const creator = this.currentUser ? this.currentUser.username : 'Администрация';
+
+    await executeTursoQuery([
+      { sql: 'DELETE FROM announcements' },
+      {
+        sql: 'INSERT INTO announcements (id, content, created_by) VALUES (?, ?, ?)',
+        args: [
+          { type: 'text', value: id },
+          { type: 'text', value: clean },
+          { type: 'text', value: creator }
+        ]
       }
     ]);
   },
