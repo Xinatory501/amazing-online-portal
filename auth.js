@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication, Admin API & IP Geolocation Analytics Module
+ * Amazing Online Portal - Authentication, Admin API & Wishes Module
  */
 
 const TURSO_CONFIG = {
@@ -92,7 +92,6 @@ async function fetchUserGeoLocation() {
     } catch(e) {}
   }
 
-  // 1. Try ipwho.is (CORS enabled, fast, detailed)
   try {
     const res = await fetch('https://ipwho.is/');
     if (res.ok) {
@@ -109,7 +108,6 @@ async function fetchUserGeoLocation() {
     }
   } catch(e) {}
 
-  // 2. Try ipapi.co
   try {
     const res = await fetch('https://ipapi.co/json/');
     if (res.ok) {
@@ -120,19 +118,6 @@ async function fetchUserGeoLocation() {
           country: data.country_name || 'Не определена',
           city: data.city || ''
         };
-        sessionStorage.setItem('amazing_geo_cache', JSON.stringify(cachedGeo));
-        return cachedGeo;
-      }
-    }
-  } catch(e) {}
-
-  // 3. Fallback ipify
-  try {
-    const res = await fetch('https://api.ipify.org?format=json');
-    if (res.ok) {
-      const data = await res.json();
-      if (data.ip) {
-        cachedGeo = { ip: data.ip, country: 'Не определена', city: '' };
         sessionStorage.setItem('amazing_geo_cache', JSON.stringify(cachedGeo));
         return cachedGeo;
       }
@@ -174,7 +159,7 @@ const AuthService = {
   },
 
   async logGuestVisit(pageName = 'Главная') {
-    if (this.currentUser) return; // Don't log as guest if logged in
+    if (this.currentUser) return;
     try {
       const geo = await fetchUserGeoLocation();
       const ipKey = 'ip_' + String(geo.ip).replace(/[^a-zA-Z0-9_]/g, '_');
@@ -196,9 +181,7 @@ const AuthService = {
           ]
         }
       ]);
-    } catch (e) {
-      // Ignore background analytics logging errors
-    }
+    } catch (e) {}
   },
 
   async register(username, password, rank = 'Охранник', department = 'Отсутствует') {
@@ -314,10 +297,116 @@ const AuthService = {
     return this.currentUser;
   },
 
+  // ── WISHES SYSTEM API ────────────────────────────
+  async submitWish(title, content) {
+    if (!this.currentUser) {
+      throw new Error('Для отправки пожелания необходимо войти в аккаунт.');
+    }
+
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
+
+    if (!cleanTitle || cleanTitle.length < 3) {
+      throw new Error('Укажите краткую тему пожелания (не менее 3 символов).');
+    }
+    if (!cleanContent || cleanContent.length < 10) {
+      throw new Error('Подробно опишите ваше пожелание (не менее 10 символов).');
+    }
+
+    const wishId = 'w_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+
+    await executeTursoQuery([
+      {
+        sql: 'INSERT INTO wishes (id, user_id, username, title, content, status) VALUES (?, ?, ?, ?, ?, \'pending\')',
+        args: [
+          { type: 'text', value: wishId },
+          { type: 'text', value: this.currentUser.id },
+          { type: 'text', value: this.currentUser.username },
+          { type: 'text', value: cleanTitle },
+          { type: 'text', value: cleanContent }
+        ]
+      }
+    ]);
+
+    return wishId;
+  },
+
+  async getUserWishes() {
+    if (!this.currentUser) return [];
+
+    const res = await executeTursoQuery([
+      {
+        sql: 'SELECT id, title, content, status, created_at FROM wishes WHERE user_id = ? ORDER BY created_at DESC',
+        args: [{ type: 'text', value: this.currentUser.id }]
+      }
+    ]);
+
+    const rows = res[0]?.response?.result?.rows || [];
+    return rows.map(r => ({
+      id: r[0]?.value || '',
+      title: r[1]?.value || '',
+      content: r[2]?.value || '',
+      status: r[3]?.value || 'pending',
+      createdAt: r[4]?.value || ''
+    }));
+  },
+
+  async adminGetAllWishes() {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    const res = await executeTursoQuery([
+      {
+        sql: 'SELECT id, user_id, username, title, content, status, created_at FROM wishes ORDER BY created_at DESC'
+      }
+    ]);
+
+    const rows = res[0]?.response?.result?.rows || [];
+    return rows.map(r => ({
+      id: r[0]?.value || '',
+      userId: r[1]?.value || '',
+      username: r[2]?.value || 'Пользователь',
+      title: r[3]?.value || '',
+      content: r[4]?.value || '',
+      status: r[5]?.value || 'pending',
+      createdAt: r[6]?.value || ''
+    }));
+  },
+
+  async adminUpdateWishStatus(wishId, status) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    await executeTursoQuery([
+      {
+        sql: 'UPDATE wishes SET status = ? WHERE id = ?',
+        args: [
+          { type: 'text', value: status },
+          { type: 'text', value: wishId }
+        ]
+      }
+    ]);
+  },
+
+  async adminDeleteWish(wishId) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    await executeTursoQuery([
+      {
+        sql: 'DELETE FROM wishes WHERE id = ?',
+        args: [{ type: 'text', value: wishId }]
+      }
+    ]);
+  },
+
   // ── ADMIN PANEL ADVANCED API ─────────────────────
   async adminGetAllUsers() {
     if (!this.isAdmin()) {
-      throw new Error('Доступ запрещен. Требуются права администратора.');
+      throw new Error('Доступ запрещен.');
     }
 
     const res = await executeTursoQuery([

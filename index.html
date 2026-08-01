@@ -126,6 +126,10 @@
             <i class="fa-solid fa-clipboard-list"></i>
             <span>Инструкции</span>
           </button>
+          <button class="nav-item" data-tab="wishes">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>Пожелания</span>
+          </button>
           <button class="nav-item hidden" data-tab="admin" id="nav-item-admin" style="color: var(--accent); font-weight: 500;">
             <i class="fa-solid fa-user-shield"></i>
             <span>Админ-панель</span>
@@ -333,38 +337,68 @@
         <div id="law-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
-      <!-- INSTRUCTIONS TAB -->
-      <section id="tab-instructions" class="tab">
-        <header class="page-header row" id="instructions-dashboard-header">
+      <!-- WISHES TAB -->
+      <section id="tab-wishes" class="tab">
+        <header class="page-header row">
           <div>
             <div style="margin-bottom: 12px;">
               <button class="btn btn-secondary btn-back-home" style="font-size: 13px; padding: 6px 14px;">
                 <i class="fa-solid fa-house"></i> В главное меню
               </button>
             </div>
-            <h1 class="page-title">Утверждённые инструкции и материалы</h1>
-            <p class="page-sub">Штатная форма одежды по должностям, карты стационарных постов РБП и памятки безопасности.</p>
-          </div>
-          <div class="search-box">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="instruction-search-input" placeholder="Поиск по инструкциям и постам…" autocomplete="off">
+            <h1 class="page-title">Пожелания и Предложения</h1>
+            <p class="page-sub">Напишите своё предложение по улучшению портала. Администратор рассмотрит его и вынесет решение.</p>
           </div>
         </header>
 
-        <!-- Instructions Category Filters -->
-        <div id="instruction-category-filters" class="filters"></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+          <!-- Submit Wish Card -->
+          <div class="card" style="padding: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 16px;"><i class="fa-solid fa-pen-to-square" style="color: var(--accent); margin-right: 8px;"></i> Оставить пожелание</h3>
+            
+            <div id="wishes-auth-prompt" class="hidden" style="text-align: center; padding: 24px; background: rgba(255, 82, 82, 0.08); border-radius: var(--r-md); border: 1px solid rgba(255, 82, 82, 0.2);">
+              <i class="fa-solid fa-lock" style="font-size: 32px; color: #ff5252; margin-bottom: 12px;"></i>
+              <div style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">Только для авторизованных пользователей</div>
+              <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">Чтобы оставить пожелание администрации портала, необходимо войти в свой аккаунт или зарегистрироваться.</p>
+              <button class="btn btn-primary btn-open-login" id="wishes-login-btn">
+                <i class="fa-solid fa-right-to-bracket"></i> Войти в аккаунт
+              </button>
+            </div>
 
-        <!-- Instructions Grid -->
-        <div id="instructions-grid" class="lectures-grid"></div>
+            <form id="user-wish-form">
+              <div class="auth-form-group">
+                <label>Тема пожелания</label>
+                <input type="text" id="wish-title-input" class="auth-form-input" placeholder="Например: Добавить новый раздел со шпаргалками" required autocomplete="off">
+              </div>
+              <div class="auth-form-group">
+                <label>Подробное описание</label>
+                <textarea id="wish-content-input" class="auth-form-input" rows="5" placeholder="Опишите детально, что бы вы хотели видеть на сайте..." required style="resize: vertical; font-family: inherit;"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary" id="wish-submit-btn" style="width: 100%;">
+                <i class="fa-solid fa-paper-plane"></i> Отправить пожелание
+              </button>
+            </form>
+          </div>
 
-        <!-- Full-screen Instruction Viewer Panel -->
-        <div id="instruction-viewer" class="lecture-viewer-detail hidden"></div>
+          <!-- My Wishes List Card -->
+          <div class="card" style="padding: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 16px;"><i class="fa-solid fa-list-check" style="color: var(--accent); margin-right: 8px;"></i> Мои отправленные пожелания</h3>
+            <div id="user-wishes-list" style="display: flex; flex-direction: column; gap: 12px;">
+              <div style="text-align: center; color: var(--text-muted); padding: 20px;">Загрузка...</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ADMIN TAB -->
       <section id="tab-admin" class="tab">
         <header class="page-header row">
           <div>
+            <div style="margin-bottom: 12px;">
+              <button class="btn btn-secondary btn-back-home" style="font-size: 13px; padding: 6px 14px;">
+                <i class="fa-solid fa-house"></i> В главное меню
+              </button>
+            </div>
             <h1 class="page-title"><i class="fa-solid fa-user-shield" style="color: var(--accent); margin-right: 10px;"></i> Панель администратора</h1>
             <p class="page-sub">Управление сотрудниками, гостевая аналитика, рассылка указов и отчёты.</p>
           </div>
@@ -382,7 +416,7 @@
         </header>
 
         <!-- Admin Overview Cards -->
-        <div class="cards-grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="cards-grid" style="margin-bottom: 24px; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
           <div class="card" style="padding: 18px;">
             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Зарегистрировано</div>
             <div style="font-size: 26px; font-weight: 700; color: var(--accent); margin-top: 4px;" id="admin-stat-total">0</div>
@@ -390,6 +424,10 @@
           <div class="card" style="padding: 18px;">
             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Незарегистрированные гости</div>
             <div style="font-size: 26px; font-weight: 700; color: #00bcd4; margin-top: 4px;" id="admin-stat-guests">0</div>
+          </div>
+          <div class="card" style="padding: 18px;">
+            <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Пожелания</div>
+            <div style="font-size: 26px; font-weight: 700; color: #e91e63; margin-top: 4px;" id="admin-stat-wishes">0</div>
           </div>
           <div class="card" style="padding: 18px;">
             <div style="font-size: 11px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Администрация</div>
@@ -408,6 +446,9 @@
           </button>
           <button class="auth-tab-btn" id="admin-subtab-guests-btn">
             <i class="fa-solid fa-user-secret"></i> Гости без аккаунта
+          </button>
+          <button class="auth-tab-btn" id="admin-subtab-wishes-btn">
+            <i class="fa-solid fa-comment-dots"></i> Пожелания (<span id="admin-wishes-badge">0</span>)
           </button>
           <button class="auth-tab-btn" id="admin-subtab-announcement-btn">
             <i class="fa-solid fa-bullhorn"></i> Объявление / Указ
@@ -450,7 +491,16 @@
           </div>
         </div>
 
-        <!-- SUBTAB 3: ANNOUNCEMENT -->
+        <!-- SUBTAB 3: WISHES -->
+        <div id="admin-view-wishes" class="hidden">
+          <div class="card" style="padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-size: 18px; margin-bottom: 8px;"><i class="fa-solid fa-comment-dots" style="color: #e91e63; margin-right: 8px;"></i> Пожелания и предложения пользователей</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Все предложения пользователей видит только администратор. Одобряйте ("Сделаем"), отклоняйте ("Не сделаем") или удаляйте недопустимые сообщения.</p>
+            <div id="admin-wishes-list" class="lec-list"></div>
+          </div>
+        </div>
+
+        <!-- SUBTAB 4: ANNOUNCEMENT -->
         <div id="admin-view-announcement" class="hidden">
           <div class="card" style="padding: 28px;">
             <h3 style="font-size: 20px; margin-bottom: 8px;"><i class="fa-solid fa-scroll" style="color: var(--accent); margin-right: 8px;"></i> Глобальное объявление / Указ</h3>
@@ -788,10 +838,10 @@
     </div>
   </div>
 
-  <script src="auth.js?v=37.0_ip_clean_wipe"></script>
-  <script src="instructionsData.js?v=37.0_ip_clean_wipe"></script>
-  <script src="lawsData.js?v=37.0_ip_clean_wipe"></script>
-  <script src="data.js?v=37.0_ip_clean_wipe"></script>
-  <script src="app.js?v=37.0_ip_clean_wipe"></script>
+  <script src="auth.js?v=38.0_wishes_module"></script>
+  <script src="instructionsData.js?v=38.0_wishes_module"></script>
+  <script src="lawsData.js?v=38.0_wishes_module"></script>
+  <script src="data.js?v=38.0_wishes_module"></script>
+  <script src="app.js?v=38.0_wishes_module"></script>
 </body>
 </html>

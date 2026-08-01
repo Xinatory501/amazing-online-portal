@@ -101,6 +101,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'hints' || id === 'home') closeHintViewer();
     if (id === 'laws' || id === 'home') closeLawReader();
     if (id === 'instructions' || id === 'home') closeInstructionViewer();
+    if (id === 'wishes') loadUserWishes();
+    if (id === 'admin') loadAdminData();
   }
 
   navItems.forEach(btn => {
@@ -1323,15 +1325,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Subtabs
   const btnSubtabUsers = document.getElementById('admin-subtab-users-btn');
   const btnSubtabGuests = document.getElementById('admin-subtab-guests-btn');
+  const btnSubtabWishes = document.getElementById('admin-subtab-wishes-btn');
   const btnSubtabAnnouncement = document.getElementById('admin-subtab-announcement-btn');
 
   const viewSubtabUsers = document.getElementById('admin-view-users');
   const viewSubtabGuests = document.getElementById('admin-view-guests');
+  const viewSubtabWishes = document.getElementById('admin-view-wishes');
   const viewSubtabAnnouncement = document.getElementById('admin-view-announcement');
 
   function showAdminSubtab(tabName) {
-    [btnSubtabUsers, btnSubtabGuests, btnSubtabAnnouncement].forEach(b => b?.classList.remove('active'));
-    [viewSubtabUsers, viewSubtabGuests, viewSubtabAnnouncement].forEach(v => v?.classList.add('hidden'));
+    [btnSubtabUsers, btnSubtabGuests, btnSubtabWishes, btnSubtabAnnouncement].forEach(b => b?.classList.remove('active'));
+    [viewSubtabUsers, viewSubtabGuests, viewSubtabWishes, viewSubtabAnnouncement].forEach(v => v?.classList.add('hidden'));
 
     if (tabName === 'users') {
       btnSubtabUsers?.classList.add('active');
@@ -1340,6 +1344,10 @@ document.addEventListener('DOMContentLoaded', () => {
       btnSubtabGuests?.classList.add('active');
       viewSubtabGuests?.classList.remove('hidden');
       loadGuestVisits();
+    } else if (tabName === 'wishes') {
+      btnSubtabWishes?.classList.add('active');
+      viewSubtabWishes?.classList.remove('hidden');
+      loadAdminWishes();
     } else if (tabName === 'announcement') {
       btnSubtabAnnouncement?.classList.add('active');
       viewSubtabAnnouncement?.classList.remove('hidden');
@@ -1349,6 +1357,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (btnSubtabUsers) btnSubtabUsers.addEventListener('click', () => showAdminSubtab('users'));
   if (btnSubtabGuests) btnSubtabGuests.addEventListener('click', () => showAdminSubtab('guests'));
+  if (btnSubtabWishes) btnSubtabWishes.addEventListener('click', () => showAdminSubtab('wishes'));
   if (btnSubtabAnnouncement) btnSubtabAnnouncement.addEventListener('click', () => showAdminSubtab('announcement'));
 
   // Modals
@@ -1719,10 +1728,218 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ── GITHUB PAGES MIGRATION BANNER ─────────────
-  if (window.location.hostname.includes('github.io')) {
-    const migrationBanner = document.getElementById('github-migration-banner');
-    if (migrationBanner) migrationBanner.classList.remove('hidden');
+  // ── WISHES SYSTEM CONTROLLER ───────────────────
+  const userWishForm = document.getElementById('user-wish-form');
+  const wishesAuthPrompt = document.getElementById('wishes-auth-prompt');
+  const wishesLoginBtn = document.getElementById('wishes-login-btn');
+
+  if (wishesLoginBtn) {
+    wishesLoginBtn.addEventListener('click', () => {
+      openAuthModal();
+    });
+  }
+
+  if (userWishForm) {
+    userWishForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titleInput = document.getElementById('wish-title-input');
+      const contentInput = document.getElementById('wish-content-input');
+      const submitBtn = document.getElementById('wish-submit-btn');
+
+      if (!titleInput || !contentInput || !submitBtn) return;
+      if (!AuthService.getCurrentUser()) {
+        showToast('Войдите в аккаунт для отправки пожелания');
+        openAuthModal();
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Отправка...';
+        await AuthService.submitWish(titleInput.value, contentInput.value);
+        titleInput.value = '';
+        contentInput.value = '';
+        showToast('Пожелание успешно отправлено!');
+        loadUserWishes();
+      } catch (err) {
+        alert(err.message || 'Ошибка отправки');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Отправить пожелание';
+      }
+    });
+  }
+
+  async function loadUserWishes() {
+    const listEl = document.getElementById('user-wishes-list');
+    const formEl = document.getElementById('user-wish-form');
+    const promptEl = document.getElementById('wishes-auth-prompt');
+    if (!listEl) return;
+
+    const user = AuthService.getCurrentUser();
+    if (!user) {
+      if (formEl) formEl.classList.add('hidden');
+      if (promptEl) promptEl.classList.remove('hidden');
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+          Войдите в аккаунт, чтобы просмотреть свои пожелания
+        </div>
+      `;
+      return;
+    }
+
+    if (formEl) formEl.classList.remove('hidden');
+    if (promptEl) promptEl.classList.add('hidden');
+
+    try {
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+          <i class="fa-solid fa-spinner fa-spin"></i> Загрузка...
+        </div>
+      `;
+
+      const wishes = await AuthService.getUserWishes();
+      if (!wishes.length) {
+        listEl.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+            У вас пока нет отправленных пожеланий
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = wishes.map(w => {
+        let badge = '';
+        if (w.status === 'approved') {
+          badge = '<span style="color: #4caf50; background: rgba(76, 175, 80, 0.12); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Одобрено (Будет сделано)</span>';
+        } else if (w.status === 'rejected') {
+          badge = '<span style="color: #ff5252; background: rgba(255, 82, 82, 0.12); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Отклонено (Не будет сделано)</span>';
+        } else {
+          badge = '<span style="color: #ffc107; background: rgba(255, 193, 7, 0.12); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-clock"></i> В обработке</span>';
+        }
+
+        return `
+          <div style="padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md);">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
+              <strong style="font-size: 15px; color: var(--text-primary);">${escapeHtml(w.title)}</strong>
+              ${badge}
+            </div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; margin-bottom: 8px;">${escapeHtml(w.content)}</div>
+            <div style="font-size: 11px; color: var(--text-muted); text-align: right;">${escapeHtml(w.createdAt)}</div>
+          </div>
+        `;
+      }).join('');
+    } catch (err) {
+      listEl.innerHTML = `<div style="color: #ff5252; text-align: center; padding: 20px;">Ошибка: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  async function loadAdminWishes() {
+    const listEl = document.getElementById('admin-wishes-list');
+    if (!listEl || typeof AuthService === 'undefined') return;
+
+    try {
+      listEl.innerHTML = `
+        <div style="text-align: center; padding: 20px; color: var(--text-muted);">
+          <i class="fa-solid fa-spinner fa-spin"></i> Загрузка пожеланий...
+        </div>
+      `;
+
+      const wishes = await AuthService.adminGetAllWishes();
+      const wishesStatEl = document.getElementById('admin-stat-wishes');
+      const wishesBadgeEl = document.getElementById('admin-wishes-badge');
+      if (wishesStatEl) wishesStatEl.textContent = wishes.length;
+      if (wishesBadgeEl) wishesBadgeEl.textContent = wishes.length;
+
+      if (!wishes.length) {
+        listEl.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+            Пока нет ни одного пожелания от пользователей
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = wishes.map(w => {
+        let badge = '';
+        if (w.status === 'approved') {
+          badge = '<span style="color: #4caf50; background: rgba(76, 175, 80, 0.15); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Будет сделано</span>';
+        } else if (w.status === 'rejected') {
+          badge = '<span style="color: #ff5252; background: rgba(255, 82, 82, 0.15); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-circle-xmark"></i> Не будет сделано</span>';
+        } else {
+          badge = '<span style="color: #ffc107; background: rgba(255, 193, 7, 0.15); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-clock"></i> В обработке</span>';
+        }
+
+        return `
+          <div class="lec-item" style="cursor: default; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+                  ${escapeHtml(w.username)[0].toUpperCase()}
+                </div>
+                <div>
+                  <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">
+                    ${escapeHtml(w.username)}
+                  </div>
+                  <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(w.createdAt)}</div>
+                </div>
+              </div>
+              ${badge}
+            </div>
+
+            <div>
+              <div style="font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 4px;">
+                ${escapeHtml(w.title)}
+              </div>
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap;">
+                ${escapeHtml(w.content)}
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 6px; flex-wrap: wrap;">
+              <button class="btn btn-secondary btn-wish-approve" data-id="${w.id}" style="font-size: 12px; padding: 6px 12px; color: #4caf50; border-color: rgba(76, 175, 80, 0.3);">
+                <i class="fa-solid fa-check"></i> Одобрить ("Сделаем")
+              </button>
+              <button class="btn btn-secondary btn-wish-reject" data-id="${w.id}" style="font-size: 12px; padding: 6px 12px; color: #ff9800; border-color: rgba(255, 152, 0, 0.3);">
+                <i class="fa-solid fa-xmark"></i> Отклонить ("Не сделаем")
+              </button>
+              <button class="btn btn-secondary btn-wish-delete" data-id="${w.id}" style="font-size: 12px; padding: 6px 12px; color: #ff5252; border-color: rgba(255, 82, 82, 0.3);">
+                <i class="fa-solid fa-trash"></i> Удалить
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      listEl.querySelectorAll('.btn-wish-approve').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await AuthService.adminUpdateWishStatus(btn.dataset.id, 'approved');
+          showToast('Пожелание одобрено!');
+          loadAdminWishes();
+        });
+      });
+
+      listEl.querySelectorAll('.btn-wish-reject').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          await AuthService.adminUpdateWishStatus(btn.dataset.id, 'rejected');
+          showToast('Пожелание отклонено!');
+          loadAdminWishes();
+        });
+      });
+
+      listEl.querySelectorAll('.btn-wish-delete').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (confirm('Вы уверены, что хотите удалить это пожелание?')) {
+            await AuthService.adminDeleteWish(btn.dataset.id);
+            showToast('Пожелание удалено');
+            loadAdminWishes();
+          }
+        });
+      });
+
+    } catch (err) {
+      listEl.innerHTML = `<div style="color: #ff5252; text-align: center; padding: 20px;">Ошибка: ${escapeHtml(err.message)}</div>`;
+    }
   }
 
   // ── Init ──────────────────────────────────
