@@ -362,8 +362,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     viewerEl.innerHTML = `
       <div class="viewer-inner">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
-          <button class="btn btn-secondary btn-back" id="back-to-grid-btn">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;">
+          <button class="btn btn-secondary" id="back-to-grid-btn">
             <i class="fa-solid fa-arrow-left"></i> Назад к списку
           </button>
           <button class="btn btn-secondary btn-back-home">
@@ -670,8 +670,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lawViewerEl.innerHTML = `
       <div class="viewer-inner">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
-          <button class="btn btn-secondary btn-back" id="back-to-laws-btn">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;">
+          <button class="btn btn-secondary" id="back-to-laws-btn">
             <i class="fa-solid fa-arrow-left"></i> Назад к законам
           </button>
           <button class="btn btn-secondary btn-back-home">
@@ -952,8 +952,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     instructionViewerEl.innerHTML = `
       <div class="viewer-inner">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
-          <button class="btn btn-secondary btn-back" id="back-to-instructions-btn">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;">
+          <button class="btn btn-secondary" id="back-to-instructions-btn">
             <i class="fa-solid fa-arrow-left"></i> Назад к инструкциям
           </button>
           <button class="btn btn-secondary btn-back-home">
