@@ -398,18 +398,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (type === 'pravitelstvo') {
       currentHintFile = 'assets/images/f1_help_overlay_pravitelstvo.png';
-      if (viewerCat) viewerCat.textContent = 'Официальный оверлей Правительства';
-      if (viewerTitle) viewerTitle.textContent = 'Памятка Правительства (F1)';
+      if (viewerCat) viewerCat.textContent = 'Разработчик: Андрей Морозов';
+      if (viewerTitle) viewerTitle.textContent = 'Подсказка Морозова';
       if (hintImgElement) {
         hintImgElement.src = 'assets/images/f1_help_overlay_pravitelstvo.png';
-        hintImgElement.alt = 'Памятка Правительства (кликните для скачивания)';
+        hintImgElement.alt = 'Подсказка Морозова (кликните для скачивания)';
       }
       if (downloadHintBtn) {
         downloadHintBtn.href = 'assets/images/f1_help_overlay_pravitelstvo.png';
         downloadHintBtn.download = 'f1_help_overlay_pravitelstvo.png';
       }
       if (copyrightP) {
-        copyrightP.innerHTML = '© Данный справочный оверлей является официальным материалом Правительства Нижегородской области. Опубликован для быстрого использования.';
+        copyrightP.innerHTML = '© Данный справочный оверлей разработан <strong>Андреем Морозовым</strong>. Опубликован на портале для быстрого скачивания и использования.';
       }
     } else {
       currentHintFile = 'f1_help_overlay.png';
