@@ -1007,6 +1007,148 @@ document.addEventListener('DOMContentLoaded', () => {
     instructionSearchInput.addEventListener('input', buildInstructionsGrid);
   }
 
+  // ── AUTH UI CONTROLLER ─────────────────────
+  function updateSidebarUserUI() {
+    const container = document.getElementById('sidebar-user-container');
+    if (!container || typeof AuthService === 'undefined') return;
+
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      const initial = (user.username || 'U')[0].toUpperCase();
+      container.innerHTML = `
+        <div class="user-profile-badge">
+          <div class="user-avatar">${initial}</div>
+          <div class="user-info">
+            <div class="user-name">${escapeHtml(user.username)}</div>
+            <div class="user-role-badge">${escapeHtml(user.role || 'Пользователь')}</div>
+          </div>
+          <button class="btn-logout" id="auth-logout-btn" title="Выйти из аккаунта">
+            <i class="fa-solid fa-right-from-bracket"></i>
+          </button>
+        </div>
+      `;
+      document.getElementById('auth-logout-btn')?.addEventListener('click', () => {
+        AuthService.logout();
+        updateSidebarUserUI();
+        showToast('Вы успешно вышли из системы');
+      });
+    } else {
+      container.innerHTML = `
+        <button class="btn btn-primary" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
+          <i class="fa-solid fa-user-check"></i> Войти / Регистрация
+        </button>
+      `;
+      document.getElementById('open-auth-btn')?.addEventListener('click', openAuthModal);
+    }
+  }
+
+  const authModal = document.getElementById('auth-modal');
+  const authCloseBtn = document.getElementById('auth-modal-close-btn');
+  const tabLogin = document.getElementById('auth-tab-login');
+  const tabRegister = document.getElementById('auth-tab-register');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+
+  function openAuthModal() {
+    if (authModal) authModal.classList.add('active');
+  }
+
+  function closeAuthModal() {
+    if (authModal) authModal.classList.remove('active');
+  }
+
+  if (authCloseBtn) authCloseBtn.addEventListener('click', closeAuthModal);
+  if (authModal) {
+    authModal.addEventListener('click', (e) => {
+      if (e.target === authModal) closeAuthModal();
+    });
+  }
+
+  if (tabLogin && tabRegister && loginForm && registerForm) {
+    tabLogin.addEventListener('click', () => {
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+  }
+
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const submitBtn = document.getElementById('login-submit-btn');
+
+      if (!usernameInput || !passwordInput || !submitBtn) return;
+
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Вход...';
+
+        const user = await AuthService.login(username, password);
+        updateSidebarUserUI();
+        closeAuthModal();
+        showToast(`Добро пожаловать, ${user.username}!`);
+        loginForm.reset();
+      } catch (err) {
+        alert(err.message || 'Ошибка входа');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Войти на портал';
+      }
+    });
+  }
+
+  if (registerForm) {
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('register-username');
+      const roleInput = document.getElementById('register-role');
+      const passwordInput = document.getElementById('register-password');
+      const confirmInput = document.getElementById('register-confirm-password');
+      const submitBtn = document.getElementById('register-submit-btn');
+
+      if (!usernameInput || !passwordInput || !confirmInput || !submitBtn) return;
+
+      const username = usernameInput.value.trim();
+      const role = roleInput ? roleInput.value : 'Пользователь';
+      const password = passwordInput.value;
+      const confirm = confirmInput.value;
+
+      if (password !== confirm) {
+        alert('Пароли не совпадают');
+        return;
+      }
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрация...';
+
+        const user = await AuthService.register(username, password, role);
+        updateSidebarUserUI();
+        closeAuthModal();
+        showToast(`Регистрация успешна! Добро пожаловать, ${user.username}`);
+        registerForm.reset();
+      } catch (err) {
+        alert(err.message || 'Ошибка регистрации');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Зарегистрироваться';
+      }
+    });
+  }
+
   // ── Init ──────────────────────────────────
   buildCategories();
   buildGrid();
@@ -1014,5 +1156,6 @@ document.addEventListener('DOMContentLoaded', () => {
   buildLawsGrid();
   buildInstructionCategories();
   buildInstructionsGrid();
+  updateSidebarUserUI();
 
 });

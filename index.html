@@ -87,6 +87,7 @@
           <i class="fa-solid fa-moon" id="theme-icon"></i>
           <span id="theme-label">Светлая тема</span>
         </button>
+        <div id="sidebar-user-container"></div>
         <div class="creator-block">
           <div class="creator-name">Savely_Gerov</div>
           <div class="creator-role">бывший глава администрации ЮР</div>
@@ -318,9 +319,69 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <script src="instructionsData.js?v=26.0_back_home_all_sections"></script>
-  <script src="lawsData.js?v=26.0_back_home_all_sections"></script>
-  <script src="data.js?v=26.0_back_home_all_sections"></script>
-  <script src="app.js?v=26.0_back_home_all_sections"></script>
+  <!-- AUTH MODAL -->
+  <div class="auth-modal-overlay" id="auth-modal">
+    <div class="auth-modal-card">
+      <button class="auth-modal-close" id="auth-modal-close-btn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="auth-tab-login">Вход</button>
+        <button class="auth-tab-btn" id="auth-tab-register">Регистрация</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form">
+        <div class="auth-form-group">
+          <label>Имя пользователя / Игровой ник</label>
+          <input type="text" id="login-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+        </div>
+        <div class="auth-form-group">
+          <label>Пароль</label>
+          <input type="password" id="login-password" class="auth-form-input" placeholder="Ваш пароль" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary auth-submit-btn" id="login-submit-btn">
+          <i class="fa-solid fa-right-to-bracket"></i> Войти на портал
+        </button>
+      </form>
+
+      <!-- REGISTER FORM (Hidden initially) -->
+      <form id="register-form" class="hidden">
+        <div class="auth-form-group">
+          <label>Имя пользователя / Игровой ник</label>
+          <input type="text" id="register-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+        </div>
+        <div class="auth-form-group">
+          <label>Должность / Ваша роль</label>
+          <select id="register-role" class="auth-form-select">
+            <option value="Сотрудник ПР">Сотрудник ПР</option>
+            <option value="Адвокат">Адвокат</option>
+            <option value="Министр">Министр</option>
+            <option value="Вице-губернатор">Вице-губернатор</option>
+            <option value="Губернатор">Губернатор</option>
+            <option value="Депутат">Депутат</option>
+          </select>
+        </div>
+        <div class="auth-form-group">
+          <label>Пароль</label>
+          <input type="password" id="register-password" class="auth-form-input" placeholder="Минимум 4 символа" required autocomplete="new-password">
+        </div>
+        <div class="auth-form-group">
+          <label>Повторите пароль</label>
+          <input type="password" id="register-confirm-password" class="auth-form-input" placeholder="Повтор пароля" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary auth-submit-btn" id="register-submit-btn">
+          <i class="fa-solid fa-user-plus"></i> Зарегистрироваться
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js?v=27.0_turso_auth"></script>
+  <script src="instructionsData.js?v=27.0_turso_auth"></script>
+  <script src="lawsData.js?v=27.0_turso_auth"></script>
+  <script src="data.js?v=27.0_turso_auth"></script>
+  <script src="app.js?v=27.0_turso_auth"></script>
 </body>
 </html>
