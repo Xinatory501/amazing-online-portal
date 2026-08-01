@@ -1010,13 +1010,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
+    const adminNavItem = document.getElementById('nav-item-admin');
+
     if (!container || typeof AuthService === 'undefined') return;
 
     const user = AuthService.getCurrentUser();
+    const isAdmin = AuthService.isAdmin();
+
+    if (adminNavItem) {
+      if (isAdmin) {
+        adminNavItem.classList.remove('hidden');
+      } else {
+        adminNavItem.classList.add('hidden');
+      }
+    }
+
     if (user) {
       const initial = (user.username || 'U')[0].toUpperCase();
       const rankText = user.rank || 'Охранник';
-      const deptText = user.department && user.department !== 'Отсутствует' ? ` • ${user.department}` : '';
+      const deptText = user.department && user.department !== 'Отсутствует' && user.department !== 'Не назначен' ? ` • ${user.department}` : '';
       const subBadge = `${rankText}${deptText}`;
 
       container.innerHTML = `
@@ -1038,6 +1050,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('auth-logout-btn')?.addEventListener('click', () => {
         AuthService.logout();
         updateSidebarUserUI();
+        if (adminNavItem) adminNavItem.classList.add('hidden');
         showToast('Вы успешно вышли из системы');
       });
     } else {
@@ -1268,6 +1281,197 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Сохранить изменения';
       }
+    });
+  }
+
+  // ── ADMIN PANEL CONTROLLER ────────────────────
+  let adminUsersList = [];
+
+  const adminUsersGrid = document.getElementById('admin-users-grid');
+  const adminUserSearch = document.getElementById('admin-user-search');
+  const adminDeptFilter = document.getElementById('admin-dept-filter');
+  const adminRefreshBtn = document.getElementById('admin-refresh-btn');
+
+  const adminEditModal = document.getElementById('admin-edit-modal');
+  const adminEditCloseBtn = document.getElementById('admin-edit-close-btn');
+  const adminEditForm = document.getElementById('admin-edit-form');
+  const adminDeleteUserBtn = document.getElementById('admin-delete-user-btn');
+
+  function openAdminEditModal(user) {
+    if (!adminEditModal) return;
+    document.getElementById('admin-edit-userid').value = user.id;
+    document.getElementById('admin-edit-username').value = user.username;
+    document.getElementById('admin-edit-rank').value = user.rank || 'Охранник';
+    document.getElementById('admin-edit-department').value = user.department || 'Не назначен';
+    document.getElementById('admin-edit-password').value = '';
+    adminEditModal.classList.add('active');
+  }
+
+  function closeAdminEditModal() {
+    if (adminEditModal) adminEditModal.classList.remove('active');
+  }
+
+  if (adminEditCloseBtn) adminEditCloseBtn.addEventListener('click', closeAdminEditModal);
+  if (adminEditModal) {
+    adminEditModal.addEventListener('click', (e) => {
+      if (e.target === adminEditModal) closeAdminEditModal();
+    });
+  }
+
+  async function loadAdminData() {
+    if (typeof AuthService === 'undefined' || !AuthService.isAdmin()) return;
+    try {
+      if (adminUsersGrid) {
+        adminUsersGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+            <i class="fa-solid fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px; color: var(--accent);"></i>
+            <div>Загрузка сотрудников из БД...</div>
+          </div>
+        `;
+      }
+      adminUsersList = await AuthService.adminGetAllUsers();
+      renderAdminUsers();
+    } catch (err) {
+      if (adminUsersGrid) {
+        adminUsersGrid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #ff5252;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 24px; margin-bottom: 12px;"></i>
+            <div>Ошибка загрузки: ${escapeHtml(err.message)}</div>
+          </div>
+        `;
+      }
+    }
+  }
+
+  function renderAdminUsers() {
+    if (!adminUsersGrid) return;
+
+    const query = (adminUserSearch?.value || '').trim().toLowerCase();
+    const dept = adminDeptFilter?.value || 'ALL';
+
+    const filtered = adminUsersList.filter(u => {
+      const matchQuery = !query || u.username.toLowerCase().includes(query) || (u.rank || '').toLowerCase().includes(query);
+      const matchDept = dept === 'ALL' || u.department === dept;
+      return matchQuery && matchDept;
+    });
+
+    const totalEl = document.getElementById('admin-stat-total');
+    const adminsEl = document.getElementById('admin-stat-admins');
+    const deptsEl = document.getElementById('admin-stat-depts');
+
+    if (totalEl) totalEl.textContent = adminUsersList.length;
+    if (adminsEl) adminsEl.textContent = adminUsersList.filter(u => u.rank === 'Администратор портала' || u.rank === 'Губернатор' || u.username.toLowerCase() === 'savely_gerov').length;
+    if (deptsEl) deptsEl.textContent = adminUsersList.filter(u => u.department && u.department !== 'Не назначен' && u.department !== 'Отсутствует').length;
+
+    if (!filtered.length) {
+      adminUsersGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+          Сотрудники не найдены
+        </div>
+      `;
+      return;
+    }
+
+    adminUsersGrid.innerHTML = filtered.map(u => {
+      const initial = (u.username || 'U')[0].toUpperCase();
+      const isAdminUser = u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
+      const badgeStyle = isAdminUser ? 'color: #ffc107; background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);' : '';
+
+      return `
+        <div class="card" style="position: relative; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>
+              <div style="min-width: 0; flex: 1;">
+                <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                  ${escapeHtml(u.username)}
+                </div>
+                <div style="font-size: 12px; color: var(--accent); font-weight: 500; margin-top: 2px;">
+                  ${escapeHtml(u.rank)}
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size: 12px; background: var(--bg-surface); padding: 8px 12px; border-radius: var(--r-sm); border: 1px solid var(--border); margin-bottom: 14px; ${badgeStyle}">
+              <span style="color: var(--text-muted);">Отдел:</span> <strong>${escapeHtml(u.department || 'Не назначен')}</strong>
+            </div>
+          </div>
+
+          <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="width: 100%; justify-content: center; font-size: 13px; padding: 8px;">
+            <i class="fa-solid fa-pen-to-square"></i> Редактировать
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    adminUsersGrid.querySelectorAll('.admin-edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        const targetUser = adminUsersList.find(u => u.id === uid);
+        if (targetUser) openAdminEditModal(targetUser);
+      });
+    });
+  }
+
+  if (adminUserSearch) adminUserSearch.addEventListener('input', renderAdminUsers);
+  if (adminDeptFilter) adminDeptFilter.addEventListener('change', renderAdminUsers);
+  if (adminRefreshBtn) adminRefreshBtn.addEventListener('click', loadAdminData);
+
+  if (adminEditForm) {
+    adminEditForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const uid = document.getElementById('admin-edit-userid').value;
+      const rank = document.getElementById('admin-edit-rank').value;
+      const department = document.getElementById('admin-edit-department').value;
+      const password = document.getElementById('admin-edit-password').value;
+      const saveBtn = document.getElementById('admin-save-user-btn');
+
+      if (!uid || !saveBtn) return;
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сохранение...';
+
+        await AuthService.adminUpdateUser(uid, { rank, department, newPassword: password });
+        showToast('Сотрудник успешно обновлен!');
+        closeAdminEditModal();
+        loadAdminData();
+        updateSidebarUserUI();
+      } catch (err) {
+        alert(err.message || 'Ошибка обновления');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Сохранить';
+      }
+    });
+  }
+
+  if (adminDeleteUserBtn) {
+    adminDeleteUserBtn.addEventListener('click', async () => {
+      const uid = document.getElementById('admin-edit-userid').value;
+      const username = document.getElementById('admin-edit-username').value;
+      if (!uid) return;
+
+      if (!confirm(`Вы действительно хотите удалить аккаунт ${username}?`)) return;
+
+      try {
+        adminDeleteUserBtn.disabled = true;
+        await AuthService.adminDeleteUser(uid);
+        showToast(`Аккаунт ${username} удален`);
+        closeAdminEditModal();
+        loadAdminData();
+      } catch (err) {
+        alert(err.message || 'Ошибка удаления');
+      } finally {
+        adminDeleteUserBtn.disabled = false;
+      }
+    });
+  }
+
+  const adminNavItem = document.getElementById('nav-item-admin');
+  if (adminNavItem) {
+    adminNavItem.addEventListener('click', () => {
+      loadAdminData();
     });
   }
 

@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication & Turso DB API Module
+ * Amazing Online Portal - Authentication & Turso DB API Module (With Admin Panel API)
  */
 
 const TURSO_CONFIG = {
@@ -8,6 +8,7 @@ const TURSO_CONFIG = {
 };
 
 const OFFICIAL_RANKS = [
+  'Администратор портала',
   'Охранник',
   'Начальник охраны',
   'Адвокат',
@@ -21,6 +22,7 @@ const OFFICIAL_RANKS = [
 ];
 
 const OFFICIAL_DEPARTMENTS = [
+  'Не назначен',
   'Региональная безопасность',
   'Адвокатская палата',
   'ООК',
@@ -100,6 +102,13 @@ const AuthService = {
     return this.currentUser;
   },
 
+  isAdmin() {
+    if (!this.currentUser) return false;
+    const rank = (this.currentUser.rank || '').toLowerCase();
+    const name = (this.currentUser.username || '').toLowerCase();
+    return rank === 'администратор портала' || rank === 'губернатор' || name === 'savely_gerov';
+  },
+
   async register(username, password, rank = 'Охранник', department = 'Отсутствует') {
     const cleanUser = username.trim();
     if (!cleanUser || cleanUser.length < 3) {
@@ -112,7 +121,6 @@ const AuthService = {
     const passwordHash = await sha256(password);
     const userId = generateUUID();
 
-    // Check if username exists
     const checkRes = await executeTursoQuery([
       {
         sql: 'SELECT id FROM users WHERE LOWER(username) = LOWER(?)',
@@ -125,7 +133,6 @@ const AuthService = {
       throw new Error('Пользователь с таким ником уже зарегистрирован');
     }
 
-    // Insert user
     await executeTursoQuery([
       {
         sql: 'INSERT INTO users (id, username, password_hash, role, rank, department) VALUES (?, ?, ?, ?, ?, ?)',
@@ -213,6 +220,81 @@ const AuthService = {
     this.currentUser.department = department;
     localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
     return this.currentUser;
+  },
+
+  // ── ADMIN PANEL METHODS ─────────────────────────
+  async adminGetAllUsers() {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен. Требуются права администратора.');
+    }
+
+    const res = await executeTursoQuery([
+      {
+        sql: 'SELECT id, username, rank, department, role FROM users ORDER BY username ASC'
+      }
+    ]);
+
+    const rows = res[0]?.response?.result?.rows || [];
+    return rows.map(r => ({
+      id: r[0]?.value || '',
+      username: r[1]?.value || '',
+      rank: r[2]?.value || r[4]?.value || 'Охранник',
+      department: r[3]?.value || 'Отсутствует'
+    }));
+  },
+
+  async adminUpdateUser(userId, { rank, department, newPassword }) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    const statements = [];
+
+    if (newPassword && newPassword.trim().length >= 4) {
+      const passHash = await sha256(newPassword.trim());
+      statements.push({
+        sql: 'UPDATE users SET rank = ?, department = ?, role = ?, password_hash = ? WHERE id = ?',
+        args: [
+          { type: 'text', value: rank },
+          { type: 'text', value: department },
+          { type: 'text', value: rank },
+          { type: 'text', value: passHash },
+          { type: 'text', value: userId }
+        ]
+      });
+    } else {
+      statements.push({
+        sql: 'UPDATE users SET rank = ?, department = ?, role = ? WHERE id = ?',
+        args: [
+          { type: 'text', value: rank },
+          { type: 'text', value: department },
+          { type: 'text', value: rank },
+          { type: 'text', value: userId }
+        ]
+      });
+    }
+
+    await executeTursoQuery(statements);
+
+    // If editing self, update local state
+    if (this.currentUser && this.currentUser.id === userId) {
+      this.currentUser.rank = rank;
+      this.currentUser.department = department;
+      localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
+    }
+  },
+
+  async adminDeleteUser(userId) {
+    if (!this.isAdmin()) {
+      throw new Error('Доступ запрещен.');
+    }
+
+    await executeTursoQuery([
+      {
+        sql: 'DELETE FROM users WHERE id = ?',
+        args: [{ type: 'text', value: userId }]
+      }
+    ]);
   },
 
   logout() {

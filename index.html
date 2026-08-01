@@ -95,6 +95,10 @@
             <i class="fa-solid fa-clipboard-list"></i>
             <span>Инструкции</span>
           </button>
+          <button class="nav-item hidden" data-tab="admin" id="nav-item-admin" style="color: var(--accent); font-weight: 500;">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Админ-панель</span>
+          </button>
         </nav>
       </div>
 
@@ -327,6 +331,59 @@
         <div id="instruction-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
+      <!-- ADMIN TAB -->
+      <section id="tab-admin" class="tab">
+        <header class="page-header row">
+          <div>
+            <h1 class="page-title"><i class="fa-solid fa-user-shield" style="color: var(--accent); margin-right: 10px;"></i> Панель администратора</h1>
+            <p class="page-sub">Управление сотрудниками, назначение должностей, отделов и паролей в системе.</p>
+          </div>
+          <button class="btn btn-primary" id="admin-refresh-btn" style="font-size: 13px;">
+            <i class="fa-solid fa-rotate-right"></i> Обновить данные
+          </button>
+        </header>
+
+        <!-- Admin Overview Cards -->
+        <div class="cards-grid" style="margin-bottom: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));">
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Всего пользователей</div>
+            <div style="font-size: 28px; font-weight: 700; color: var(--accent); margin-top: 4px;" id="admin-stat-total">0</div>
+          </div>
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Руководство / Админы</div>
+            <div style="font-size: 28px; font-weight: 700; color: #ffc107; margin-top: 4px;" id="admin-stat-admins">0</div>
+          </div>
+          <div class="card" style="padding: 20px;">
+            <div style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">Распределено по отделам</div>
+            <div style="font-size: 28px; font-weight: 700; color: #4caf50; margin-top: 4px;" id="admin-stat-depts">0</div>
+          </div>
+        </div>
+
+        <!-- Admin Controls & Search -->
+        <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; align-items: center;">
+          <div class="search-box" style="flex: 1; min-width: 250px;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="admin-user-search" placeholder="Поиск по никнейму сотрудника…" autocomplete="off" style="width: 100%;">
+          </div>
+          <div style="width: 220px;">
+            <select id="admin-dept-filter" class="auth-form-select" style="padding: 10px 14px;">
+              <option value="ALL">Все отделы</option>
+              <option value="Региональная безопасность">Региональная безопасность</option>
+              <option value="Адвокатская палата">Адвокатская палата</option>
+              <option value="ООК">ООК</option>
+              <option value="Южный район">Южный район</option>
+              <option value="Арзамасский район">Арзамасский район</option>
+              <option value="Батыревский район">Батыревский район</option>
+              <option value="Не назначен">Не назначен</option>
+              <option value="Отсутствует">Отсутствует</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Admin Users Grid -->
+        <div id="admin-users-grid" class="cards-grid"></div>
+      </section>
+
     </main>
   </div>
 
@@ -515,10 +572,76 @@
     </div>
   </div>
 
-  <script src="auth.js?v=29.0_fix_hidden_modal"></script>
-  <script src="instructionsData.js?v=29.0_fix_hidden_modal"></script>
-  <script src="lawsData.js?v=29.0_fix_hidden_modal"></script>
-  <script src="data.js?v=29.0_fix_hidden_modal"></script>
-  <script src="app.js?v=29.0_fix_hidden_modal"></script>
+  <!-- ADMIN EDIT USER MODAL -->
+  <div class="auth-modal-overlay" id="admin-edit-modal">
+    <div class="auth-modal-card">
+      <button class="auth-modal-close" id="admin-edit-close-btn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px;">
+        <i class="fa-solid fa-user-pen" style="color: var(--accent); margin-right: 8px;"></i> Редактировать сотрудника
+      </h2>
+
+      <form id="admin-edit-form">
+        <input type="hidden" id="admin-edit-userid">
+        <div class="auth-form-group">
+          <label>Игровой ник</label>
+          <input type="text" id="admin-edit-username" class="auth-form-input" readonly style="opacity: 0.7; cursor: not-allowed;">
+        </div>
+
+        <div class="auth-form-group">
+          <label>Должность</label>
+          <select id="admin-edit-rank" class="auth-form-select">
+            <option value="Администратор портала">Администратор портала</option>
+            <option value="Охранник">Охранник</option>
+            <option value="Начальник охраны">Начальник охраны</option>
+            <option value="Адвокат">Адвокат</option>
+            <option value="Инспектор">Инспектор</option>
+            <option value="Советник">Советник</option>
+            <option value="Заместитель министра">Заместитель министра</option>
+            <option value="Министр">Министр</option>
+            <option value="Глава администрации">Глава администрации</option>
+            <option value="Вице-губернатор">Вице-губернатор</option>
+            <option value="Губернатор">Губернатор</option>
+          </select>
+        </div>
+
+        <div class="auth-form-group">
+          <label>Отдел</label>
+          <select id="admin-edit-department" class="auth-form-select">
+            <option value="Не назначен">Не назначен</option>
+            <option value="Региональная безопасность">Региональная безопасность</option>
+            <option value="Адвокатская палата">Адвокатская палата</option>
+            <option value="ООК">ООК</option>
+            <option value="Южный район">Южный район</option>
+            <option value="Арзамасский район">Арзамасский район</option>
+            <option value="Батыревский район">Батыревский район</option>
+            <option value="Отсутствует">Отсутствует</option>
+          </select>
+        </div>
+
+        <div class="auth-form-group">
+          <label>Сменить пароль (Оставьте пустым, если не меняете)</label>
+          <input type="password" id="admin-edit-password" class="auth-form-input" placeholder="Новый пароль" autocomplete="new-password">
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+          <button type="button" class="btn btn-secondary" id="admin-delete-user-btn" style="flex: 1; color: #ff5252; border-color: rgba(255, 82, 82, 0.3);">
+            <i class="fa-solid fa-trash"></i> Удалить
+          </button>
+          <button type="submit" class="btn btn-primary" id="admin-save-user-btn" style="flex: 2;">
+            <i class="fa-solid fa-floppy-disk"></i> Сохранить
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js?v=31.0_admin_panel"></script>
+  <script src="instructionsData.js?v=31.0_admin_panel"></script>
+  <script src="lawsData.js?v=31.0_admin_panel"></script>
+  <script src="data.js?v=31.0_admin_panel"></script>
+  <script src="app.js?v=31.0_admin_panel"></script>
 </body>
 </html>
