@@ -1819,12 +1819,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return `
-          <div style="padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md);">
+          <div style="padding: 16px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--r-md); word-break: break-word; overflow-wrap: anywhere;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap;">
-              <strong style="font-size: 15px; color: var(--text-primary);">${escapeHtml(w.title)}</strong>
+              <strong style="font-size: 15px; color: var(--text-primary); word-break: break-word;">${escapeHtml(w.title)}</strong>
               ${badge}
             </div>
-            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; margin-bottom: 8px;">${escapeHtml(w.content)}</div>
+            <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; margin-bottom: 8px;">${escapeHtml(w.content)}</div>
             <div style="font-size: 11px; color: var(--text-muted); text-align: right;">${escapeHtml(w.createdAt)}</div>
           </div>
         `;
@@ -1871,7 +1871,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         return `
-          <div class="lec-item" style="cursor: default; padding: 18px; display: flex; flex-direction: column; gap: 12px;">
+          <div class="lec-item" style="cursor: default; padding: 18px; display: flex; flex-direction: column; gap: 12px; word-break: break-word; overflow-wrap: anywhere;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
               <div style="display: flex; align-items: center; gap: 10px;">
                 <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
@@ -1888,10 +1888,10 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div>
-              <div style="font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 4px;">
+              <div style="font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 4px; word-break: break-word;">
                 ${escapeHtml(w.title)}
               </div>
-              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap;">
+              <div style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;">
                 ${escapeHtml(w.content)}
               </div>
             </div>

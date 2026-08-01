@@ -330,6 +330,10 @@ p { max-width: 60ch; }
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 28px;
+  box-sizing: border-box;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: anywhere;
   transition: border-color var(--transition), background var(--transition);
 }
 
