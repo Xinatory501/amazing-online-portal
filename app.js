@@ -1476,15 +1476,20 @@ document.addEventListener('DOMContentLoaded', () => {
       container.innerHTML = guests.map(g => `
         <div class="lec-item" style="cursor: default; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 188, 212, 0.1); color: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 188, 212, 0.1); color: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
               <i class="fa-solid fa-user-secret"></i>
             </div>
             <div>
-              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Анонимный гость (${escapeHtml(g.id)})</div>
+              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                <span>Уникальный гость (${escapeHtml(g.id)})</span>
+                <span style="font-size: 11px; background: rgba(0, 188, 212, 0.15); color: #00bcd4; padding: 2px 8px; border-radius: 10px; font-weight: 600;">
+                  <i class="fa-solid fa-fire"></i> ${g.visitCount} визитов
+                </span>
+              </div>
               <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.userAgent)}</div>
             </div>
           </div>
-          <div style="text-align: right;">
+          <div style="text-align: right; flex-shrink: 0;">
             <div style="font-size: 12px; font-weight: 500; color: var(--accent);">${escapeHtml(g.page)}</div>
             <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.lastActive)}</div>
           </div>

@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication, Admin API & Guest Analytics Module
+ * Amazing Online Portal - Authentication, Admin API & Fingerprinted Guest Analytics Module
  */
 
 const TURSO_CONFIG = {
@@ -80,13 +80,22 @@ function generateUUID() {
   return 'u_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
 }
 
-function getGuestSessionId() {
-  let gid = localStorage.getItem('amazing_guest_session');
-  if (!gid) {
-    gid = 'guest_' + Math.random().toString(36).substr(2, 8);
-    localStorage.setItem('amazing_guest_session', gid);
-  }
-  return gid;
+async function getDeviceFingerprint() {
+  let storedFp = localStorage.getItem('amazing_device_fingerprint');
+  if (storedFp) return storedFp;
+
+  const rawSig = [
+    navigator.userAgent || '',
+    navigator.language || '',
+    (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
+    (window.screen ? window.screen.colorDepth : ''),
+    navigator.hardwareConcurrency || ''
+  ].join('||');
+
+  const fpHash = await sha256(rawSig);
+  const shortFp = 'guest_' + fpHash.substring(0, 10);
+  localStorage.setItem('amazing_device_fingerprint', shortFp);
+  return shortFp;
 }
 
 const AuthService = {
@@ -119,16 +128,16 @@ const AuthService = {
     return rank === 'администратор портала' || rank === 'губернатор' || name === 'savely_gerov';
   },
 
-  async logGuestVisit(pageName = 'Портал') {
+  async logGuestVisit(pageName = 'Главная') {
     if (this.currentUser) return; // Don't log as guest if logged in
     try {
-      const gid = getGuestSessionId();
-      const ua = navigator.userAgent ? navigator.userAgent.substring(0, 80) : 'Browser';
+      const fpId = await getDeviceFingerprint();
+      const ua = navigator.userAgent ? navigator.userAgent.substring(0, 80) : 'Браузер';
       await executeTursoQuery([
         {
-          sql: 'INSERT INTO guest_visits (id, user_agent, page, last_active) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(id) DO UPDATE SET page = ?, last_active = CURRENT_TIMESTAMP',
+          sql: 'INSERT INTO guest_visits (id, user_agent, page, last_active, visit_count) VALUES (?, ?, ?, CURRENT_TIMESTAMP, 1) ON CONFLICT(id) DO UPDATE SET page = ?, last_active = CURRENT_TIMESTAMP, visit_count = COALESCE(visit_count, 1) + 1',
           args: [
-            { type: 'text', value: gid },
+            { type: 'text', value: fpId },
             { type: 'text', value: ua },
             { type: 'text', value: pageName },
             { type: 'text', value: pageName }
@@ -281,7 +290,7 @@ const AuthService = {
 
     const res = await executeTursoQuery([
       {
-        sql: 'SELECT id, user_agent, page, last_active FROM guest_visits ORDER BY last_active DESC LIMIT 50'
+        sql: 'SELECT id, user_agent, page, last_active, COALESCE(visit_count, 1) FROM guest_visits ORDER BY last_active DESC LIMIT 50'
       }
     ]);
 
@@ -290,7 +299,8 @@ const AuthService = {
       id: r[0]?.value || '',
       userAgent: r[1]?.value || 'Браузер',
       page: r[2]?.value || 'Главная',
-      lastActive: r[3]?.value || ''
+      lastActive: r[3]?.value || '',
+      visitCount: r[4]?.value || 1
     }));
   },
 
