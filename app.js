@@ -1454,28 +1454,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      container.innerHTML = guests.map(g => `
-        <div class="lec-item" style="cursor: default; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(0, 188, 212, 0.1); color: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
-              <i class="fa-solid fa-user-secret"></i>
-            </div>
-            <div>
-              <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
-                <span>Уникальный гость (${escapeHtml(g.id)})</span>
-                <span style="font-size: 11px; background: rgba(0, 188, 212, 0.15); color: #00bcd4; padding: 2px 8px; border-radius: 10px; font-weight: 600;">
-                  <i class="fa-solid fa-fire"></i> ${g.visitCount} визитов
-                </span>
+      container.innerHTML = guests.map(g => {
+        const locationText = [g.country, g.city].filter(Boolean).join(', ') || 'Страна не определена';
+        return `
+          <div class="lec-item" style="cursor: default; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 240px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(0, 188, 212, 0.12); color: #00bcd4; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;">
+                <i class="fa-solid fa-earth-americas"></i>
               </div>
-              <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.userAgent)}</div>
+              <div>
+                <div style="font-size: 14px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span>📍 ${escapeHtml(locationText)}</span>
+                  <span style="font-size: 11px; background: rgba(0, 188, 212, 0.15); color: #00bcd4; padding: 2px 8px; border-radius: 10px; font-weight: 600;">
+                    <i class="fa-solid fa-fire"></i> ${g.visitCount} визитов
+                  </span>
+                </div>
+                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                  IP: <strong>${escapeHtml(g.id)}</strong> • ${escapeHtml(g.userAgent)}
+                </div>
+              </div>
+            </div>
+            <div style="text-align: right; flex-shrink: 0;">
+              <div style="font-size: 12px; font-weight: 600; color: var(--accent);">${escapeHtml(g.page)}</div>
+              <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.lastActive)}</div>
             </div>
           </div>
-          <div style="text-align: right; flex-shrink: 0;">
-            <div style="font-size: 12px; font-weight: 500; color: var(--accent);">${escapeHtml(g.page)}</div>
-            <div style="font-size: 11px; color: var(--text-muted);">${escapeHtml(g.lastActive)}</div>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     } catch (err) {
       container.innerHTML = `<div style="color: #ff5252; text-align: center; padding: 20px;">Ошибка: ${escapeHtml(err.message)}</div>`;
     }

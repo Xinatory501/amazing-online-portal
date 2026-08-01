@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication, Admin API & Fingerprinted Guest Analytics Module
+ * Amazing Online Portal - Authentication, Admin API & IP-Geolocated Guest Analytics Module
  */
 
 const TURSO_CONFIG = {
@@ -80,22 +80,48 @@ function generateUUID() {
   return 'u_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
 }
 
-async function getDeviceFingerprint() {
-  let storedFp = localStorage.getItem('amazing_device_fingerprint');
-  if (storedFp) return storedFp;
+let cachedGeo = null;
 
-  const rawSig = [
-    navigator.userAgent || '',
-    navigator.language || '',
-    (window.screen ? window.screen.width + 'x' + window.screen.height : ''),
-    (window.screen ? window.screen.colorDepth : ''),
-    navigator.hardwareConcurrency || ''
-  ].join('||');
+async function fetchUserGeoLocation() {
+  if (cachedGeo) return cachedGeo;
+  const stored = sessionStorage.getItem('amazing_geo_cache');
+  if (stored) {
+    try {
+      cachedGeo = JSON.parse(stored);
+      return cachedGeo;
+    } catch(e) {}
+  }
 
-  const fpHash = await sha256(rawSig);
-  const shortFp = 'guest_' + fpHash.substring(0, 10);
-  localStorage.setItem('amazing_device_fingerprint', shortFp);
-  return shortFp;
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    if (res.ok) {
+      const data = await res.json();
+      cachedGeo = {
+        ip: data.ip || '0.0.0.0',
+        country: data.country_name || 'Не определена',
+        city: data.city || ''
+      };
+      sessionStorage.setItem('amazing_geo_cache', JSON.stringify(cachedGeo));
+      return cachedGeo;
+    }
+  } catch(e) {}
+
+  try {
+    const res2 = await fetch('https://ipwho.is/');
+    if (res2.ok) {
+      const data2 = await res2.json();
+      cachedGeo = {
+        ip: data2.ip || '0.0.0.0',
+        country: data2.country || 'Не определена',
+        city: data2.city || ''
+      };
+      sessionStorage.setItem('amazing_geo_cache', JSON.stringify(cachedGeo));
+      return cachedGeo;
+    }
+  } catch(e) {}
+
+  cachedGeo = { ip: 'ip_anon_' + Math.random().toString(36).substr(2, 6), country: 'Не определена', city: '' };
+  return cachedGeo;
 }
 
 const AuthService = {
@@ -131,16 +157,23 @@ const AuthService = {
   async logGuestVisit(pageName = 'Главная') {
     if (this.currentUser) return; // Don't log as guest if logged in
     try {
-      const fpId = await getDeviceFingerprint();
+      const geo = await fetchUserGeoLocation();
+      const ipKey = 'guest_ip_' + String(geo.ip).replace(/[^a-zA-Z0-9_]/g, '_');
       const ua = navigator.userAgent ? navigator.userAgent.substring(0, 80) : 'Браузер';
+      const locString = [geo.country, geo.city].filter(Boolean).join(', ') || 'Не определена';
+
       await executeTursoQuery([
         {
-          sql: 'INSERT INTO guest_visits (id, user_agent, page, last_active, visit_count) VALUES (?, ?, ?, CURRENT_TIMESTAMP, 1) ON CONFLICT(id) DO UPDATE SET page = ?, last_active = CURRENT_TIMESTAMP, visit_count = COALESCE(visit_count, 1) + 1',
+          sql: 'INSERT INTO guest_visits (id, user_agent, page, country, city, last_active, visit_count) VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, 1) ON CONFLICT(id) DO UPDATE SET page = ?, country = ?, city = ?, last_active = CURRENT_TIMESTAMP, visit_count = COALESCE(visit_count, 1) + 1',
           args: [
-            { type: 'text', value: fpId },
+            { type: 'text', value: ipKey },
             { type: 'text', value: ua },
             { type: 'text', value: pageName },
-            { type: 'text', value: pageName }
+            { type: 'text', value: geo.country },
+            { type: 'text', value: geo.city },
+            { type: 'text', value: pageName },
+            { type: 'text', value: geo.country },
+            { type: 'text', value: geo.city }
           ]
         }
       ]);
@@ -290,17 +323,19 @@ const AuthService = {
 
     const res = await executeTursoQuery([
       {
-        sql: 'SELECT id, user_agent, page, last_active, COALESCE(visit_count, 1) FROM guest_visits ORDER BY last_active DESC LIMIT 50'
+        sql: 'SELECT id, user_agent, page, country, city, last_active, COALESCE(visit_count, 1) FROM guest_visits ORDER BY last_active DESC LIMIT 50'
       }
     ]);
 
     const rows = res[0]?.response?.result?.rows || [];
     return rows.map(r => ({
-      id: r[0]?.value || '',
+      id: (r[0]?.value || '').replace('guest_ip_', ''),
       userAgent: r[1]?.value || 'Браузер',
       page: r[2]?.value || 'Главная',
-      lastActive: r[3]?.value || '',
-      visitCount: r[4]?.value || 1
+      country: r[3]?.value || '',
+      city: r[4]?.value || '',
+      lastActive: r[5]?.value || '',
+      visitCount: r[6]?.value || 1
     }));
   },
 
