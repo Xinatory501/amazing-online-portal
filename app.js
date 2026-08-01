@@ -666,34 +666,29 @@ document.addEventListener('DOMContentLoaded', () => {
       
       let targetEl = null;
 
-      if (artNum) {
-        // 1. If both chapter & article specified, search inside chapter container/elements first
-        if (chNum) {
-          const chHeader = lawViewerEl.querySelector(`.law-chapter-header[data-chapter="${chNum}"]`);
-          if (chHeader) {
-            let curr = chHeader.nextElementSibling;
-            while (curr && !curr.classList.contains('law-chapter-header')) {
-              const elArt = curr.getAttribute('data-article');
-              if (elArt === artNum || elArt === `${chNum}.${artNum}`) {
-                targetEl = curr;
-                break;
-              }
-              curr = curr.nextElementSibling;
+      // Case A: Both chapter & article specified
+      if (chNum && artNum) {
+        const chHeader = lawViewerEl.querySelector(`.law-chapter-header[data-chapter="${chNum}"]`);
+        if (chHeader) {
+          let curr = chHeader.nextElementSibling;
+          while (curr && !curr.classList.contains('law-chapter-header')) {
+            const elArt = curr.getAttribute('data-article');
+            if (elArt === artNum || elArt === `${chNum}.${artNum}` || (elArt && (elArt.endsWith('.' + artNum) || elArt.startsWith(artNum + '.')))) {
+              targetEl = curr;
+              break;
             }
+            curr = curr.nextElementSibling;
+          }
+          // If the requested article does not exist in this chapter, strictly target this chapter header
+          if (!targetEl) {
+            targetEl = chHeader;
           }
         }
-        
-        // 2. Exact article match anywhere
-        if (!targetEl) {
-          targetEl = lawViewerEl.querySelector(`.law-article-box[data-article="${artNum}"]`);
-        }
+      }
 
-        // 3. Dot-notation match anywhere (e.g. '1.2' for ch 1 art 2)
-        if (!targetEl && chNum) {
-          targetEl = lawViewerEl.querySelector(`.law-article-box[data-article="${chNum}.${artNum}"]`);
-        }
-
-        // 4. Fallback matching article ending/starting with number
+      // Case B: Only article specified (no chapter specified)
+      if (!targetEl && artNum && !chNum) {
+        targetEl = lawViewerEl.querySelector(`.law-article-box[data-article="${artNum}"]`);
         if (!targetEl) {
           const allArtBoxes = Array.from(lawViewerEl.querySelectorAll('.law-article-box'));
           targetEl = allArtBoxes.find(el => {
@@ -703,12 +698,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // 5. If ONLY chapter specified (or no article found)
+      // Case C: Only chapter specified
       if (!targetEl && chNum) {
         targetEl = lawViewerEl.querySelector(`.law-chapter-header[data-chapter="${chNum}"]`);
       }
 
-      // 6. Fallback: first search-matched box
+      // Case D: Fallback to first search-matched box
       if (!targetEl) {
         targetEl = lawViewerEl.querySelector('.search-matched-box');
       }
