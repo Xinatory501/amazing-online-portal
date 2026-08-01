@@ -96,11 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(b => b.classList.toggle('active', b.dataset.tab === id));
     tabs.forEach(t => t.classList.toggle('active', t.id === `tab-${id}`));
     
-    // Reset views when switching tabs or going to dashboard
-    if (id === 'lectures' || id === 'dashboard') closeReader();
-    if (id === 'hints' || id === 'dashboard') closeHintViewer();
-    if (id === 'laws' || id === 'dashboard') closeLawReader();
-    if (id === 'instructions' || id === 'dashboard') closeInstructionViewer();
+    // Reset views when switching tabs or going home
+    if (id === 'lectures' || id === 'home') closeReader();
+    if (id === 'hints' || id === 'home') closeHintViewer();
+    if (id === 'laws' || id === 'home') closeLawReader();
+    if (id === 'instructions' || id === 'home') closeInstructionViewer();
   }
 
   navItems.forEach(btn => {
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', (e) => {
     const btn = e.target.closest('.btn-back-home');
     if (btn) {
-      switchTab('dashboard');
+      switchTab('home');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   });
