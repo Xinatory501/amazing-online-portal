@@ -112,6 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (gotoLaws) gotoLaws.addEventListener('click', () => switchTab('laws'));
   if (gotoInstructions) gotoInstructions.addEventListener('click', () => switchTab('instructions'));
 
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.btn-back-home');
+    if (btn) {
+      switchTab('dashboard');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+
   // ── Toast & Copy ───────────────────────────
   function showToast(msg) {
     if (!toast || !toastMsg) return;
@@ -354,9 +362,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     viewerEl.innerHTML = `
       <div class="viewer-inner">
-        <button class="btn btn-secondary btn-back" id="back-to-grid-btn">
-          <i class="fa-solid fa-arrow-left"></i> Назад к списку
-        </button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button class="btn btn-secondary btn-back" id="back-to-grid-btn">
+            <i class="fa-solid fa-arrow-left"></i> Назад к списку
+          </button>
+          <button class="btn btn-secondary btn-back-home">
+            <i class="fa-solid fa-house"></i> В главное меню
+          </button>
+        </div>
 
         <div class="viewer-header">
           <div class="viewer-cat">${lec.category}</div>
@@ -657,9 +670,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lawViewerEl.innerHTML = `
       <div class="viewer-inner">
-        <button class="btn btn-secondary btn-back" id="back-to-laws-btn">
-          <i class="fa-solid fa-arrow-left"></i> Назад к законам
-        </button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button class="btn btn-secondary btn-back" id="back-to-laws-btn">
+            <i class="fa-solid fa-arrow-left"></i> Назад к законам
+          </button>
+          <button class="btn btn-secondary btn-back-home">
+            <i class="fa-solid fa-house"></i> В главное меню
+          </button>
+        </div>
 
         <div class="viewer-header">
           <div class="viewer-cat">${law.category}</div>
@@ -934,9 +952,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     instructionViewerEl.innerHTML = `
       <div class="viewer-inner">
-        <button class="btn btn-secondary btn-back" id="back-to-instructions-btn">
-          <i class="fa-solid fa-arrow-left"></i> Назад к инструкциям
-        </button>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+          <button class="btn btn-secondary btn-back" id="back-to-instructions-btn">
+            <i class="fa-solid fa-arrow-left"></i> Назад к инструкциям
+          </button>
+          <button class="btn btn-secondary btn-back-home">
+            <i class="fa-solid fa-house"></i> В главное меню
+          </button>
+        </div>
 
         <div class="viewer-header">
           <div class="viewer-cat">${inst.category}</div>
