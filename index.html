@@ -349,18 +349,34 @@
       <!-- REGISTER FORM (Hidden initially) -->
       <form id="register-form" class="hidden">
         <div class="auth-form-group">
-          <label>Имя пользователя / Игровой ник</label>
+          <label>Игровой ник / Логин</label>
           <input type="text" id="register-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
         </div>
         <div class="auth-form-group">
-          <label>Должность / Ваша роль</label>
-          <select id="register-role" class="auth-form-select">
-            <option value="Сотрудник ПР">Сотрудник ПР</option>
+          <label>Должность</label>
+          <select id="register-rank" class="auth-form-select">
+            <option value="Охранник">Охранник</option>
+            <option value="Начальник охраны">Начальник охраны</option>
             <option value="Адвокат">Адвокат</option>
+            <option value="Инспектор">Инспектор</option>
+            <option value="Советник">Советник</option>
+            <option value="Заместитель министра">Заместитель министра</option>
             <option value="Министр">Министр</option>
+            <option value="Глава администрации">Глава администрации</option>
             <option value="Вице-губернатор">Вице-губернатор</option>
             <option value="Губернатор">Губернатор</option>
-            <option value="Депутат">Депутат</option>
+          </select>
+        </div>
+        <div class="auth-form-group">
+          <label>Отдел</label>
+          <select id="register-department" class="auth-form-select">
+            <option value="Отсутствует">Отсутствует</option>
+            <option value="Региональная безопасность">Региональная безопасность</option>
+            <option value="Адвокатская палата">Адвокатская палата</option>
+            <option value="ООК">ООК</option>
+            <option value="Южный район">Южный район</option>
+            <option value="Арзамасский">Арзамасский</option>
+            <option value="Батыревский">Батыревский</option>
           </select>
         </div>
         <div class="auth-form-group">
@@ -378,10 +394,60 @@
     </div>
   </div>
 
-  <script src="auth.js?v=27.0_turso_auth"></script>
-  <script src="instructionsData.js?v=27.0_turso_auth"></script>
-  <script src="lawsData.js?v=27.0_turso_auth"></script>
-  <script src="data.js?v=27.0_turso_auth"></script>
-  <script src="app.js?v=27.0_turso_auth"></script>
+  <!-- PROFILE SETTINGS MODAL -->
+  <div class="auth-modal-overlay" id="settings-modal">
+    <div class="auth-modal-card">
+      <button class="auth-modal-close" id="settings-modal-close-btn">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px;">
+        <i class="fa-solid fa-gear" style="color: var(--accent); margin-right: 8px;"></i> Настройки профиля
+      </h2>
+
+      <form id="settings-form">
+        <div class="auth-form-group">
+          <label>Игровой ник</label>
+          <input type="text" id="settings-username-display" class="auth-form-input" readonly style="opacity: 0.7; cursor: not-allowed;">
+        </div>
+        <div class="auth-form-group">
+          <label>Должность</label>
+          <select id="settings-rank" class="auth-form-select">
+            <option value="Охранник">Охранник</option>
+            <option value="Начальник охраны">Начальник охраны</option>
+            <option value="Адвокат">Адвокат</option>
+            <option value="Инспектор">Инспектор</option>
+            <option value="Советник">Советник</option>
+            <option value="Заместитель министра">Заместитель министра</option>
+            <option value="Министр">Министр</option>
+            <option value="Глава администрации">Глава администрации</option>
+            <option value="Вице-губернатор">Вице-губернатор</option>
+            <option value="Губернатор">Губернатор</option>
+          </select>
+        </div>
+        <div class="auth-form-group">
+          <label>Отдел</label>
+          <select id="settings-department" class="auth-form-select">
+            <option value="Отсутствует">Отсутствует</option>
+            <option value="Региональная безопасность">Региональная безопасность</option>
+            <option value="Адвокатская палата">Адвокатская палата</option>
+            <option value="ООК">ООК</option>
+            <option value="Южный район">Южный район</option>
+            <option value="Арзамасский">Арзамасский</option>
+            <option value="Батыревский">Батыревский</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary auth-submit-btn" id="settings-submit-btn">
+          <i class="fa-solid fa-floppy-disk"></i> Сохранить изменения
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="auth.js?v=28.0_official_ranks"></script>
+  <script src="instructionsData.js?v=28.0_official_ranks"></script>
+  <script src="lawsData.js?v=28.0_official_ranks"></script>
+  <script src="data.js?v=28.0_official_ranks"></script>
+  <script src="app.js?v=28.0_official_ranks"></script>
 </body>
 </html>

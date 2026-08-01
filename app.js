@@ -1007,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
     instructionSearchInput.addEventListener('input', buildInstructionsGrid);
   }
 
-  // ── AUTH UI CONTROLLER ─────────────────────
+  // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
     if (!container || typeof AuthService === 'undefined') return;
@@ -1015,18 +1015,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const user = AuthService.getCurrentUser();
     if (user) {
       const initial = (user.username || 'U')[0].toUpperCase();
+      const rankText = user.rank || 'Охранник';
+      const deptText = user.department && user.department !== 'Отсутствует' ? ` • ${user.department}` : '';
+      const subBadge = `${rankText}${deptText}`;
+
       container.innerHTML = `
         <div class="user-profile-badge">
           <div class="user-avatar">${initial}</div>
           <div class="user-info">
             <div class="user-name">${escapeHtml(user.username)}</div>
-            <div class="user-role-badge">${escapeHtml(user.role || 'Пользователь')}</div>
+            <div class="user-role-badge" title="${escapeHtml(subBadge)}">${escapeHtml(subBadge)}</div>
           </div>
+          <button class="btn-logout" id="auth-settings-btn" title="Настройки профиля" style="margin-right: 4px;">
+            <i class="fa-solid fa-gear"></i>
+          </button>
           <button class="btn-logout" id="auth-logout-btn" title="Выйти из аккаунта">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
       `;
+      document.getElementById('auth-settings-btn')?.addEventListener('click', openSettingsModal);
       document.getElementById('auth-logout-btn')?.addEventListener('click', () => {
         AuthService.logout();
         updateSidebarUserUI();
@@ -1049,6 +1057,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginForm = document.getElementById('login-form');
   const registerForm = document.getElementById('register-form');
 
+  const settingsModal = document.getElementById('settings-modal');
+  const settingsCloseBtn = document.getElementById('settings-modal-close-btn');
+  const settingsForm = document.getElementById('settings-form');
+
   function openAuthModal() {
     if (authModal) authModal.classList.add('active');
   }
@@ -1057,10 +1069,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (authModal) authModal.classList.remove('active');
   }
 
+  function openSettingsModal() {
+    if (!settingsModal || typeof AuthService === 'undefined') return;
+    const user = AuthService.getCurrentUser();
+    if (!user) return;
+
+    const usernameDisplay = document.getElementById('settings-username-display');
+    const rankSelect = document.getElementById('settings-rank');
+    const deptSelect = document.getElementById('settings-department');
+
+    if (usernameDisplay) usernameDisplay.value = user.username || '';
+    if (rankSelect) rankSelect.value = user.rank || 'Охранник';
+    if (deptSelect) deptSelect.value = user.department || 'Отсутствует';
+
+    settingsModal.classList.add('active');
+  }
+
+  function closeSettingsModal() {
+    if (settingsModal) settingsModal.classList.remove('active');
+  }
+
   if (authCloseBtn) authCloseBtn.addEventListener('click', closeAuthModal);
   if (authModal) {
     authModal.addEventListener('click', (e) => {
       if (e.target === authModal) closeAuthModal();
+    });
+  }
+
+  if (settingsCloseBtn) settingsCloseBtn.addEventListener('click', closeSettingsModal);
+  if (settingsModal) {
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) closeSettingsModal();
     });
   }
 
@@ -1114,7 +1153,8 @@ document.addEventListener('DOMContentLoaded', () => {
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const usernameInput = document.getElementById('register-username');
-      const roleInput = document.getElementById('register-role');
+      const rankInput = document.getElementById('register-rank');
+      const deptInput = document.getElementById('register-department');
       const passwordInput = document.getElementById('register-password');
       const confirmInput = document.getElementById('register-confirm-password');
       const submitBtn = document.getElementById('register-submit-btn');
@@ -1122,7 +1162,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!usernameInput || !passwordInput || !confirmInput || !submitBtn) return;
 
       const username = usernameInput.value.trim();
-      const role = roleInput ? roleInput.value : 'Пользователь';
+      const rank = rankInput ? rankInput.value : 'Охранник';
+      const department = deptInput ? deptInput.value : 'Отсутствует';
       const password = passwordInput.value;
       const confirm = confirmInput.value;
 
@@ -1135,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрация...';
 
-        const user = await AuthService.register(username, password, role);
+        const user = await AuthService.register(username, password, rank, department);
         updateSidebarUserUI();
         closeAuthModal();
         showToast(`Регистрация успешна! Добро пожаловать, ${user.username}`);
@@ -1145,6 +1186,35 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Зарегистрироваться';
+      }
+    });
+  }
+
+  if (settingsForm) {
+    settingsForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rankSelect = document.getElementById('settings-rank');
+      const deptSelect = document.getElementById('settings-department');
+      const submitBtn = document.getElementById('settings-submit-btn');
+
+      if (!rankSelect || !deptSelect || !submitBtn) return;
+
+      const rank = rankSelect.value;
+      const department = deptSelect.value;
+
+      try {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сохранение...';
+
+        await AuthService.updateProfile(rank, department);
+        updateSidebarUserUI();
+        closeSettingsModal();
+        showToast('Профиль и должность успешно обновлены!');
+      } catch (err) {
+        alert(err.message || 'Ошибка сохранения настроек');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Сохранить изменения';
       }
     });
   }

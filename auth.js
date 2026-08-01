@@ -1,12 +1,34 @@
 /**
  * Amazing Online Portal - Authentication & Turso DB API Module
- * Works on both GitHub Pages and Cloudflare Pages
  */
 
 const TURSO_CONFIG = {
   url: 'https://amazing-db-xinatory501.aws-eu-west-1.turso.io/v2/pipeline',
   token: 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODU2MDM2NzUsImlkIjoiMDE5ZmJlNDQtMTEwMS03NjE1LTk0NzAtZDEyMTdiMjBkZDM3Iiwia2lkIjoibjd4RzFTZzlJalRqMm5GYTdUUmFWek1IeDhQNmxVaVFhSWFNMlZUeTVwTSIsInJpZCI6IjQ4Njg5OGNiLTRhNzktNDhiMS05ZDAxLTU4Njk5Yzk0MjQ3OSJ9.SLy-Kv-TGxN9IHCEvt6RpnR96qbjCQgHbV4uiekI9G-FIfQapnZkbm5aYb0GJgXl1k970DCUFB2C830oAZctBg'
 };
+
+const OFFICIAL_RANKS = [
+  'Охранник',
+  'Начальник охраны',
+  'Адвокат',
+  'Инспектор',
+  'Советник',
+  'Заместитель министра',
+  'Министр',
+  'Глава администрации',
+  'Вице-губернатор',
+  'Губернатор'
+];
+
+const OFFICIAL_DEPARTMENTS = [
+  'Региональная безопасность',
+  'Адвокатская палата',
+  'ООК',
+  'Южный район',
+  'Арзамасский',
+  'Батыревский',
+  'Отсутствует'
+];
 
 async function executeTursoQuery(statements) {
   const reqBody = {
@@ -35,7 +57,6 @@ async function executeTursoQuery(statements) {
   const data = await res.json();
   const results = data.results || [];
   
-  // Check for execution errors
   for (const r of results) {
     if (r.type === 'error') {
       throw new Error(r.error ? r.error.message : 'Ошибка выполнения SQL запроса');
@@ -59,6 +80,8 @@ function generateUUID() {
 
 const AuthService = {
   currentUser: null,
+  ranks: OFFICIAL_RANKS,
+  departments: OFFICIAL_DEPARTMENTS,
 
   init() {
     const stored = localStorage.getItem('amazing_portal_user');
@@ -77,7 +100,7 @@ const AuthService = {
     return this.currentUser;
   },
 
-  async register(username, password, role = 'Пользователь', rank = 'Сотрудник') {
+  async register(username, password, rank = 'Охранник', department = 'Отсутствует') {
     const cleanUser = username.trim();
     if (!cleanUser || cleanUser.length < 3) {
       throw new Error('Имя пользователя должно быть не менее 3 символов');
@@ -99,19 +122,20 @@ const AuthService = {
 
     const existingRows = checkRes[0]?.response?.result?.rows || [];
     if (existingRows.length > 0) {
-      throw new Error('Пользователь с таким именем уже зарегистрирован');
+      throw new Error('Пользователь с таким ником уже зарегистрирован');
     }
 
     // Insert user
     await executeTursoQuery([
       {
-        sql: 'INSERT INTO users (id, username, password_hash, role, rank) VALUES (?, ?, ?, ?, ?)',
+        sql: 'INSERT INTO users (id, username, password_hash, role, rank, department) VALUES (?, ?, ?, ?, ?, ?)',
         args: [
           { type: 'text', value: userId },
           { type: 'text', value: cleanUser },
           { type: 'text', value: passwordHash },
-          { type: 'text', value: role },
-          { type: 'text', value: rank }
+          { type: 'text', value: rank },
+          { type: 'text', value: rank },
+          { type: 'text', value: department }
         ]
       }
     ]);
@@ -119,8 +143,8 @@ const AuthService = {
     const userObj = {
       id: userId,
       username: cleanUser,
-      role: role,
       rank: rank,
+      department: department,
       avatar_url: ''
     };
 
@@ -139,7 +163,7 @@ const AuthService = {
 
     const res = await executeTursoQuery([
       {
-        sql: 'SELECT id, username, password_hash, role, rank, avatar_url FROM users WHERE LOWER(username) = LOWER(?)',
+        sql: 'SELECT id, username, password_hash, role, rank, department, avatar_url FROM users WHERE LOWER(username) = LOWER(?)',
         args: [{ type: 'text', value: cleanUser }]
       }
     ]);
@@ -159,14 +183,36 @@ const AuthService = {
     const userObj = {
       id: userRow[0]?.value || '',
       username: userRow[1]?.value || cleanUser,
-      role: userRow[3]?.value || 'Пользователь',
-      rank: userRow[4]?.value || 'Сотрудник',
-      avatar_url: userRow[5]?.value || ''
+      rank: userRow[4]?.value || userRow[3]?.value || 'Охранник',
+      department: userRow[5]?.value || 'Отсутствует',
+      avatar_url: userRow[6]?.value || ''
     };
 
     this.currentUser = userObj;
     localStorage.setItem('amazing_portal_user', JSON.stringify(userObj));
     return userObj;
+  },
+
+  async updateProfile(rank, department) {
+    if (!this.currentUser) {
+      throw new Error('Вы не авторизованы');
+    }
+
+    await executeTursoQuery([
+      {
+        sql: 'UPDATE users SET rank = ?, department = ? WHERE id = ?',
+        args: [
+          { type: 'text', value: rank },
+          { type: 'text', value: department },
+          { type: 'text', value: this.currentUser.id }
+        ]
+      }
+    ]);
+
+    this.currentUser.rank = rank;
+    this.currentUser.department = department;
+    localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
+    return this.currentUser;
   },
 
   logout() {
