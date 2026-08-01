@@ -1041,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <button class="btn-logout" id="auth-settings-btn" title="Настройки профиля" style="margin-right: 4px;">
             <i class="fa-solid fa-gear"></i>
           </button>
-          <button class="btn-logout" id="auth-logout-btn" title="Выйти из аккаунта">
+          <button class="btn-logout danger" id="auth-logout-btn" title="Выйти из аккаунта">
             <i class="fa-solid fa-right-from-bracket"></i>
           </button>
         </div>
