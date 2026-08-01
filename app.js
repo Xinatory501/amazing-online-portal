@@ -522,6 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function openLawReader(law, searchQuery = '') {
     if (!lawsHeader || !lawFiltersEl || !lawsGridEl || !lawViewerEl) return;
+    window.scrollTo(0, 0);
     lawsHeader.style.display = 'none';
     lawFiltersEl.style.display = 'none';
     lawsGridEl.style.display = 'none';
@@ -715,9 +716,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (targetEl) {
         lawViewerEl.querySelectorAll('.pulse-target').forEach(el => el.classList.remove('pulse-target'));
         targetEl.classList.add('pulse-target');
-        setTimeout(() => {
-          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 150);
+        
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            const rect = targetEl.getBoundingClientRect();
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const targetY = Math.max(0, rect.top + scrollTop - 120);
+            window.scrollTo({ top: targetY, behavior: 'smooth' });
+          }, 80);
+        });
       }
     }
 
