@@ -40,25 +40,26 @@
 }
 
 [data-theme="light"] {
-  --bg-base:        #faf8f5;
+  --bg-base:        #f6f4f0;
   --bg-surface:     #ffffff;
-  --bg-elevated:    #f5f2ee;
-  --bg-input:       #f0ede9;
+  --bg-elevated:    #ece7df;
+  --bg-card:        #ffffff;
+  --bg-input:       #f0eae1;
 
-  --text-primary:   #1a1712;
-  --text-secondary: #6b6560;
-  --text-muted:     #a09b95;
+  --text-primary:   #1a1714;
+  --text-secondary: #5c554c;
+  --text-muted:     #948c81;
 
-  --border:         #e8e3dc;
-  --border-subtle:  #f0ede9;
+  --border:         #ded6ca;
+  --border-subtle:  #e8e2d7;
 
-  --accent:         #b8895a;
-  --accent-hover:   #c9996a;
-  --accent-dim:     rgba(184, 137, 90, 0.08);
+  --accent:         #b8824a;
+  --accent-hover:   #9f6f3b;
+  --accent-dim:     rgba(184, 130, 74, 0.12);
 
-  --btn-bg:         #1a1712;
-  --btn-text:       #faf8f5;
-  --btn-hover:      #2d2a25;
+  --btn-bg:         #b8824a;
+  --btn-text:       #ffffff;
+  --btn-hover:      #9f6f3b;
 }
 
 /* ── BASE ─────────────────────────────────── */
