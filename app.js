@@ -201,6 +201,51 @@ document.addEventListener('DOMContentLoaded', () => {
     return content.toLowerCase().includes(searchQuery.trim().toLowerCase());
   }
 
+  function isLawMatch(law, searchQuery) {
+    if (!searchQuery || !searchQuery.trim()) return true;
+    const q = searchQuery.trim().toLowerCase();
+
+    const artMatch = q.match(/(?:статья|ст\.?|ст)\s*(\d+(?:\.\d+)?)/i) || q.match(/(\d+(?:\.\d+)?)\s*(?:статья|ст\.?|ст)/i);
+    const chMatch = q.match(/(?:глава|гл\.?|гл)\s*(\d+)/i) || q.match(/(\d+)\s*(?:глава|гл\.?|гл)/i);
+
+    const chNum = chMatch ? chMatch[1] : null;
+    const artNum = artMatch ? artMatch[1] : null;
+
+    if (!chNum && !artNum) return true;
+
+    const lines = law.text.split('\n').map(s => s.trim()).filter(Boolean);
+    const items = [];
+    let curCh = null;
+
+    lines.forEach(l => {
+      const cM = l.match(/^Глава\s+(\d+)/i);
+      if (cM) {
+        curCh = cM[1];
+        items.push({ type: 'chapter', chapter: curCh });
+      }
+      const aM = l.match(/^(?:Статья\s*(\d+(?:\.\d+)?)|(\d+\.\d+))/i);
+      if (aM) {
+        const aNum = aM[1] || aM[2];
+        items.push({ type: 'article', chapter: curCh, article: aNum });
+      }
+    });
+
+    if (chNum && artNum) {
+      const hasArtInCh = items.some(i => i.type === 'article' && i.chapter === chNum && (i.article === artNum || i.article === `${chNum}.${artNum}` || i.article.endsWith('.' + artNum)));
+      if (!hasArtInCh) return false;
+    }
+    else if (chNum && !artNum) {
+      const hasCh = items.some(i => i.type === 'chapter' && i.chapter === chNum);
+      if (!hasCh) return false;
+    }
+    else if (artNum && !chNum) {
+      const hasArt = items.some(i => i.type === 'article' && (i.article === artNum || i.article.endsWith('.' + artNum) || i.article.startsWith(artNum + '.')));
+      if (!hasArt) return false;
+    }
+
+    return true;
+  }
+
   function highlightText(text, searchQuery) {
     const escaped = escapeHtml(text);
     if (!searchQuery || !searchQuery.trim()) return escaped;
@@ -480,8 +525,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const rawQ = (lawSearchInput ? lawSearchInput.value || '' : '').trim();
     const filtered = lawsData.filter(l => {
       const catOk = activeLawCategory === 'Все' || l.category === activeLawCategory;
+      const matchOk = isLawMatch(l, rawQ);
       const qOk = matchesQuery(l.title + ' ' + l.description + ' ' + l.text, rawQ);
-      return catOk && qOk;
+      return catOk && matchOk && qOk;
     });
 
     lawsGridEl.innerHTML = '';
