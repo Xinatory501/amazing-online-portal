@@ -550,6 +550,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const boxText = currentBoxLines.join('\n');
         const hasSearchMatch = searchQuery.trim() && matchesQuery(boxText, searchQuery);
         
+        let artAttr = '';
+        const firstLine = currentBoxLines[0] || '';
+        const artMatch = firstLine.match(/^(?:Статья\s*(\d+(?:\.\d+)?)|(\d+\.\d+))/i);
+        if (artMatch) {
+          artAttr = ` data-article="${artMatch[1] || artMatch[2]}"`;
+        }
+
         const boxParagraphs = currentBoxLines
           .map((p, idx) => {
             const highlighted = highlightText(p, searchQuery);
@@ -561,17 +568,19 @@ document.addEventListener('DOMContentLoaded', () => {
           .join('');
 
         const activeClass = hasSearchMatch ? ' search-matched-box' : '';
-        html += `<div class="law-article-box${activeClass}">${boxParagraphs}</div>`;
+        html += `<div class="law-article-box${activeClass}"${artAttr}>${boxParagraphs}</div>`;
         currentBoxLines = [];
       }
     }
 
     lines.forEach(line => {
-      if (/^Глава\s+\d+/i.test(line)) {
+      const chMatch = line.match(/^Глава\s+(\d+)/i);
+      if (chMatch) {
         flushBox();
+        const chNum = chMatch[1];
         const highlightedCh = highlightText(line, searchQuery);
         html += `
-          <div class="law-chapter-header">
+          <div class="law-chapter-header" data-chapter="${chNum}">
             <i class="fa-solid fa-bookmark"></i>
             <span>${highlightedCh}</span>
           </div>
@@ -643,6 +652,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('back-to-laws-btn').addEventListener('click', closeLawReader);
     document.getElementById('back-to-laws-btn-bottom').addEventListener('click', closeLawReader);
+
+    // Smooth scroll and pulse highlight targeted article or chapter
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      
+      const artMatch = q.match(/(?:статья|ст\.?|ст)\s*(\d+(?:\.\d+)?)/i) || q.match(/(\d+(?:\.\d+)?)\s*(?:статья|ст\.?|ст)/i);
+      const chMatch = q.match(/(?:глава|гл\.?|гл)\s*(\d+)/i) || q.match(/(\d+)\s*(?:глава|гл\.?|гл)/i);
+      
+      let targetEl = null;
+
+      if (artMatch) {
+        const artNum = artMatch[1];
+        targetEl = lawViewerEl.querySelector(`.law-article-box[data-article="${artNum}"]`);
+      }
+
+      if (!targetEl && chMatch) {
+        const chNum = chMatch[1];
+        targetEl = lawViewerEl.querySelector(`.law-chapter-header[data-chapter="${chNum}"]`);
+      }
+
+      if (!targetEl) {
+        targetEl = lawViewerEl.querySelector('.search-matched-box');
+      }
+
+      if (targetEl) {
+        targetEl.classList.add('pulse-target');
+        setTimeout(() => {
+          targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 150);
+      }
+    }
 
     const lawReaderBody = document.getElementById('law-reader-body');
 

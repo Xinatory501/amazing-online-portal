@@ -794,6 +794,29 @@ mark.search-highlight {
   background: rgba(245, 158, 11, 0.05);
 }
 
+@keyframes pulseTargetGlow {
+  0% {
+    border-color: rgba(245, 158, 11, 0.4);
+    box-shadow: 0 0 0px rgba(245, 158, 11, 0);
+  }
+  50% {
+    border-color: var(--accent);
+    box-shadow: 0 0 32px rgba(245, 158, 11, 0.6);
+    background: rgba(245, 158, 11, 0.15);
+  }
+  100% {
+    border-color: var(--accent);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.25);
+    background: rgba(245, 158, 11, 0.08);
+  }
+}
+
+.law-article-box.pulse-target,
+.law-chapter-header.pulse-target {
+  scroll-margin-top: 120px;
+  animation: pulseTargetGlow 1.8s ease-in-out infinite alternate;
+}
+
 .law-box-title {
   font-weight: 600;
   font-size: 1.05em;
