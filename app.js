@@ -59,13 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── Hints DOM refs ──────────────────────────
-  const hintsHeader          = document.getElementById('hints-dashboard-header');
-  const hintsGrid            = document.getElementById('hints-grid');
-  const hintViewer           = document.getElementById('hint-viewer');
-  const hintZhukovCard       = document.getElementById('hint-zhukov-card');
-  const backFromHintBtn      = document.getElementById('back-from-hint-btn');
-  const backFromHintBtnBottom = document.getElementById('back-from-hint-btn-bottom');
-  const hintImgElement       = document.getElementById('hint-img-element');
+  const hintsHeader            = document.getElementById('hints-dashboard-header');
+  const hintsGrid              = document.getElementById('hints-grid');
+  const hintViewer             = document.getElementById('hint-viewer');
+  const hintZhukovCard         = document.getElementById('hint-zhukov-card');
+  const hintPravitelstvoCard   = document.getElementById('hint-pravitelstvo-card');
+  const backFromHintBtn        = document.getElementById('back-from-hint-btn');
+  const backFromHintBtnBottom  = document.getElementById('back-from-hint-btn-bottom');
+  const hintImgElement         = document.getElementById('hint-img-element');
+  const downloadHintBtn        = document.getElementById('download-hint-btn');
+
+  let currentHintFile = 'f1_help_overlay.png';
 
   // ── Laws DOM refs ───────────────────────────
   const lawsHeader       = document.getElementById('laws-dashboard-header');
@@ -385,8 +389,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── HINTS SECTION ─────────────────────────
-  function openHintViewer() {
+  function openHintViewer(type) {
     if (!hintsHeader || !hintsGrid || !hintViewer) return;
+    
+    const viewerCat = hintViewer.querySelector('.viewer-cat');
+    const viewerTitle = hintViewer.querySelector('.viewer-title');
+    const copyrightP = hintViewer.querySelector('.copyright-notice p');
+    
+    if (type === 'pravitelstvo') {
+      currentHintFile = 'assets/images/f1_help_overlay_pravitelstvo.png';
+      if (viewerCat) viewerCat.textContent = 'Официальный оверлей Правительства';
+      if (viewerTitle) viewerTitle.textContent = 'Памятка Правительства (F1)';
+      if (hintImgElement) {
+        hintImgElement.src = 'assets/images/f1_help_overlay_pravitelstvo.png';
+        hintImgElement.alt = 'Памятка Правительства (кликните для скачивания)';
+      }
+      if (downloadHintBtn) {
+        downloadHintBtn.href = 'assets/images/f1_help_overlay_pravitelstvo.png';
+        downloadHintBtn.download = 'f1_help_overlay_pravitelstvo.png';
+      }
+      if (copyrightP) {
+        copyrightP.innerHTML = '© Данный справочный оверлей является официальным материалом Правительства Нижегородской области. Опубликован для быстрого использования.';
+      }
+    } else {
+      currentHintFile = 'f1_help_overlay.png';
+      if (viewerCat) viewerCat.textContent = 'Разработчик: Жуков';
+      if (viewerTitle) viewerTitle.textContent = 'Подсказка Жукова';
+      if (hintImgElement) {
+        hintImgElement.src = 'f1_help_overlay.png';
+        hintImgElement.alt = 'Подсказка Жукова (кликните для скачивания)';
+      }
+      if (downloadHintBtn) {
+        downloadHintBtn.href = 'f1_help_overlay.png';
+        downloadHintBtn.download = 'f1_help_overlay.png';
+      }
+      if (copyrightP) {
+        copyrightP.innerHTML = '© Данная подсказка разработана <strong>Жуковым</strong> (ZHUKOV - X). Материал опубликован на портале для быстрого скачивания и использования.';
+      }
+    }
+
     hintsHeader.style.display = 'none';
     hintsGrid.style.display = 'none';
     hintViewer.classList.remove('hidden');
@@ -400,14 +441,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hintImgElement) hintImgElement.classList.remove('zoomed');
   }
 
-  if (hintZhukovCard) hintZhukovCard.addEventListener('click', openHintViewer);
+  if (hintZhukovCard) hintZhukovCard.addEventListener('click', () => openHintViewer('zhukov'));
+  if (hintPravitelstvoCard) hintPravitelstvoCard.addEventListener('click', () => openHintViewer('pravitelstvo'));
   if (backFromHintBtn) backFromHintBtn.addEventListener('click', closeHintViewer);
   if (backFromHintBtnBottom) backFromHintBtnBottom.addEventListener('click', closeHintViewer);
   if (hintImgElement) {
     hintImgElement.addEventListener('click', () => {
       const link = document.createElement('a');
-      link.href = 'f1_help_overlay.png';
-      link.download = 'f1_help_overlay.png';
+      link.href = currentHintFile;
+      link.download = currentHintFile.split('/').pop();
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
