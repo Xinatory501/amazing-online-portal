@@ -1470,7 +1470,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   </span>
                 </div>
                 <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-                  IP: <strong>${escapeHtml(g.id)}</strong> • ${escapeHtml(g.userAgent)}
+                  IP: <strong style="color: var(--text-primary); font-family: monospace; font-size: 12px;">${escapeHtml(g.ip)}</strong> • ${escapeHtml(g.userAgent)}
                 </div>
               </div>
             </div>
