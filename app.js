@@ -719,11 +719,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         requestAnimationFrame(() => {
           setTimeout(() => {
-            const rect = targetEl.getBoundingClientRect();
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const targetY = Math.max(0, rect.top + scrollTop - 120);
+            let top = 0;
+            let el = targetEl;
+            while (el) {
+              top += el.offsetTop || 0;
+              el = el.offsetParent;
+            }
+            const targetY = Math.max(0, top - 120);
             window.scrollTo({ top: targetY, behavior: 'smooth' });
-          }, 80);
+          }, 100);
         });
       }
     }
