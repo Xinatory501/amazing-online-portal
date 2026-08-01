@@ -1406,3 +1406,62 @@ mark.search-highlight {
   color: #ff5252;
   background: rgba(255, 82, 82, 0.1);
 }
+
+/* ── GITHUB PAGES MIGRATION BANNER ───────────── */
+.github-migration-banner {
+  background: linear-gradient(135deg, #2b1f0c, #1a1306);
+  border-bottom: 2px solid var(--accent);
+  color: #ffffff;
+  padding: 12px 24px;
+  position: relative;
+  z-index: 999999;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.migration-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.migration-icon {
+  font-size: 20px;
+  color: #ffc107;
+  flex-shrink: 0;
+}
+
+.migration-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.migration-text strong {
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.migration-btn {
+  background: var(--accent);
+  color: #121212 !important;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: var(--r-md);
+  text-decoration: none;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.2s ease, background 0.2s ease;
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
+
+.migration-btn:hover {
+  background: #e0b48a;
+  transform: translateY(-1px);
+}

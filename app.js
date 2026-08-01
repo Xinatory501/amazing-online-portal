@@ -1271,6 +1271,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ── GITHUB PAGES MIGRATION BANNER ─────────────
+  if (window.location.hostname.includes('github.io')) {
+    const migrationBanner = document.getElementById('github-migration-banner');
+    if (migrationBanner) migrationBanner.classList.remove('hidden');
+  }
+
   // ── Init ──────────────────────────────────
   buildCategories();
   buildGrid();
