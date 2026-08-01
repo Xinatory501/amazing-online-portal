@@ -20,11 +20,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма охранника по должности",
-            "url": "assets/images/forma_ohranka_gemini_hd.jpg"
+            "url": "assets/images/forma_ohranka_gemini_v11_hd.jpg"
           },
           {
             "title": "Форма руководящего состава",
-            "url": "assets/images/forma_rbp_lead_gemini_hd.jpg"
+            "url": "assets/images/forma_rbp_lead_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -34,11 +34,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма адвоката",
-            "url": "assets/images/forma_advokat_hd_v10.jpg"
+            "url": "assets/images/forma_advokat_gemini_v11_hd.jpg"
           },
           {
             "title": "Форма сотрудника АР по должности",
-            "url": "assets/images/forma_ar_hd_v10.jpg"
+            "url": "assets/images/forma_ar_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -48,11 +48,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ЮР по должности",
-            "url": "assets/images/forma_ur_hd_v10.jpg"
+            "url": "assets/images/forma_ur_gemini_v11_hd.jpg"
           },
           {
             "title": "Форма сотрудника БР по должности",
-            "url": "assets/images/forma_br_hd_v10.jpg"
+            "url": "assets/images/forma_br_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -62,7 +62,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудника ООК по должности",
-            "url": "assets/images/forma_ook_hd_v10.jpg"
+            "url": "assets/images/forma_ook_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -72,11 +72,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма руководства области",
-            "url": "assets/images/forma_gov_obl_hd_v10.jpg"
+            "url": "assets/images/forma_gov_obl_gemini_v11_hd.jpg"
           },
           {
             "title": "Форма руководства районов и АП, ООК",
-            "url": "assets/images/forma_gov_rayons_hd_v10.jpg"
+            "url": "assets/images/forma_gov_rayons_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -86,11 +86,11 @@ const instructionsData = [
         "images": [
           {
             "title": "Форма сотрудницы по должности",
-            "url": "assets/images/forma_female_hd_v10.jpg"
+            "url": "assets/images/forma_female_gemini_v11_hd.jpg"
           },
           {
             "title": "Форма сотрудницы руководящего состава",
-            "url": "assets/images/forma_female_lead_hd_v10.jpg"
+            "url": "assets/images/forma_female_lead_gemini_v11_hd.jpg"
           }
         ]
       }
@@ -108,7 +108,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост А1 - А2 (Вход в Правительство)",
-            "url": "assets/images/forum_img_37_hd_v10.jpg"
+            "url": "assets/images/forum_img_37_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -118,7 +118,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост В1 - В2 (Холл Правительства)",
-            "url": "assets/images/forum_img_38_hd_v10.jpg"
+            "url": "assets/images/forum_img_38_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -128,7 +128,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост С1 - С2 (Задний вход / парковка)",
-            "url": "assets/images/forum_img_39_hd_v10.jpg"
+            "url": "assets/images/forum_img_39_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -138,7 +138,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост D1 - D2 (Ворота на парковку)",
-            "url": "assets/images/forum_img_40_hd_v10.jpg"
+            "url": "assets/images/forum_img_40_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -190,7 +190,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВА (Вокзал г. Арзамас)",
-            "url": "assets/images/pps_post_va_gemini_hd.jpg"
+            "url": "assets/images/pps_post_va_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -200,7 +200,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЧ (КПП-1 Воинской части)",
-            "url": "assets/images/pps_post_vch_gemini_hd.jpg"
+            "url": "assets/images/pps_post_vch_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -210,7 +210,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЦР (Центральный рынок)",
-            "url": "assets/images/pps_post_cr_gemini_hd.jpg"
+            "url": "assets/images/pps_post_cr_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -220,7 +220,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВЮ (Вокзал г. Южный)",
-            "url": "assets/images/pps_post_vyu_gemini_hd.jpg"
+            "url": "assets/images/pps_post_vyu_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -230,7 +230,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ЕСС (Напротив ЕСС)",
-            "url": "assets/images/pps_post_ess_gemini_hd.jpg"
+            "url": "assets/images/pps_post_ess_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -240,7 +240,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ПР (Здание Правительства)",
-            "url": "assets/images/pps_post_pr_gemini_hd.jpg"
+            "url": "assets/images/pps_post_pr_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -250,7 +250,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ХЕСС (Холл ЕСС)",
-            "url": "assets/images/pps_post_hess_gemini_hd.jpg"
+            "url": "assets/images/pps_post_hess_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -260,7 +260,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост КПЗ (Внутри УМВД)",
-            "url": "assets/images/pps_post_kpz_gemini_hd.jpg"
+            "url": "assets/images/pps_post_kpz_gemini_v11_hd.jpg"
           }
         ]
       },
@@ -270,7 +270,7 @@ const instructionsData = [
         "images": [
           {
             "title": "Пост ВК (Военкомат)",
-            "url": "assets/images/pps_post_vk_gemini_hd.jpg"
+            "url": "assets/images/pps_post_vk_gemini_v11_hd.jpg"
           }
         ]
       }
