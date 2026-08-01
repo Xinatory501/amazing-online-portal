@@ -1052,16 +1052,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const authModal = document.getElementById('auth-modal');
   const authCloseBtn = document.getElementById('auth-modal-close-btn');
-  const tabLogin = document.getElementById('auth-tab-login');
-  const tabRegister = document.getElementById('auth-tab-register');
-  const loginForm = document.getElementById('login-form');
-  const registerForm = document.getElementById('register-form');
 
   const settingsModal = document.getElementById('settings-modal');
   const settingsCloseBtn = document.getElementById('settings-modal-close-btn');
   const settingsForm = document.getElementById('settings-form');
 
+  // ── VIEW SWITCHING FOR AUTH MODAL ─────────────
+  const viewLogin = document.getElementById('auth-view-login');
+  const viewRegStep1 = document.getElementById('auth-view-reg-step1');
+  const viewRegStep2 = document.getElementById('auth-view-reg-step2');
+  const viewRegComplete = document.getElementById('auth-view-reg-complete');
+
+  function showAuthView(viewName) {
+    if (viewLogin) viewLogin.classList.add('hidden');
+    if (viewRegStep1) viewRegStep1.classList.add('hidden');
+    if (viewRegStep2) viewRegStep2.classList.add('hidden');
+    if (viewRegComplete) viewRegComplete.classList.add('hidden');
+
+    if (viewName === 'login' && viewLogin) viewLogin.classList.remove('hidden');
+    if (viewName === 'step1' && viewRegStep1) viewRegStep1.classList.remove('hidden');
+    if (viewName === 'step2' && viewRegStep2) viewRegStep2.classList.remove('hidden');
+    if (viewName === 'complete' && viewRegComplete) viewRegComplete.classList.remove('hidden');
+  }
+
   function openAuthModal() {
+    showAuthView('login');
     if (authModal) authModal.classList.add('active');
   }
 
@@ -1103,22 +1118,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (tabLogin && tabRegister && loginForm && registerForm) {
-    tabLogin.addEventListener('click', () => {
-      tabLogin.classList.add('active');
-      tabRegister.classList.remove('active');
-      loginForm.classList.remove('hidden');
-      registerForm.classList.add('hidden');
-    });
+  document.getElementById('goto-register-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showAuthView('step1');
+  });
 
-    tabRegister.addEventListener('click', () => {
-      tabRegister.classList.add('active');
-      tabLogin.classList.remove('active');
-      registerForm.classList.remove('hidden');
-      loginForm.classList.add('hidden');
-    });
-  }
+  document.getElementById('goto-login-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showAuthView('login');
+  });
 
+  const loginForm = document.getElementById('login-form');
   if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1144,51 +1154,93 @@ document.addEventListener('DOMContentLoaded', () => {
         alert(err.message || 'Ошибка входа');
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Войти на портал';
+        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Войти';
       }
     });
   }
 
-  if (registerForm) {
-    registerForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const usernameInput = document.getElementById('register-username');
-      const rankInput = document.getElementById('register-rank');
-      const deptInput = document.getElementById('register-department');
-      const passwordInput = document.getElementById('register-password');
-      const confirmInput = document.getElementById('register-confirm-password');
-      const submitBtn = document.getElementById('register-submit-btn');
+  // ── Step 1 Form Handler ──────────────────────
+  let pendingRegData = { username: '', password: '' };
 
-      if (!usernameInput || !passwordInput || !confirmInput || !submitBtn) return;
+  const regStep1Form = document.getElementById('reg-step1-form');
+  if (regStep1Form) {
+    regStep1Form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const usernameInput = document.getElementById('reg-username');
+      const passwordInput = document.getElementById('reg-password');
+      const confirmInput = document.getElementById('reg-confirm-password');
+
+      if (!usernameInput || !passwordInput || !confirmInput) return;
 
       const username = usernameInput.value.trim();
-      const rank = rankInput ? rankInput.value : 'Охранник';
-      const department = deptInput ? deptInput.value : 'Отсутствует';
       const password = passwordInput.value;
       const confirm = confirmInput.value;
 
+      if (!username || username.length < 3) {
+        alert('Игровой ник должен содержать минимум 3 символа');
+        return;
+      }
+      if (!password || password.length < 4) {
+        alert('Пароль должен содержать минимум 4 символа');
+        return;
+      }
       if (password !== confirm) {
-        alert('Пароли не совпадают');
+        alert('Пароли не совпадают!');
         return;
       }
 
-      try {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрация...';
+      pendingRegData.username = username;
+      pendingRegData.password = password;
+      showAuthView('step2');
+    });
+  }
 
-        const user = await AuthService.register(username, password, rank, department);
+  document.getElementById('reg-back-step1-btn')?.addEventListener('click', () => {
+    showAuthView('step1');
+  });
+
+  // ── Step 2 Form Handler (Finish Registration) ──
+  const regStep2Form = document.getElementById('reg-step2-form');
+  if (regStep2Form) {
+    regStep2Form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rankSelect = document.getElementById('reg-rank');
+      const deptSelect = document.getElementById('reg-department');
+      const finishBtn = document.getElementById('reg-finish-btn');
+
+      if (!rankSelect || !deptSelect || !finishBtn) return;
+
+      const rank = rankSelect.value;
+      const department = deptSelect.value;
+
+      try {
+        finishBtn.disabled = true;
+        finishBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Регистрация...';
+
+        const user = await AuthService.register(pendingRegData.username, pendingRegData.password, rank, department);
         updateSidebarUserUI();
-        closeAuthModal();
-        showToast(`Регистрация успешна! Добро пожаловать, ${user.username}`);
-        registerForm.reset();
+
+        const successMsg = document.getElementById('reg-success-msg');
+        if (successMsg) {
+          successMsg.textContent = `Аккаунт ${user.username} успешно создан! Ваша должность: ${user.rank} (${user.department}).`;
+        }
+
+        showAuthView('complete');
+        regStep1Form.reset();
+        regStep2Form.reset();
       } catch (err) {
         alert(err.message || 'Ошибка регистрации');
       } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Зарегистрироваться';
+        finishBtn.disabled = false;
+        finishBtn.innerHTML = '<i class="fa-solid fa-check"></i> Завершить';
       }
     });
   }
+
+  document.getElementById('reg-done-btn')?.addEventListener('click', () => {
+    closeAuthModal();
+    showToast('Добро пожаловать на портал!');
+  });
 
   if (settingsForm) {
     settingsForm.addEventListener('submit', async (e) => {

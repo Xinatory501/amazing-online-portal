@@ -326,71 +326,126 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
 
-      <div class="auth-tabs">
-        <button class="auth-tab-btn active" id="auth-tab-login">Вход</button>
-        <button class="auth-tab-btn" id="auth-tab-register">Регистрация</button>
+      <!-- LOGIN VIEW -->
+      <div id="auth-view-login">
+        <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px; text-align: center;">
+          Вход на портал
+        </h2>
+
+        <form id="login-form">
+          <div class="auth-form-group">
+            <label>Имя пользователя / Игровой ник</label>
+            <input type="text" id="login-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+          </div>
+          <div class="auth-form-group">
+            <label>Пароль</label>
+            <input type="password" id="login-password" class="auth-form-input" placeholder="Ваш пароль" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit-btn" id="login-submit-btn">
+            <i class="fa-solid fa-right-to-bracket"></i> Войти
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 18px; font-size: 13px; color: var(--text-muted);">
+          Нет аккаунта? <a href="#" id="goto-register-link" style="color: var(--accent); font-weight: 500; text-decoration: none;">Зарегистрируйтесь</a>
+        </div>
       </div>
 
-      <!-- LOGIN FORM -->
-      <form id="login-form">
-        <div class="auth-form-group">
-          <label>Имя пользователя / Игровой ник</label>
-          <input type="text" id="login-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+      <!-- REGISTER STEP 1 VIEW -->
+      <div id="auth-view-reg-step1" class="hidden">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 6px;">
+          Шаг 1 из 2
         </div>
-        <div class="auth-form-group">
-          <label>Пароль</label>
-          <input type="password" id="login-password" class="auth-form-input" placeholder="Ваш пароль" required autocomplete="current-password">
-        </div>
-        <button type="submit" class="btn btn-primary auth-submit-btn" id="login-submit-btn">
-          <i class="fa-solid fa-right-to-bracket"></i> Войти на портал
-        </button>
-      </form>
+        <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px;">
+          Регистрация аккаунта
+        </h2>
 
-      <!-- REGISTER FORM (Hidden initially) -->
-      <form id="register-form" class="hidden">
-        <div class="auth-form-group">
-          <label>Игровой ник / Логин</label>
-          <input type="text" id="register-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+        <form id="reg-step1-form">
+          <div class="auth-form-group">
+            <label>Игровой ник в игре</label>
+            <input type="text" id="reg-username" class="auth-form-input" placeholder="Например: Savely_Gerov" required autocomplete="username">
+          </div>
+          <div class="auth-form-group">
+            <label>Пароль</label>
+            <input type="password" id="reg-password" class="auth-form-input" placeholder="Минимум 4 символа" required autocomplete="new-password">
+          </div>
+          <div class="auth-form-group">
+            <label>Повторите пароль</label>
+            <input type="password" id="reg-confirm-password" class="auth-form-input" placeholder="Повтор пароля" required autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-primary auth-submit-btn">
+            Далее <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+          </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 18px; font-size: 13px; color: var(--text-muted);">
+          Уже есть аккаунт? <a href="#" id="goto-login-link" style="color: var(--accent); font-weight: 500; text-decoration: none;">Войти</a>
         </div>
-        <div class="auth-form-group">
-          <label>Должность</label>
-          <select id="register-rank" class="auth-form-select">
-            <option value="Охранник">Охранник</option>
-            <option value="Начальник охраны">Начальник охраны</option>
-            <option value="Адвокат">Адвокат</option>
-            <option value="Инспектор">Инспектор</option>
-            <option value="Советник">Советник</option>
-            <option value="Заместитель министра">Заместитель министра</option>
-            <option value="Министр">Министр</option>
-            <option value="Глава администрации">Глава администрации</option>
-            <option value="Вице-губернатор">Вице-губернатор</option>
-            <option value="Губернатор">Губернатор</option>
-          </select>
+      </div>
+
+      <!-- REGISTER STEP 2 VIEW -->
+      <div id="auth-view-reg-step2" class="hidden">
+        <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 6px;">
+          Шаг 2 из 2
         </div>
-        <div class="auth-form-group">
-          <label>Отдел</label>
-          <select id="register-department" class="auth-form-select">
-            <option value="Отсутствует">Отсутствует</option>
-            <option value="Региональная безопасность">Региональная безопасность</option>
-            <option value="Адвокатская палата">Адвокатская палата</option>
-            <option value="ООК">ООК</option>
-            <option value="Южный район">Южный район</option>
-            <option value="Арзамасский район">Арзамасский район</option>
-            <option value="Батыревский район">Батыревский район</option>
-          </select>
+        <h2 style="font-size: 20px; font-family: 'DM Serif Display', serif; margin-bottom: 20px;">
+          Должность и отдел
+        </h2>
+
+        <form id="reg-step2-form">
+          <div class="auth-form-group">
+            <label>Должность</label>
+            <select id="reg-rank" class="auth-form-select">
+              <option value="Охранник">Охранник</option>
+              <option value="Начальник охраны">Начальник охраны</option>
+              <option value="Адвокат">Адвокат</option>
+              <option value="Инспектор">Инспектор</option>
+              <option value="Советник">Советник</option>
+              <option value="Заместитель министра">Заместитель министра</option>
+              <option value="Министр">Министр</option>
+              <option value="Глава администрации">Глава администрации</option>
+              <option value="Вице-губернатор">Вице-губернатор</option>
+              <option value="Губернатор">Губернатор</option>
+            </select>
+          </div>
+          <div class="auth-form-group">
+            <label>Отдел</label>
+            <select id="reg-department" class="auth-form-select">
+              <option value="Отсутствует">Отсутствует</option>
+              <option value="Региональная безопасность">Региональная безопасность</option>
+              <option value="Адвокатская палата">Адвокатская палата</option>
+              <option value="ООК">ООК</option>
+              <option value="Южный район">Южный район</option>
+              <option value="Арзамасский район">Арзамасский район</option>
+              <option value="Батыревский район">Батыревский район</option>
+            </select>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button type="button" class="btn btn-secondary" id="reg-back-step1-btn" style="flex: 1;">
+              <i class="fa-solid fa-arrow-left"></i> Назад
+            </button>
+            <button type="submit" class="btn btn-primary" id="reg-finish-btn" style="flex: 2;">
+              <i class="fa-solid fa-check"></i> Завершить
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- REGISTER COMPLETE VIEW -->
+      <div id="auth-view-reg-complete" class="hidden" style="text-align: center; padding: 12px 0;">
+        <div style="font-size: 48px; color: #4caf50; margin-bottom: 12px;">
+          <i class="fa-solid fa-circle-check"></i>
         </div>
-        <div class="auth-form-group">
-          <label>Пароль</label>
-          <input type="password" id="register-password" class="auth-form-input" placeholder="Минимум 4 символа" required autocomplete="new-password">
-        </div>
-        <div class="auth-form-group">
-          <label>Повторите пароль</label>
-          <input type="password" id="register-confirm-password" class="auth-form-input" placeholder="Повтор пароля" required autocomplete="new-password">
-        </div>
-        <button type="submit" class="btn btn-primary auth-submit-btn" id="register-submit-btn">
-          <i class="fa-solid fa-user-plus"></i> Зарегистрироваться
+        <h2 style="font-size: 22px; font-family: 'DM Serif Display', serif; margin-bottom: 8px;">
+          Регистрация завершена!
+        </h2>
+        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;" id="reg-success-msg">
+          Добро пожаловать на портал!
+        </p>
+        <button type="button" class="btn btn-primary" id="reg-done-btn" style="width: 100%;">
+          Перейти в личный кабинет
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
