@@ -1033,9 +1033,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const deptText = user.department && user.department !== 'Отсутствует' && user.department !== 'Не назначен' ? ` • ${user.department}` : '';
       const subBadge = `${rankText}${deptText}`;
 
+      const isUserAdmin = user.rank === 'Администратор портала' || (user.username || '').toLowerCase() === 'savely_gerov';
+      const avatarHtml = isUserAdmin ? `
+        <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
+      ` : `<div class="user-avatar">${initial}</div>`;
+
       container.innerHTML = `
         <div class="user-profile-badge">
-          <div class="user-avatar">${initial}</div>
+          ${avatarHtml}
           <div class="user-info">
             <div class="user-name">${escapeHtml(user.username)}</div>
             <div class="user-role-badge" title="${escapeHtml(subBadge)}">${escapeHtml(subBadge)}</div>
@@ -1548,11 +1553,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const isAdminUser = u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
       const badgeStyle = isAdminUser ? 'color: #ffc107; background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);' : '';
 
+      const avatarHtml = isAdminUser ? `
+        <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
+      ` : `<div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>`;
+
       return `
         <div class="card" style="position: relative; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-              <div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>
+              ${avatarHtml}
               <div style="min-width: 0; flex: 1;">
                 <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                   ${escapeHtml(u.username)}
@@ -1882,13 +1891,20 @@ document.addEventListener('DOMContentLoaded', () => {
           badge = '<span style="color: #ffc107; background: rgba(255, 193, 7, 0.15); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-clock"></i> В обработке</span>';
         }
 
+        const isAuthorAdmin = (w.username || '').toLowerCase() === 'savely_gerov';
+        const wishAvatarHtml = isAuthorAdmin ? `
+          <img src="photo_2026-03-18_22-07-06.jpg" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
+        ` : `
+          <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+            ${escapeHtml(w.username)[0].toUpperCase()}
+          </div>
+        `;
+
         return `
           <div class="lec-item" style="cursor: default; padding: 18px; display: flex; flex-direction: column; gap: 12px; word-break: break-word; overflow-wrap: anywhere;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
               <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                  ${escapeHtml(w.username)[0].toUpperCase()}
-                </div>
+                ${wishAvatarHtml}
                 <div>
                   <div style="font-size: 14px; font-weight: 600; color: var(--text-primary);">
                     ${escapeHtml(w.username)}
