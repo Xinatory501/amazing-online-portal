@@ -681,6 +681,7 @@
         <div class="auth-form-group">
           <label>Должность</label>
           <select id="settings-rank" class="auth-form-select">
+            <option value="Администратор портала">Администратор портала</option>
             <option value="Охранник">Охранник</option>
             <option value="Начальник охраны">Начальник охраны</option>
             <option value="Адвокат">Адвокат</option>
@@ -692,6 +693,9 @@
             <option value="Вице-губернатор">Вице-губернатор</option>
             <option value="Губернатор">Губернатор</option>
           </select>
+          <div id="admin-rank-lock-notice" class="hidden" style="font-size: 11px; color: #ffc107; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+            <i class="fa-solid fa-lock"></i> Должность Администратора зафиксирована и не может быть изменена.
+          </div>
         </div>
         <div class="auth-form-group">
           <label>Отдел</label>
@@ -704,6 +708,17 @@
             <option value="Арзамасский район">Арзамасский район</option>
             <option value="Батыревский район">Батыревский район</option>
           </select>
+        </div>
+        <div class="auth-form-group">
+          <label>Аватарка профиля</label>
+          <div style="display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;" id="avatar-presets-container">
+            <button type="button" class="btn btn-secondary avatar-preset-btn" data-url="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" style="padding: 4px; border-radius: 50%;"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" style="width:30px; height:30px; border-radius:50%; object-fit:cover; display:block;"></button>
+            <button type="button" class="btn btn-secondary avatar-preset-btn" data-url="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" style="padding: 4px; border-radius: 50%;"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" style="width:30px; height:30px; border-radius:50%; object-fit:cover; display:block;"></button>
+            <button type="button" class="btn btn-secondary avatar-preset-btn" data-url="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" style="padding: 4px; border-radius: 50%;"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" style="width:30px; height:30px; border-radius:50%; object-fit:cover; display:block;"></button>
+            <button type="button" class="btn btn-secondary avatar-preset-btn" data-url="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80" style="padding: 4px; border-radius: 50%;"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&auto=format&fit=crop&q=80" style="width:30px; height:30px; border-radius:50%; object-fit:cover; display:block;"></button>
+            <button type="button" class="btn btn-secondary avatar-preset-btn" data-url="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop&q=80" style="padding: 4px; border-radius: 50%;"><img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop&q=80" style="width:30px; height:30px; border-radius:50%; object-fit:cover; display:block;"></button>
+          </div>
+          <input type="url" id="settings-avatar-url" class="auth-form-input" placeholder="Или вставьте ссылку на аватарку (https://...)" autocomplete="off">
         </div>
         <button type="submit" class="btn btn-primary auth-submit-btn" id="settings-submit-btn">
           <i class="fa-solid fa-floppy-disk"></i> Сохранить изменения
@@ -838,10 +853,10 @@
     </div>
   </div>
 
-  <script src="auth.js?v=39.0_text_wrap_fix"></script>
-  <script src="instructionsData.js?v=39.0_text_wrap_fix"></script>
-  <script src="lawsData.js?v=39.0_text_wrap_fix"></script>
-  <script src="data.js?v=39.0_text_wrap_fix"></script>
-  <script src="app.js?v=39.0_text_wrap_fix"></script>
+  <script src="auth.js?v=40.0_admin_lock_and_avatars"></script>
+  <script src="instructionsData.js?v=40.0_admin_lock_and_avatars"></script>
+  <script src="lawsData.js?v=40.0_admin_lock_and_avatars"></script>
+  <script src="data.js?v=40.0_admin_lock_and_avatars"></script>
+  <script src="app.js?v=40.0_admin_lock_and_avatars"></script>
 </body>
 </html>

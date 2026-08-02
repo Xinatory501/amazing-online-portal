@@ -1,5 +1,5 @@
 /**
- * Amazing Online Portal - Authentication, Admin API & Wishes Module
+ * Amazing Online Portal - Authentication, Admin API & Wishes Module with Locked Admin Rank & Avatars
  */
 
 const TURSO_CONFIG = {
@@ -184,7 +184,7 @@ const AuthService = {
     } catch (e) {}
   },
 
-  async register(username, password, rank = 'Охранник', department = 'Отсутствует') {
+  async register(username, password, rank = 'Охранник', department = 'Отсутствует', avatarUrl = '') {
     const cleanUser = username.trim();
     if (!cleanUser || cleanUser.length < 3) {
       throw new Error('Имя пользователя должно быть не менее 3 символов');
@@ -210,14 +210,15 @@ const AuthService = {
 
     await executeTursoQuery([
       {
-        sql: 'INSERT INTO users (id, username, password_hash, role, rank, department) VALUES (?, ?, ?, ?, ?, ?)',
+        sql: 'INSERT INTO users (id, username, password_hash, role, rank, department, avatar_url) VALUES (?, ?, ?, ?, ?, ?, ?)',
         args: [
           { type: 'text', value: userId },
           { type: 'text', value: cleanUser },
           { type: 'text', value: passwordHash },
           { type: 'text', value: rank },
           { type: 'text', value: rank },
-          { type: 'text', value: department }
+          { type: 'text', value: department },
+          { type: 'text', value: avatarUrl || '' }
         ]
       }
     ]);
@@ -227,7 +228,7 @@ const AuthService = {
       username: cleanUser,
       rank: rank,
       department: department,
-      avatar_url: ''
+      avatar_url: avatarUrl || ''
     };
 
     this.currentUser = userObj;
@@ -275,24 +276,35 @@ const AuthService = {
     return userObj;
   },
 
-  async updateProfile(rank, department) {
+  async updateProfile(rank, department, avatarUrl = null) {
     if (!this.currentUser) {
       throw new Error('Вы не авторизованы');
     }
 
+    // 🔒 Admin Rank Lock Check
+    let targetRank = rank;
+    const isUserAdmin = this.currentUser.rank === 'Администратор портала' || (this.currentUser.username || '').toLowerCase() === 'savely_gerov';
+    if (isUserAdmin) {
+      targetRank = 'Администратор портала'; // Lock rank for administrator
+    }
+
+    const finalAvatar = avatarUrl !== null ? avatarUrl : (this.currentUser.avatar_url || '');
+
     await executeTursoQuery([
       {
-        sql: 'UPDATE users SET rank = ?, department = ? WHERE id = ?',
+        sql: 'UPDATE users SET rank = ?, department = ?, avatar_url = ? WHERE id = ?',
         args: [
-          { type: 'text', value: rank },
+          { type: 'text', value: targetRank },
           { type: 'text', value: department },
+          { type: 'text', value: finalAvatar },
           { type: 'text', value: this.currentUser.id }
         ]
       }
     ]);
 
-    this.currentUser.rank = rank;
+    this.currentUser.rank = targetRank;
     this.currentUser.department = department;
+    this.currentUser.avatar_url = finalAvatar;
     localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
     return this.currentUser;
   },
@@ -411,7 +423,7 @@ const AuthService = {
 
     const res = await executeTursoQuery([
       {
-        sql: 'SELECT id, username, rank, department, role FROM users ORDER BY username ASC'
+        sql: 'SELECT id, username, rank, department, role, avatar_url FROM users ORDER BY username ASC'
       }
     ]);
 
@@ -420,7 +432,8 @@ const AuthService = {
       id: r[0]?.value || '',
       username: r[1]?.value || '',
       rank: r[2]?.value || r[4]?.value || 'Охранник',
-      department: r[3]?.value || 'Отсутствует'
+      department: r[3]?.value || 'Отсутствует',
+      avatarUrl: r[5]?.value || ''
     }));
   },
 
@@ -495,6 +508,22 @@ const AuthService = {
       throw new Error('Доступ запрещен.');
     }
 
+    // Check target user to protect Admin rank
+    const userRes = await executeTursoQuery([
+      {
+        sql: 'SELECT username, rank FROM users WHERE id = ?',
+        args: [{ type: 'text', value: userId }]
+      }
+    ]);
+    const targetRow = userRes[0]?.response?.result?.rows?.[0];
+    const targetName = (targetRow?.[0]?.value || '').toLowerCase();
+    const targetCurrentRank = targetRow?.[1]?.value || '';
+
+    let finalRank = rank;
+    if (targetCurrentRank === 'Администратор портала' || targetName === 'savely_gerov') {
+      finalRank = 'Администратор портала'; // Lock admin rank
+    }
+
     const statements = [];
 
     if (newPassword && newPassword.trim().length >= 4) {
@@ -502,9 +531,9 @@ const AuthService = {
       statements.push({
         sql: 'UPDATE users SET rank = ?, department = ?, role = ?, password_hash = ? WHERE id = ?',
         args: [
-          { type: 'text', value: rank },
+          { type: 'text', value: finalRank },
           { type: 'text', value: department },
-          { type: 'text', value: rank },
+          { type: 'text', value: finalRank },
           { type: 'text', value: passHash },
           { type: 'text', value: userId }
         ]
@@ -513,9 +542,9 @@ const AuthService = {
       statements.push({
         sql: 'UPDATE users SET rank = ?, department = ?, role = ? WHERE id = ?',
         args: [
-          { type: 'text', value: rank },
+          { type: 'text', value: finalRank },
           { type: 'text', value: department },
-          { type: 'text', value: rank },
+          { type: 'text', value: finalRank },
           { type: 'text', value: userId }
         ]
       });
@@ -524,7 +553,7 @@ const AuthService = {
     await executeTursoQuery(statements);
 
     if (this.currentUser && this.currentUser.id === userId) {
-      this.currentUser.rank = rank;
+      this.currentUser.rank = finalRank;
       this.currentUser.department = department;
       localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
     }

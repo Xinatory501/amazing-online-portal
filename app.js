@@ -1033,9 +1033,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const deptText = user.department && user.department !== 'Отсутствует' && user.department !== 'Не назначен' ? ` • ${user.department}` : '';
       const subBadge = `${rankText}${deptText}`;
 
+      const avatarHtml = user.avatar_url ? `
+        <img src="${escapeHtml(user.avatar_url)}" class="user-avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 1px solid var(--border);" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-avatar\\'>${initial}</div>';">
+      ` : `<div class="user-avatar">${initial}</div>`;
+
       container.innerHTML = `
         <div class="user-profile-badge">
-          <div class="user-avatar">${initial}</div>
+          ${avatarHtml}
           <div class="user-info">
             <div class="user-name">${escapeHtml(user.username)}</div>
             <div class="user-role-badge" title="${escapeHtml(subBadge)}">${escapeHtml(subBadge)}</div>
@@ -1107,10 +1111,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameDisplay = document.getElementById('settings-username-display');
     const rankSelect = document.getElementById('settings-rank');
     const deptSelect = document.getElementById('settings-department');
+    const avatarInput = document.getElementById('settings-avatar-url');
+    const lockNotice = document.getElementById('admin-rank-lock-notice');
 
     if (usernameDisplay) usernameDisplay.value = user.username || '';
     if (rankSelect) rankSelect.value = user.rank || 'Охранник';
     if (deptSelect) deptSelect.value = user.department || 'Отсутствует';
+    if (avatarInput) avatarInput.value = user.avatar_url || '';
+
+    // 🔒 Lock rank for Administrator
+    const isUserAdmin = user.rank === 'Администратор портала' || (user.username || '').toLowerCase() === 'savely_gerov';
+    if (rankSelect) {
+      rankSelect.disabled = isUserAdmin;
+      if (isUserAdmin) rankSelect.value = 'Администратор портала';
+    }
+    if (lockNotice) {
+      if (isUserAdmin) lockNotice.classList.remove('hidden');
+      else lockNotice.classList.add('hidden');
+    }
 
     settingsModal.classList.add('active');
   }
@@ -1257,26 +1275,37 @@ document.addEventListener('DOMContentLoaded', () => {
     showToast('Добро пожаловать на портал!');
   });
 
+  // Preset Avatar Pickers
+  document.querySelectorAll('.avatar-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const url = btn.dataset.url;
+      const avatarInput = document.getElementById('settings-avatar-url');
+      if (avatarInput) avatarInput.value = url;
+    });
+  });
+
   if (settingsForm) {
     settingsForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const rankSelect = document.getElementById('settings-rank');
       const deptSelect = document.getElementById('settings-department');
+      const avatarInput = document.getElementById('settings-avatar-url');
       const submitBtn = document.getElementById('settings-submit-btn');
 
       if (!rankSelect || !deptSelect || !submitBtn) return;
 
       const rank = rankSelect.value;
       const department = deptSelect.value;
+      const avatarUrl = avatarInput ? avatarInput.value.trim() : '';
 
       try {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сохранение...';
 
-        await AuthService.updateProfile(rank, department);
+        await AuthService.updateProfile(rank, department, avatarUrl);
         updateSidebarUserUI();
         closeSettingsModal();
-        showToast('Профиль и должность успешно обновлены!');
+        showToast('Профиль и аватарка успешно обновлены!');
       } catch (err) {
         alert(err.message || 'Ошибка сохранения настроек');
       } finally {
@@ -1536,11 +1565,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const isAdminUser = u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
       const badgeStyle = isAdminUser ? 'color: #ffc107; background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);' : '';
 
+      const avatarHtml = u.avatarUrl ? `
+        <img src="${escapeHtml(u.avatarUrl)}" class="user-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" onerror="this.onerror=null; this.outerHTML='<div class=\\'user-avatar\\' style=\\'width: 42px; height: 42px; font-size: 18px;\\'>${initial}</div>';">
+      ` : `<div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>`;
+
       return `
         <div class="card" style="position: relative; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-              <div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>
+              ${avatarHtml}
               <div style="min-width: 0; flex: 1;">
                 <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
                   ${escapeHtml(u.username)}
