@@ -276,7 +276,7 @@ const AuthService = {
     return userObj;
   },
 
-  async updateProfile(rank, department, avatarUrl = null) {
+  async updateProfile(rank, department) {
     if (!this.currentUser) {
       throw new Error('Вы не авторизованы');
     }
@@ -288,15 +288,12 @@ const AuthService = {
       targetRank = 'Администратор портала'; // Lock rank for administrator
     }
 
-    const finalAvatar = avatarUrl !== null ? avatarUrl : (this.currentUser.avatar_url || '');
-
     await executeTursoQuery([
       {
-        sql: 'UPDATE users SET rank = ?, department = ?, avatar_url = ? WHERE id = ?',
+        sql: 'UPDATE users SET rank = ?, department = ? WHERE id = ?',
         args: [
           { type: 'text', value: targetRank },
           { type: 'text', value: department },
-          { type: 'text', value: finalAvatar },
           { type: 'text', value: this.currentUser.id }
         ]
       }
@@ -304,7 +301,6 @@ const AuthService = {
 
     this.currentUser.rank = targetRank;
     this.currentUser.department = department;
-    this.currentUser.avatar_url = finalAvatar;
     localStorage.setItem('amazing_portal_user', JSON.stringify(this.currentUser));
     return this.currentUser;
   },
