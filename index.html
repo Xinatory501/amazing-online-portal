@@ -126,14 +126,6 @@
             <i class="fa-solid fa-clipboard-list"></i>
             <span>Инструкции</span>
           </button>
-          <button class="nav-item" data-tab="wishes">
-            <i class="fa-solid fa-comment-dots"></i>
-            <span>Пожелания</span>
-          </button>
-          <button class="nav-item hidden" data-tab="admin" id="nav-item-admin" style="color: var(--accent); font-weight: 500;">
-            <i class="fa-solid fa-user-shield"></i>
-            <span>Админ-панель</span>
-          </button>
         </nav>
       </div>
 
@@ -142,7 +134,6 @@
           <i class="fa-solid fa-moon" id="theme-icon"></i>
           <span id="theme-label">Светлая тема</span>
         </button>
-        <div id="sidebar-user-container"></div>
       </div>
 
     </aside>
@@ -157,8 +148,6 @@
           <p class="page-sub">Официальная база знаний, законодательство и лекционный раздел правительства сервера Amazing X от Savely_Gerov.</p>
         </header>
 
-        <!-- Global Announcement Banner -->
-        <div id="global-announcement-container"></div>
 
         <div class="cards-grid">
           <div class="card">
@@ -337,7 +326,8 @@
         <div id="law-viewer" class="lecture-viewer-detail hidden"></div>
       </section>
 
-      <!-- WISHES TAB -->
+      <template>
+      <!-- Legacy wishes and administration UI intentionally omitted from the static mirror. -->
       <section id="tab-wishes" class="tab">
         <header class="page-header row">
           <div>
@@ -389,7 +379,6 @@
           </div>
         </div>
       </section>
-
       <!-- ADMIN TAB -->
       <section id="tab-admin" class="tab">
         <header class="page-header row">
@@ -524,6 +513,7 @@
         </div>
       </section>
 
+      </template>
     </main>
   </div>
 
@@ -532,7 +522,8 @@
     <span id="toast-msg">Скопировано</span>
   </div>
 
-  <!-- AUTH MODAL -->
+  <template>
+  <!-- Legacy account UI intentionally omitted from the static mirror. -->
   <div class="auth-modal-overlay" id="auth-modal">
     <div class="auth-modal-card">
       <button class="auth-modal-close" id="auth-modal-close-btn">
@@ -842,7 +833,7 @@
     </div>
   </div>
 
-  <script src="auth.js?v=42.0_admin_exclusive_avatar"></script>
+  </template>
   <script src="instructionsData.js?v=42.0_admin_exclusive_avatar"></script>
   <script src="lawsData.js?v=42.0_admin_exclusive_avatar"></script>
   <script src="data.js?v=42.0_admin_exclusive_avatar"></script>
