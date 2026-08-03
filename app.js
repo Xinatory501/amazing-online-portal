@@ -1,4 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // ── GitHub Pages Migration Banner ───────────
+  if (window.location.hostname.includes('github.io')) {
+    const banner = document.getElementById('github-migration-banner');
+    if (banner) banner.classList.remove('hidden');
+  }
+
+
   // ── State ──────────────────────────────────
   let activeCategory = 'Все';
   let activeLecId = null;
