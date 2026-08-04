@@ -477,12 +477,128 @@ document.addEventListener('DOMContentLoaded', () => {
     buildGrid();
   }
 
+  function formatReportParagraphs(text, searchQuery = '') {
+    if (!text) return '';
+    const paragraphs = text.split('\n').map(p => p.trim()).filter(Boolean);
+    let html = '';
+
+    paragraphs.forEach(p => {
+      const reportRegex = /(?:\(\(\s*(\/[a-zA-Z0-9_-]+[^\)]*)\s*\)\))|(\/[rd]\s+\[[^\]]+\][^\n\.\,\!]+)|(\/[rd]\s+Докладывает[^\n\.\!]+)/gi;
+
+      let lastIndex = 0;
+      let match;
+      const matches = [];
+
+      while ((match = reportRegex.exec(p)) !== null) {
+        const cmdStr = (match[1] || match[2] || match[3] || '').trim();
+        if (cmdStr) {
+          matches.push({
+            fullMatch: match[0],
+            cmd: cmdStr,
+            index: match.index,
+            length: match[0].length
+          });
+        }
+      }
+
+      if (matches.length > 0) {
+        matches.forEach(m => {
+          const beforeText = p.substring(lastIndex, m.index).trim();
+          if (beforeText) {
+            const hText = highlightText(beforeText, searchQuery);
+            html += `<p class="reader-para">${hText}</p>`;
+          }
+
+          const cmdClean = m.cmd.replace(/^\(\(\s*/, '').replace(/\s*\)\)$/, '').trim();
+          const cmdHighlighted = highlightText(cmdClean, searchQuery);
+          const isRadio = cmdClean.startsWith('/r') || cmdClean.startsWith('/d');
+          const badgeTitle = isRadio ? 'Доклад в рацию' : 'Команда';
+          const iconClass = isRadio ? 'fa-radio' : 'fa-terminal';
+
+          html += `
+            <div class="radio-report-card">
+              <div class="radio-report-header">
+                <div class="radio-report-tag">
+                  <i class="fa-solid ${iconClass}"></i>
+                  <span>${badgeTitle}</span>
+                </div>
+                <button class="btn-copy-report" data-copy-text="${escapeHtml(cmdClean)}" title="Нажмите, чтобы скопировать доклад">
+                  <i class="fa-solid fa-copy"></i>
+                  <span>Скопировать</span>
+                </button>
+              </div>
+              <div class="radio-report-body">
+                <code class="radio-report-text">${cmdHighlighted}</code>
+              </div>
+            </div>
+          `;
+
+          lastIndex = m.index + m.length;
+        });
+
+        const afterText = p.substring(lastIndex).trim();
+        if (afterText && afterText !== '.' && afterText !== '..') {
+          const hText = highlightText(afterText, searchQuery);
+          html += `<p class="reader-para">${hText}</p>`;
+        }
+      } else {
+        const hText = highlightText(p, searchQuery);
+        html += `<p class="reader-para">${hText}</p>`;
+      }
+    });
+
+    return html;
+  }
+
+  function attachCopyReportListeners(containerEl) {
+    containerEl.querySelectorAll('.btn-copy-report').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const textToCopy = btn.getAttribute('data-copy-text');
+        if (!textToCopy) return;
+
+        const copySuccess = () => {
+          btn.classList.add('copied');
+          btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Скопировано!</span>';
+          showToast(`Скопировано: ${textToCopy}`);
+
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.innerHTML = '<i class="fa-solid fa-copy"></i> <span>Скопировать</span>';
+          }, 2200);
+        };
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy).then(copySuccess).catch(() => {
+            const input = document.createElement('textarea');
+            input.value = textToCopy;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            copySuccess();
+          });
+        } else {
+          const input = document.createElement('textarea');
+          input.value = textToCopy;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          document.body.removeChild(input);
+          copySuccess();
+        }
+      });
+    });
+
+    containerEl.querySelectorAll('.radio-report-card').forEach(card => {
+      card.addEventListener('copy', (e) => {
+        e.stopPropagation();
+      });
+    });
+  }
+
   function renderViewer(lec, searchQuery = '') {
-    const paragraphsHtml = lec.text.split('\n')
-      .map(p => p.trim())
-      .filter(p => p.length > 0)
-      .map(p => `<p class="reader-para">${highlightText(p, searchQuery)}</p>`)
-      .join('');
+    const paragraphsHtml = formatReportParagraphs(lec.text, searchQuery);
 
     const searchBadgeHtml = searchQuery.trim() ? `
       <div class="search-badge">
@@ -541,6 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('back-to-grid-btn-bottom').addEventListener('click', closeReader);
 
     const readerBody = document.getElementById('reader-body');
+    attachCopyReportListeners(readerBody);
     
     document.getElementById('font-increase').addEventListener('click', () => {
       if (currentFontSize < 32) {
@@ -921,6 +1038,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const lawReaderBody = document.getElementById('law-reader-body');
+    attachCopyReportListeners(lawReaderBody);
 
     document.getElementById('law-font-increase').addEventListener('click', () => {
       if (currentFontSize < 32) {
@@ -1117,6 +1235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('back-to-instructions-btn-bottom').addEventListener('click', closeInstructionViewer);
 
     const instReaderBody = document.getElementById('instruction-reader-body');
+    attachCopyReportListeners(instReaderBody);
     instReaderBody.addEventListener('copy', (e) => e.preventDefault());
     instReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
     instReaderBody.addEventListener('selectstart', (e) => e.preventDefault());

@@ -818,6 +818,87 @@ mark.search-highlight-active {
   transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* ── RADIO REPORT & COMMAND CARDS IN READERS ─────────── */
+.radio-report-card {
+  margin: 16px 0;
+  padding: 14px 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--accent);
+  border-left: 4px solid var(--accent);
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: text !important;
+  pointer-events: auto !important;
+}
+
+.radio-report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.radio-report-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.btn-copy-report {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--accent);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-copy-report:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--accent-glow, rgba(245, 158, 11, 0.3));
+}
+
+.btn-copy-report.copied {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+.radio-report-body {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 14px;
+  color: #fbbf24;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  user-select: text !important;
+}
+
+[data-theme="light"] .radio-report-body {
+  background: rgba(0, 0, 0, 0.05);
+  color: #d97706;
+}
+
 /* ── LAW READER CARDS & BOXES ────────────── */
 .law-chapter-header {
   margin-top: 28px;
