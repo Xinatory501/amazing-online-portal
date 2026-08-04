@@ -160,9 +160,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const q = normalizeSearchQuery(query);
     if (!q) return null;
 
+    const words = q.split(/\s+/).filter(w => w.length > 0);
+    if (!words.length) return null;
+
     const patterns = [];
 
-    // Combination: "глава 1 статья 1"
+    // Specific article/chapter matches
     const chArtMatch = q.match(/глава\s*(\d+)\s*статья\s*(\d+(?:\.\d+)?)/);
     if (chArtMatch) {
       patterns.push(`(?:глава|гл)[\\s\\.,\\-]*${chArtMatch[1]}`);
@@ -191,29 +194,51 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    const words = q.split(/\s+/).filter(w => w.length >= 2 && !['глава', 'статья', 'пункт'].includes(w));
+    // Add Cyrillic word-boundary matching so searching "вход" matches "входа/входе/входу", but NEVER "выходе"
     words.forEach(w => {
-      if (!/^\d+(\.\d+)?$/.test(w)) {
-        patterns.push(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      if (!['глава', 'главы', 'главе', 'статья', 'статьи', 'статье', 'ст', 'пункт', 'в', 'и', 'на'].includes(w) && !/^\d+(\.\d+)?$/.test(w)) {
+        const esc = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        patterns.push(`(?<=[^a-zA-Zа-яА-Я0-9_ёЁ]|^)${esc}[a-zA-Zа-яА-Я0-9_ёЁ]*`);
       }
     });
 
     if (!patterns.length) {
-      patterns.push(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+      words.forEach(w => {
+        const esc = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        patterns.push(`(?<=[^a-zA-Zа-яА-Я0-9_ёЁ]|^)${esc}[a-zA-Zа-яА-Я0-9_ёЁ]*`);
+      });
     }
 
     try {
       return new RegExp(`(${patterns.join('|')})`, 'gi');
     } catch (e) {
-      return null;
+      return new RegExp(`(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
     }
   }
 
   function matchesQuery(content, searchQuery) {
     if (!searchQuery || !searchQuery.trim()) return true;
-    const rx = buildSearchRegex(searchQuery);
-    if (rx && rx.test(content)) return true;
-    return content.toLowerCase().includes(searchQuery.trim().toLowerCase());
+    const q = searchQuery.trim().toLowerCase();
+
+    // Check specific article/chapter search
+    const artMatch = q.match(/(?:статья|ст\.?|ст)\s*(\d+(?:\.\d+)?)/i) || q.match(/(\d+(?:\.\d+)?)\s*(?:статья|ст\.?|ст)/i);
+    const chMatch = q.match(/(?:глава|гл\.?|гл)\s*(\d+)/i) || q.match(/(\d+)\s*(?:глава|гл\.?|гл)/i);
+    if (artMatch || chMatch) {
+      const rx = buildSearchRegex(searchQuery);
+      return rx ? rx.test(content) : false;
+    }
+
+    // Split words
+    const words = q.split(/\s+/).filter(w => w.length >= 2);
+    if (!words.length) return true;
+
+    // Check that ALL words match as prefixes of words in content (e.g. "вход" matches "входе", NOT "выходе")
+    const textLower = content.toLowerCase();
+    return words.every(w => {
+      const esc = w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const wordRx = new RegExp(`(?:^|[^a-zA-Zа-яА-Я0-9_ёЁ])${esc}`, 'i');
+      return wordRx.test(textLower);
+    });
   }
 
   function isLawMatch(law, searchQuery) {
@@ -226,7 +251,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const chNum = chMatch ? chMatch[1] : null;
     const artNum = artMatch ? artMatch[1] : null;
 
-    if (!chNum && !artNum) return true;
+    if (!chNum && !artNum) {
+      return matchesQuery(law.title + ' ' + law.description + ' ' + law.text, searchQuery);
+    }
 
     const lines = law.text.split('\n').map(s => s.trim()).filter(Boolean);
     const items = [];
@@ -267,6 +294,98 @@ document.addEventListener('DOMContentLoaded', () => {
     const rx = buildSearchRegex(searchQuery);
     if (!rx) return escaped;
     return escaped.replace(rx, '<mark class="search-highlight">$1</mark>');
+  }
+
+  // ── SEARCH MATCH NAVIGATOR ──────────────────
+  let activeSearchNavigatorCleanup = null;
+
+  function setupSearchNavigator(viewerEl, searchQuery) {
+    if (activeSearchNavigatorCleanup) {
+      activeSearchNavigatorCleanup();
+      activeSearchNavigatorCleanup = null;
+    }
+
+    const oldBar = viewerEl.querySelector('.search-nav-bar');
+    if (oldBar) oldBar.remove();
+
+    if (!searchQuery || !searchQuery.trim()) return;
+
+    const highlights = Array.from(viewerEl.querySelectorAll('.search-highlight'));
+    if (!highlights.length) return;
+
+    let currentIndex = 0;
+
+    const navBar = document.createElement('div');
+    navBar.className = 'search-nav-bar';
+    navBar.innerHTML = `
+      <div class="search-nav-info">
+        <i class="fa-solid fa-magnifying-glass" style="color: var(--accent);"></i>
+        <span>Найдено по запросу <strong>"${escapeHtml(searchQuery.trim())}"</strong>:</span>
+        <span class="search-match-count" id="search-match-counter">1 из ${highlights.length}</span>
+      </div>
+      <div class="search-nav-controls">
+        <button class="btn btn-secondary btn-icon-sm" id="search-nav-prev" title="Предыдущее совпадение (Стрелка вверх)">
+          <i class="fa-solid fa-chevron-up"></i>
+        </button>
+        <button class="btn btn-secondary btn-icon-sm" id="search-nav-next" title="Следующее совпадение (Стрелка вниз)">
+          <i class="fa-solid fa-chevron-down"></i>
+        </button>
+      </div>
+    `;
+
+    const viewerHeader = viewerEl.querySelector('.viewer-header');
+    if (viewerHeader) {
+      viewerHeader.appendChild(navBar);
+    } else {
+      const viewerInner = viewerEl.querySelector('.viewer-inner');
+      if (viewerInner) viewerInner.insertBefore(navBar, viewerInner.children[1]);
+    }
+
+    function jumpToMatch(index, scroll = true) {
+      highlights.forEach(el => el.classList.remove('search-highlight-active'));
+      currentIndex = (index + highlights.length) % highlights.length;
+      const target = highlights[currentIndex];
+      if (!target) return;
+
+      target.classList.add('search-highlight-active');
+
+      const counterEl = navBar.querySelector('#search-match-counter');
+      if (counterEl) {
+        counterEl.textContent = `${currentIndex + 1} из ${highlights.length}`;
+      }
+
+      if (scroll) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    const prevBtn = navBar.querySelector('#search-nav-prev');
+    const nextBtn = navBar.querySelector('#search-nav-next');
+
+    if (prevBtn) prevBtn.addEventListener('click', () => jumpToMatch(currentIndex - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => jumpToMatch(currentIndex + 1));
+
+    const keyHandler = (e) => {
+      // Only handle if not typing in input/textarea
+      if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        jumpToMatch(currentIndex + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        jumpToMatch(currentIndex - 1);
+      }
+    };
+
+    document.addEventListener('keydown', keyHandler);
+
+    activeSearchNavigatorCleanup = () => {
+      document.removeEventListener('keydown', keyHandler);
+    };
+
+    setTimeout(() => {
+      jumpToMatch(0, true);
+    }, 150);
   }
 
   // ── LECTURES SECTION ───────────────────────
@@ -345,6 +464,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeReader() {
     activeLecId = null;
+    if (activeSearchNavigatorCleanup) {
+      activeSearchNavigatorCleanup();
+      activeSearchNavigatorCleanup = null;
+    }
     if (!lecturesHeader || !filtersEl || !gridEl || !viewerEl) return;
     viewerEl.classList.add('hidden');
     viewerEl.innerHTML = '';
@@ -440,12 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
     readerBody.addEventListener('selectstart', (e) => e.preventDefault());
 
     if (searchQuery.trim()) {
-      setTimeout(() => {
-        const firstMatch = readerBody.querySelector('.search-highlight');
-        if (firstMatch) {
-          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 150);
+      setupSearchNavigator(viewerEl, searchQuery);
     }
   }
 
@@ -598,6 +716,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeLawReader() {
     activeLawId = null;
+    if (activeSearchNavigatorCleanup) {
+      activeSearchNavigatorCleanup();
+      activeSearchNavigatorCleanup = null;
+    }
     if (!lawsHeader || !lawFiltersEl || !lawsGridEl || !lawViewerEl) return;
     lawViewerEl.classList.add('hidden');
     lawViewerEl.innerHTML = '';
@@ -821,12 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lawReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
 
     if (searchQuery.trim()) {
-      setTimeout(() => {
-        const firstMatch = lawReaderBody.querySelector('.search-highlight');
-        if (firstMatch) {
-          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 150);
+      setupSearchNavigator(lawViewerEl, searchQuery);
     }
   }
 
@@ -910,6 +1027,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function closeInstructionViewer() {
     activeInstructionId = null;
+    if (activeSearchNavigatorCleanup) {
+      activeSearchNavigatorCleanup();
+      activeSearchNavigatorCleanup = null;
+    }
     if (!instructionsHeader || !instructionFiltersEl || !instructionsGridEl || !instructionViewerEl) return;
     instructionViewerEl.classList.add('hidden');
     instructionViewerEl.innerHTML = '';
@@ -1001,12 +1122,7 @@ document.addEventListener('DOMContentLoaded', () => {
     instReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
 
     if (searchQuery.trim()) {
-      setTimeout(() => {
-        const firstMatch = instReaderBody.querySelector('.search-highlight');
-        if (firstMatch) {
-          firstMatch.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-      }, 150);
+      setupSearchNavigator(instructionViewerEl, searchQuery);
     }
   }
 
