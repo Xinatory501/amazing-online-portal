@@ -108,6 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (id === 'hints' || id === 'home') closeHintViewer();
     if (id === 'laws' || id === 'home') closeLawReader();
     if (id === 'instructions' || id === 'home') closeInstructionViewer();
+
+    if (id === 'wishes' && typeof loadUserWishes === 'function') {
+      loadUserWishes();
+    }
+    if (id === 'admin' && typeof loadAdminData === 'function') {
+      loadAdminData();
+    }
   }
 
   navItems.forEach(btn => {
@@ -1249,8 +1256,6 @@ document.addEventListener('DOMContentLoaded', () => {
     instructionSearchInput.addEventListener('input', buildInstructionsGrid);
   }
 
-  // Legacy account, administration, and wishes code is deliberately disabled in the static mirror.
-  if (false) {
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
@@ -2212,8 +2217,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  }
-
   // ── Init ──────────────────────────────────
   buildCategories();
   buildGrid();
@@ -2222,4 +2225,9 @@ document.addEventListener('DOMContentLoaded', () => {
   buildInstructionCategories();
   buildInstructionsGrid();
 
+  if (typeof AuthService !== 'undefined') {
+    AuthService.init();
+    updateSidebarUserUI();
+    renderGlobalAnnouncement();
+  }
 });
