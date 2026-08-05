@@ -34,34 +34,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Theme ──────────────────────────────────
   const savedTheme = localStorage.getItem('theme') || 'dark';
-  applyTheme(savedTheme);
+  applyTheme(savedTheme, false);
 
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
-      const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(nextTheme, true);
     });
   }
 
-  function applyTheme(theme) {
+  function applyTheme(theme, animate = true) {
+    if (animate) {
+      document.documentElement.classList.add('theme-switching');
+    }
+
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     const isDark = theme === 'dark';
+
     if (themeIcon) themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     if (themeLabel) themeLabel.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
 
-    const mobileBtn = document.getElementById('mobile-theme-toggle');
+    const mobileBtn = document.getElementById('theme-toggle-mobile') || document.getElementById('mobile-theme-toggle');
     if (mobileBtn) {
       const mobileIcon = mobileBtn.querySelector('i');
       if (mobileIcon) mobileIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     }
+
+    if (animate) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.classList.remove('theme-switching');
+        });
+      });
+    }
   }
 
-  const mobileToggleBtn = document.getElementById('mobile-theme-toggle');
+  const mobileToggleBtn = document.getElementById('theme-toggle-mobile') || document.getElementById('mobile-theme-toggle');
   if (mobileToggleBtn) {
     mobileToggleBtn.addEventListener('click', () => {
-      const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-      applyTheme(nextTheme);
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      applyTheme(nextTheme, true);
     });
   }
 

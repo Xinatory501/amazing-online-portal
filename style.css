@@ -39,6 +39,14 @@
   --transition:     0.2s ease;
 }
 
+/* ── INSTANT THEME SWITCHING (0ms delay across all elements) ── */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
+}
+
 [data-theme="light"] {
   --bg-base:        #f6f4f0;
   --bg-surface:     #ffffff;
