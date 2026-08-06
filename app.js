@@ -1288,24 +1288,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const isSavely = name.toLowerCase() === 'savely_gerov';
     const isAdmin = user.is_admin === 1 || user.is_admin === true || user.rank === 'Администратор портала' || isSavely;
     const initial = name[0].toUpperCase();
-    const avatarUrl = user.avatar_url || user.avatarUrl || '';
 
     // 1. Savely Gerov gets his personal photo ONLY
     if (isSavely) {
       return `<img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;" title="Главный Администратор">`;
     }
 
-    // 2. Custom Avatar preset selected by user
-    if (avatarUrl) {
-      return `<img src="${avatarUrl}" class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">`;
-    }
-
-    // 3. Regular Admins get Golden Crown Avatar
+    // 2. Regular Admins get Golden Crown Avatar
     if (isAdmin) {
       return `<div class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; background: linear-gradient(135deg, #ffd54f, #ffb300, #ff8f00); color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: ${Math.round(size * 0.48)}px; font-weight: bold; border: 1.5px solid #ffe082; box-shadow: 0 0 8px rgba(255, 179, 0, 0.4); flex-shrink: 0;" title="Администратор портала"><i class="fa-solid fa-crown"></i></div>`;
     }
 
-    // 4. Regular Users get initial badge
+    // 3. Regular Users get initial badge
     return `<div class="user-avatar" style="width: ${size}px; height: ${size}px; font-size: ${Math.round(size * 0.45)}px;">${initial}</div>`;
   }
 
@@ -1446,26 +1440,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameDisplay = document.getElementById('settings-username-display');
     const rankSelect = document.getElementById('settings-rank');
     const deptSelect = document.getElementById('settings-department');
-    const avatarSelect = document.getElementById('settings-avatar-preset');
-    const avatarPreview = document.getElementById('settings-avatar-preview');
     const lockNotice = document.getElementById('admin-rank-lock-notice');
 
     if (usernameDisplay) usernameDisplay.value = user.username || '';
     if (rankSelect) rankSelect.value = user.rank || 'Охранник';
     if (deptSelect) deptSelect.value = user.department || 'Отсутствует';
-    if (avatarSelect) avatarSelect.value = user.avatar_url || '';
-
-    const updatePreview = () => {
-      if (avatarPreview) {
-        const selectedUrl = avatarSelect ? avatarSelect.value : '';
-        avatarPreview.innerHTML = getUserAvatarHtml({ ...user, avatar_url: selectedUrl }, 64);
-      }
-    };
-    updatePreview();
-
-    if (avatarSelect) {
-      avatarSelect.onchange = updatePreview;
-    }
 
     // 🔒 Lock rank for Administrator
     const isUserAdmin = user.rank === 'Администратор портала' || (user.username || '').toLowerCase() === 'savely_gerov';
@@ -1628,23 +1607,21 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const rankSelect = document.getElementById('settings-rank');
       const deptSelect = document.getElementById('settings-department');
-      const avatarSelect = document.getElementById('settings-avatar-preset');
       const submitBtn = document.getElementById('settings-submit-btn');
 
       if (!rankSelect || !deptSelect || !submitBtn) return;
 
       const rank = rankSelect.value;
       const department = deptSelect.value;
-      const avatarUrl = avatarSelect ? avatarSelect.value : null;
 
       try {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сохранение...';
 
-        await AuthService.updateProfile(rank, department, avatarUrl);
+        await AuthService.updateProfile(rank, department);
         updateSidebarUserUI();
         closeSettingsModal();
-        showToast('Профиль и аватарка успешно обновлены!');
+        showToast('Профиль успешно обновлен!');
       } catch (err) {
         alert(err.message || 'Ошибка сохранения настроек');
       } finally {
