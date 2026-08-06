@@ -1370,6 +1370,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  window.updateSidebarUserUI = updateSidebarUserUI;
+
   // 🌍 Global Event Delegation for Login Buttons (guarantees click reliability everywhere)
   document.addEventListener('click', (e) => {
     const loginTarget = e.target.closest('.btn-open-login, #open-auth-btn, #wishes-login-btn, #nav-login-btn, #mobile-login-btn');
