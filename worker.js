@@ -1,12 +1,10 @@
 /**
  * Cloudflare Workers Script for Amazing Forum Portal
  * 
- * PURPOSE: Forces correct HTTP cache headers so that:
- * - index.html is NEVER cached (always fresh)
- * - JS/CSS assets with version tags are cached for 1 year
- * 
- * This prevents the Cloudflare CDN edge from serving stale
- * old versions of the portal to users even after deploys.
+ * PURPOSE: Forces absolute cache-busting so that:
+ * - index.html is NEVER cached by Cloudflare CDN or Browser
+ * - Clear-Site-Data: "cache" header forces browser to purge old cached scripts
+ * - Always serves the fresh asset from storage
  */
 
 export default {
@@ -14,33 +12,32 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    // Serve static assets from the ASSETS binding
-    const response = await env.ASSETS.fetch(request);
+    const isHtml = pathname === '/' || pathname.endsWith('.html') || pathname === '';
 
-    // Clone and modify headers
+    // Create asset fetch request with cache-busting directives
+    const assetRequest = isHtml
+      ? new Request(request, {
+          cf: {
+            cacheTtlByStatus: { "200-299": 0, "400-499": 0, "500-599": 0 },
+            cacheEverything: false
+          }
+        })
+      : request;
+
+    const response = await env.ASSETS.fetch(assetRequest);
     const newHeaders = new Headers(response.headers);
 
-    // Determine cache policy by file type
-    const isHtml = pathname === '/' || pathname.endsWith('.html') || pathname === '';
-    const isVersionedAsset = /\.(js|css)$/.test(pathname) && (url.search.includes('v=') || pathname !== '/');
-    const isFavicon = /\.(ico|png|svg|jpg|jpeg|webp)$/.test(pathname);
-
     if (isHtml) {
-      // HTML pages: NEVER cache — always serve fresh
-      newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      // 🚨 AGGRESSIVE NO-CACHE + AUTOMATIC BROWSER CACHE PURGE
+      newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       newHeaders.set('Pragma', 'no-cache');
       newHeaders.set('Expires', '0');
       newHeaders.set('Surrogate-Control', 'no-store');
-      newHeaders.set('CDN-Cache-Control', 'no-store');
-    } else if (isVersionedAsset) {
-      // Versioned JS/CSS: Cache for 1 year (they have ?v= version busting in HTML)
-      newHeaders.set('Cache-Control', 'public, max-age=31536000, immutable');
-    } else if (isFavicon) {
-      // Favicons: Cache for 1 day
-      newHeaders.set('Cache-Control', 'public, max-age=86400');
+      newHeaders.set('CDN-Cache-Control', 'no-store, no-cache');
+      newHeaders.set('Clear-Site-Data', '"cache"');
     } else {
-      // Everything else: short cache
-      newHeaders.set('Cache-Control', 'public, max-age=3600');
+      // JS / CSS / Assets: no-cache for revalidation
+      newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
 
     return new Response(response.body, {
