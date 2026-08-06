@@ -1262,7 +1262,11 @@ mark.search-highlight-active {
   }
 
   .sidebar-bottom {
-    display: none; /* Hide desktop theme btn and creator block on mobile bottom bar */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+    border-top: 1px solid var(--border);
   }
 
   /* Main scroll area adjustment */

@@ -1274,6 +1274,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
+    const homeContainer = document.getElementById('home-user-card-container');
     const adminNavItem = document.getElementById('nav-item-admin');
 
     if (!container || typeof AuthService === 'undefined') return;
@@ -1315,6 +1316,34 @@ document.addEventListener('DOMContentLoaded', () => {
           </button>
         </div>
       `;
+
+      if (homeContainer) {
+        homeContainer.innerHTML = `
+          <div class="card" style="padding: 18px 24px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              ${avatarHtml}
+              <div>
+                <div style="font-size: 16px; font-weight: 600; color: var(--text-primary);">${escapeHtml(user.username)}</div>
+                <div style="font-size: 12px; color: var(--accent); margin-top: 2px;">${escapeHtml(subBadge)}</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+              ${isAdmin ? `<button class="btn btn-secondary" id="home-goto-admin-btn" style="font-size: 13px; padding: 8px 14px; color: var(--accent); border-color: rgba(245,158,11,0.4);"><i class="fa-solid fa-user-shield"></i> Админ-панель</button>` : ''}
+              <button class="btn btn-secondary" id="home-settings-btn" style="font-size: 13px; padding: 8px 14px;"><i class="fa-solid fa-gear"></i> Настройки</button>
+              <button class="btn btn-secondary" id="home-logout-btn" style="font-size: 13px; padding: 8px 14px; color: #ff5252; border-color: rgba(255,82,82,0.3);"><i class="fa-solid fa-right-from-bracket"></i> Выйти</button>
+            </div>
+          </div>
+        `;
+        document.getElementById('home-goto-admin-btn')?.addEventListener('click', () => switchTab('admin'));
+        document.getElementById('home-settings-btn')?.addEventListener('click', openSettingsModal);
+        document.getElementById('home-logout-btn')?.addEventListener('click', () => {
+          AuthService.logout();
+          updateSidebarUserUI();
+          if (adminNavItem) adminNavItem.classList.add('hidden');
+          showToast('Вы успешно вышли из системы');
+        });
+      }
+
       document.getElementById('auth-settings-btn')?.addEventListener('click', openSettingsModal);
       document.getElementById('auth-logout-btn')?.addEventListener('click', () => {
         AuthService.logout();
@@ -1324,11 +1353,33 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     } else {
       container.innerHTML = `
-        <button class="btn btn-primary" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
+        <button class="btn btn-primary btn-open-login" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
           <i class="fa-solid fa-user-check"></i> Войти / Регистрация
         </button>
       `;
-      document.getElementById('open-auth-btn')?.addEventListener('click', openAuthModal);
+
+      if (homeContainer) {
+        homeContainer.innerHTML = `
+          <div class="card" style="padding: 20px 24px; background: linear-gradient(135deg, rgba(245,158,11,0.12) 0%, rgba(212,175,55,0.04) 100%); border: 1px solid rgba(245,158,11,0.3); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(245,158,11,0.2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <div>
+                <h3 style="font-size: 16px; margin: 0 0 4px 0; color: var(--text-primary);">Личный кабинет сотрудника</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Войдите или зарегистрируйтесь, чтобы отправлять пожелания и использовать функции администратора.</p>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-open-login" style="font-size: 13px; padding: 10px 18px;">
+              <i class="fa-solid fa-right-to-bracket"></i> Войти / Регистрация
+            </button>
+          </div>
+        `;
+      }
+
+      document.querySelectorAll('.btn-open-login').forEach(btn => {
+        btn.addEventListener('click', openAuthModal);
+      });
     }
   }
 
