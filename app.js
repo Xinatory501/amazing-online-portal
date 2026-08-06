@@ -1282,6 +1282,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
+  function getUserAvatarHtml(user, size = 38) {
+    if (!user) return `<div class="user-avatar" style="width: ${size}px; height: ${size}px; font-size: ${Math.round(size * 0.45)}px;">U</div>`;
+    const name = user.username || 'U';
+    const isSavely = name.toLowerCase() === 'savely_gerov';
+    const isAdmin = user.is_admin === 1 || user.is_admin === true || user.rank === 'Администратор портала' || isSavely;
+    const initial = name[0].toUpperCase();
+    const avatarUrl = user.avatar_url || user.avatarUrl || '';
+
+    // 1. Savely Gerov gets his personal photo ONLY
+    if (isSavely) {
+      return `<img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;" title="Главный Администратор">`;
+    }
+
+    // 2. Custom Avatar preset selected by user
+    if (avatarUrl) {
+      return `<img src="${avatarUrl}" class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">`;
+    }
+
+    // 3. Regular Admins get Golden Crown Avatar
+    if (isAdmin) {
+      return `<div class="user-avatar" style="width: ${size}px; height: ${size}px; border-radius: 50%; background: linear-gradient(135deg, #ffd54f, #ffb300, #ff8f00); color: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: ${Math.round(size * 0.48)}px; font-weight: bold; border: 1.5px solid #ffe082; box-shadow: 0 0 8px rgba(255, 179, 0, 0.4); flex-shrink: 0;" title="Администратор портала"><i class="fa-solid fa-crown"></i></div>`;
+    }
+
+    // 4. Regular Users get initial badge
+    return `<div class="user-avatar" style="width: ${size}px; height: ${size}px; font-size: ${Math.round(size * 0.45)}px;">${initial}</div>`;
+  }
+
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
     const mobileUserContainer = document.getElementById('mobile-user-container');
@@ -1301,15 +1328,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (user) {
-      const initial = (user.username || 'U')[0].toUpperCase();
       const rankText = user.rank || 'Охранник';
       const deptText = user.department && user.department !== 'Отсутствует' && user.department !== 'Не назначен' ? ` • ${user.department}` : '';
       const subBadge = `${rankText}${deptText}`;
-
-      const isUserAdmin = user.rank === 'Администратор портала' || (user.username || '').toLowerCase() === 'savely_gerov';
-      const avatarHtml = isUserAdmin ? `
-        <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
-      ` : `<div class="user-avatar">${initial}</div>`;
+      const avatarHtml = getUserAvatarHtml(user, 38);
 
       if (container) {
         container.innerHTML = `
@@ -1590,21 +1612,23 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const rankSelect = document.getElementById('settings-rank');
       const deptSelect = document.getElementById('settings-department');
+      const avatarSelect = document.getElementById('settings-avatar-preset');
       const submitBtn = document.getElementById('settings-submit-btn');
 
       if (!rankSelect || !deptSelect || !submitBtn) return;
 
       const rank = rankSelect.value;
       const department = deptSelect.value;
+      const avatarUrl = avatarSelect ? avatarSelect.value : null;
 
       try {
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Сохранение...';
 
-        await AuthService.updateProfile(rank, department);
+        await AuthService.updateProfile(rank, department, avatarUrl);
         updateSidebarUserUI();
         closeSettingsModal();
-        showToast('Профиль и должность успешно обновлены!');
+        showToast('Профиль и аватарка успешно обновлены!');
       } catch (err) {
         alert(err.message || 'Ошибка сохранения настроек');
       } finally {
@@ -1866,9 +1890,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const isBannedUser = u.is_banned === true;
       const hasPendingRank = !!u.pending_rank;
 
-      const avatarHtml = (isAdminUser || isSavely) ? `
-        <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
-      ` : `<div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>`;
+      const avatarHtml = getUserAvatarHtml(u, 42);
 
       let statusBadges = '';
       if (isBannedUser) {
@@ -2357,14 +2379,7 @@ document.addEventListener('DOMContentLoaded', () => {
           badge = '<span style="color: #ffc107; background: rgba(255, 193, 7, 0.15); padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-clock"></i> В обработке</span>';
         }
 
-        const isAuthorAdmin = (w.username || '').toLowerCase() === 'savely_gerov';
-        const wishAvatarHtml = isAuthorAdmin ? `
-          <img src="photo_2026-03-18_22-07-06.jpg" style="width: 34px; height: 34px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
-        ` : `
-          <div style="width: 34px; height: 34px; border-radius: 50%; background: rgba(212, 175, 55, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-            ${escapeHtml(w.username)[0].toUpperCase()}
-          </div>
-        `;
+        const wishAvatarHtml = getUserAvatarHtml({ username: w.username }, 34);
 
         return `
           <div class="lec-item" style="cursor: default; padding: 18px; display: flex; flex-direction: column; gap: 12px; word-break: break-word; overflow-wrap: anywhere;">
