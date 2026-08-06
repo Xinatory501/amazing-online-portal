@@ -28,13 +28,12 @@ export default {
     const newHeaders = new Headers(response.headers);
 
     if (isHtml) {
-      // 🚨 AGGRESSIVE NO-CACHE + AUTOMATIC BROWSER CACHE PURGE
+      // 🚨 AGGRESSIVE NO-CACHE (Prevents CDN/Browser HTML caching without wiping localStorage)
       newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       newHeaders.set('Pragma', 'no-cache');
       newHeaders.set('Expires', '0');
       newHeaders.set('Surrogate-Control', 'no-store');
       newHeaders.set('CDN-Cache-Control', 'no-store, no-cache');
-      newHeaders.set('Clear-Site-Data', '"cache"');
     } else {
       // JS / CSS / Assets: no-cache for revalidation
       newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
