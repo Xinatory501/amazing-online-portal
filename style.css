@@ -1172,14 +1172,15 @@ mark.search-highlight-active {
 }
 
 /* ── RESPONSIVE ───────────────────────────── */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   
   .mobile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 56px;
-    padding: 0 16px;
+    height: 52px;
+    padding: 0 12px;
+    gap: 8px;
     background: var(--bg-surface);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -1191,28 +1192,56 @@ mark.search-highlight-active {
   .mobile-header .wordmark {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     font-family: 'DM Serif Display', serif;
-    font-size: 16px;
+    font-size: 15px;
     color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .mobile-header .wordmark-icon {
     color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .mobile-user-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 10px;
+    height: 34px;
+    border-radius: var(--r-md);
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: all var(--transition);
+  }
+
+  .mobile-user-btn:hover {
+    background: rgba(245, 158, 11, 0.22);
   }
 
   .theme-btn-mobile {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
     color: var(--text-secondary);
     border-radius: var(--r-md);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 13px;
     transition: all var(--transition);
   }
 
