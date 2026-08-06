@@ -1274,9 +1274,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
+    const navUserContainer = document.getElementById('nav-user-item-container');
+    const mobileUserContainer = document.getElementById('mobile-user-container');
     const adminNavItem = document.getElementById('nav-item-admin');
 
-    if (!container || typeof AuthService === 'undefined') return;
+    if (typeof AuthService === 'undefined') return;
 
     const user = AuthService.getCurrentUser();
     const isAdmin = AuthService.isAdmin();
@@ -1300,21 +1302,43 @@ document.addEventListener('DOMContentLoaded', () => {
         <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
       ` : `<div class="user-avatar">${initial}</div>`;
 
-      container.innerHTML = `
-        <div class="user-profile-badge">
-          ${avatarHtml}
-          <div class="user-info">
-            <div class="user-name">${escapeHtml(user.username)}</div>
-            <div class="user-role-badge" title="${escapeHtml(subBadge)}">${escapeHtml(subBadge)}</div>
+      if (container) {
+        container.innerHTML = `
+          <div class="user-profile-badge">
+            ${avatarHtml}
+            <div class="user-info">
+              <div class="user-name">${escapeHtml(user.username)}</div>
+              <div class="user-role-badge" title="${escapeHtml(subBadge)}">${escapeHtml(subBadge)}</div>
+            </div>
+            <button class="btn-logout" id="auth-settings-btn" title="Настройки профиля" style="margin-right: 4px;">
+              <i class="fa-solid fa-gear"></i>
+            </button>
+            <button class="btn-logout danger" id="auth-logout-btn" title="Выйти из аккаунта">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
           </div>
-          <button class="btn-logout" id="auth-settings-btn" title="Настройки профиля" style="margin-right: 4px;">
-            <i class="fa-solid fa-gear"></i>
+        `;
+      }
+
+      if (navUserContainer) {
+        navUserContainer.innerHTML = `
+          <button class="nav-item nav-item-auth" id="nav-profile-btn" style="color: var(--accent); font-weight: 500;">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>Мой профиль</span>
           </button>
-          <button class="btn-logout danger" id="auth-logout-btn" title="Выйти из аккаунта">
-            <i class="fa-solid fa-right-from-bracket"></i>
+        `;
+        document.getElementById('nav-profile-btn')?.addEventListener('click', openSettingsModal);
+      }
+
+      if (mobileUserContainer) {
+        mobileUserContainer.innerHTML = `
+          <button class="mobile-user-btn" id="mobile-profile-btn">
+            <i class="fa-solid fa-user"></i>
+            <span>${escapeHtml(user.username)}</span>
           </button>
-        </div>
-      `;
+        `;
+        document.getElementById('mobile-profile-btn')?.addEventListener('click', openSettingsModal);
+      }
 
       document.getElementById('auth-settings-btn')?.addEventListener('click', openSettingsModal);
       document.getElementById('auth-logout-btn')?.addEventListener('click', () => {
@@ -1324,17 +1348,46 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Вы успешно вышли из системы');
       });
     } else {
-      container.innerHTML = `
-        <button class="btn btn-primary btn-open-login" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
-          <i class="fa-solid fa-user-check"></i> Войти / Регистрация
-        </button>
-      `;
+      if (container) {
+        container.innerHTML = `
+          <button class="btn btn-primary btn-open-login" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
+            <i class="fa-solid fa-user-check"></i> Войти / Регистрация
+          </button>
+        `;
+      }
+
+      if (navUserContainer) {
+        navUserContainer.innerHTML = `
+          <button class="nav-item nav-item-auth btn-open-login" id="nav-login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Войти / Регистрация</span>
+          </button>
+        `;
+      }
+
+      if (mobileUserContainer) {
+        mobileUserContainer.innerHTML = `
+          <button class="mobile-user-btn btn-open-login" id="mobile-login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>Войти</span>
+          </button>
+        `;
+      }
 
       document.querySelectorAll('.btn-open-login').forEach(btn => {
         btn.addEventListener('click', openAuthModal);
       });
     }
   }
+
+  // 🌍 Global Event Delegation for Login Buttons (guarantees click reliability everywhere)
+  document.addEventListener('click', (e) => {
+    const loginTarget = e.target.closest('.btn-open-login, #open-auth-btn, #wishes-login-btn, #nav-login-btn, #mobile-login-btn');
+    if (loginTarget) {
+      e.preventDefault();
+      openAuthModal();
+    }
+  });
 
   const authModal = document.getElementById('auth-modal');
   const authCloseBtn = document.getElementById('auth-modal-close-btn');

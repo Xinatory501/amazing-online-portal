@@ -179,6 +179,36 @@ p { max-width: 60ch; }
   color: var(--text-primary);
 }
 
+.nav-item.nav-item-auth {
+  margin-top: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  color: var(--accent);
+  font-weight: 500;
+}
+.nav-item.nav-item-auth:hover {
+  background: rgba(245, 158, 11, 0.16);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
+.mobile-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-md);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.mobile-user-btn:hover {
+  background: rgba(245, 158, 11, 0.22);
+}
+
 .nav-item.active {
   background: var(--accent-dim);
   color: var(--accent);
