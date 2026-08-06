@@ -76,19 +76,42 @@
 </head>
 <body>
 
+  <!-- GITHUB PAGES DEPRECATION MODAL (Shown only on github.io) -->
+  <div id="github-migration-modal" class="modal-backdrop" style="z-index: 999999; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); display: none;">
+    <div class="modal-card" style="max-width: 480px; text-align: center; border: 1.5px solid var(--accent); background: #18181b; padding: 28px 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.7); animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 16px;">
+      <div style="width: 56px; height: 56px; margin: 0 auto 16px auto; background: rgba(255, 193, 7, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 193, 7, 0.3);">
+        <i class="fa-solid fa-triangle-exclamation" style="font-size: 26px; color: #ffc107;"></i>
+      </div>
+      <h3 style="font-size: 20px; font-weight: 700; color: #ffffff; margin-bottom: 8px;">Вы зашли на старую версию форума</h3>
+      <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+        Этот адрес на GitHub Pages <strong>больше не поддерживается и не обновляется</strong>. Здесь отсутствуют аккаунты, сохранение настроек и новые разделы. Переходите на наш новый основной сервер!
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <a href="https://portal.xinatory.workers.dev/" class="btn btn-primary" style="padding: 12px; font-size: 14px; font-weight: 600; text-decoration: none; justify-content: center; gap: 8px; border-radius: 10px;">
+          🚀 Перейти на новый форум <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <button id="github-migration-close-btn" class="btn" style="padding: 10px; font-size: 13px; background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); justify-content: center; border-radius: 10px; cursor: pointer;">
+          Продолжить пользоваться старой версией
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- GITHUB PAGES DEPRECATION BANNER (Shown only on github.io) -->
   <div id="github-migration-banner" class="github-migration-banner hidden">
     <div class="migration-content">
       <div style="display: flex; align-items: center; gap: 12px;">
         <i class="fa-solid fa-triangle-exclamation migration-icon"></i>
         <div class="migration-text">
-          <strong>Внимание: этот адрес больше не поддерживается!</strong>
-          <span>Форум переехал на новый основной сервер с поддержкой аккаунтов.</span>
+          <strong>Внимание: старая версия форума (без поддержки)</strong>
+          <span>Основной форум переехал на новый сервер со входом и аккаунтами.</span>
         </div>
       </div>
-      <a href="https://portal.xinatory.workers.dev/" class="migration-btn">
-        Перейти на новый форум <i class="fa-solid fa-arrow-right"></i>
-      </a>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <a href="https://portal.xinatory.workers.dev/" class="migration-btn">
+          Перейти на новый форум <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
     </div>
   </div>
 
@@ -880,10 +903,10 @@
     </div>
   </div>
 
-  <script src="instructionsData.js?v=116.0_disable_avatar_change"></script>
-  <script src="lawsData.js?v=116.0_disable_avatar_change"></script>
-  <script src="data.js?v=116.0_disable_avatar_change"></script>
-  <script src="auth.js?v=116.0_disable_avatar_change"></script>
-  <script src="app.js?v=116.0_disable_avatar_change"></script>
+  <script src="instructionsData.js?v=117.0_github_migration_modal"></script>
+  <script src="lawsData.js?v=117.0_github_migration_modal"></script>
+  <script src="data.js?v=117.0_github_migration_modal"></script>
+  <script src="auth.js?v=117.0_github_migration_modal"></script>
+  <script src="app.js?v=117.0_github_migration_modal"></script>
 </body>
 </html>

@@ -1,8 +1,22 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ── GitHub Pages Migration Banner ───────────
+  // ── GitHub Pages Migration Notice & Modal ───────────
   if (window.location.hostname.includes('github.io')) {
     const banner = document.getElementById('github-migration-banner');
+    const modal = document.getElementById('github-migration-modal');
+    const closeBtn = document.getElementById('github-migration-close-btn');
+
     if (banner) banner.classList.remove('hidden');
+    if (modal) {
+      modal.style.display = 'flex';
+      modal.classList.add('active');
+    }
+
+    if (closeBtn && modal) {
+      closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+      });
+    }
   }
 
 
