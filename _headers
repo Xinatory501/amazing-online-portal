@@ -1,22 +1,13 @@
-/*
-  ====================================================
-  Cloudflare Workers Static Assets — HTTP Headers
-  ====================================================
-  Forces browsers and Cloudflare CDN edge nodes to 
-  always fetch the latest version of index.html and JS files.
-  This prevents stale cache serving old versions.
-*/
-
-# ── index.html — NEVER cache, always fresh ──────────
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate
   Pragma: no-cache
   Expires: 0
-  Surrogate-Control: no-store
-  CDN-Cache-Control: no-store
 
-# ── JS files with versioned query strings ─────────────
-# These are safe to cache since they have ?v= version tags in index.html
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0
+
 /app.js
   Cache-Control: public, max-age=31536000, immutable
 
@@ -32,11 +23,9 @@
 /instructionsData.js
   Cache-Control: public, max-age=31536000, immutable
 
-# ── CSS files ─────────────────────────────────────────
 /style.css
   Cache-Control: public, max-age=31536000, immutable
 
-# ── Favicon and images — moderate cache ──────────────
 /favicon.ico
   Cache-Control: public, max-age=86400
 
