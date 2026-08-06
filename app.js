@@ -1274,7 +1274,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── AUTH & SETTINGS UI CONTROLLER ───────────────
   function updateSidebarUserUI() {
     const container = document.getElementById('sidebar-user-container');
-    const navUserContainer = document.getElementById('nav-user-item-container');
     const mobileUserContainer = document.getElementById('mobile-user-container');
     const adminNavItem = document.getElementById('nav-item-admin');
 
@@ -1320,16 +1319,6 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
       }
 
-      if (navUserContainer) {
-        navUserContainer.innerHTML = `
-          <button class="nav-item nav-item-auth" id="nav-profile-btn" style="color: var(--accent); font-weight: 500;">
-            <i class="fa-solid fa-user-gear"></i>
-            <span>Мой профиль</span>
-          </button>
-        `;
-        document.getElementById('nav-profile-btn')?.addEventListener('click', openSettingsModal);
-      }
-
       if (mobileUserContainer) {
         mobileUserContainer.innerHTML = `
           <button class="mobile-user-btn" id="mobile-profile-btn">
@@ -1352,15 +1341,6 @@ document.addEventListener('DOMContentLoaded', () => {
         container.innerHTML = `
           <button class="btn btn-primary btn-open-login" id="open-auth-btn" style="width: 100%; margin-top: 12px; font-size: 13px; padding: 10px;">
             <i class="fa-solid fa-user-check"></i> Войти / Регистрация
-          </button>
-        `;
-      }
-
-      if (navUserContainer) {
-        navUserContainer.innerHTML = `
-          <button class="nav-item nav-item-auth btn-open-login" id="nav-login-btn">
-            <i class="fa-solid fa-right-to-bracket"></i>
-            <span>Войти / Регистрация</span>
           </button>
         `;
       }

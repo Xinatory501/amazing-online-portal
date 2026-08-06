@@ -1292,11 +1292,7 @@ mark.search-highlight-active {
   }
 
   .sidebar-bottom {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 12px;
-    border-top: 1px solid var(--border);
+    display: none !important; /* Hide desktop theme btn and creator block on mobile bottom bar */
   }
 
   /* Main scroll area adjustment */
