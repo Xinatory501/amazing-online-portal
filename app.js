@@ -1835,7 +1835,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deptsEl = document.getElementById('admin-stat-depts');
 
     if (totalEl) totalEl.textContent = adminUsersList.length;
-    if (adminsEl) adminsEl.textContent = adminUsersList.filter(u => u.rank === 'Администратор портала' || u.rank === 'Губернатор' || u.username.toLowerCase() === 'savely_gerov').length;
+    if (adminsEl) adminsEl.textContent = adminUsersList.filter(u => u.is_admin || u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov').length;
     if (deptsEl) deptsEl.textContent = adminUsersList.filter(u => u.department && u.department !== 'Не назначен' && u.department !== 'Отсутствует').length;
 
     if (!filtered.length) {
@@ -1849,17 +1849,45 @@ document.addEventListener('DOMContentLoaded', () => {
 
     adminUsersGrid.innerHTML = filtered.map(u => {
       const initial = (u.username || 'U')[0].toUpperCase();
-      const isAdminUser = u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
-      const badgeStyle = isAdminUser ? 'color: #ffc107; background: rgba(255, 193, 7, 0.1); border-color: rgba(255, 193, 7, 0.3);' : '';
+      const isAdminUser = u.is_admin || u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
+      const isBannedUser = u.is_banned === true;
+      const hasPendingRank = !!u.pending_rank;
 
-      const avatarHtml = isAdminUser ? `
+      const avatarHtml = (isAdminUser || u.username.toLowerCase() === 'savely_gerov') ? `
         <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
       ` : `<div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>`;
+
+      let statusBadges = '';
+      if (isBannedUser) {
+        statusBadges += `<span style="background: rgba(255, 82, 82, 0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-ban"></i> Заблокирован</span> `;
+      }
+      if (isAdminUser) {
+        statusBadges += `<span style="background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-crown"></i> Админ</span>`;
+      }
+
+      let pendingBox = '';
+      if (hasPendingRank) {
+        pendingBox = `
+          <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 6px; padding: 10px 12px; margin-bottom: 12px;">
+            <div style="font-size: 12px; color: var(--accent); font-weight: 600; margin-bottom: 6px;">
+              <i class="fa-solid fa-hourglass-half"></i> Запрос должности: <strong>${escapeHtml(u.pending_rank)}</strong>
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="btn btn-primary admin-approve-rank-btn" data-userid="${u.id}" style="font-size: 11px; padding: 4px 10px; flex: 1;">
+                <i class="fa-solid fa-check"></i> Одобрить
+              </button>
+              <button class="btn btn-secondary admin-reject-rank-btn" data-userid="${u.id}" style="font-size: 11px; padding: 4px 10px; color: #ff5252; border-color: rgba(255,82,82,0.3); flex: 1;">
+                <i class="fa-solid fa-xmark"></i> Отклонить
+              </button>
+            </div>
+          </div>
+        `;
+      }
 
       return `
         <div class="card" style="position: relative; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
           <div>
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
               ${avatarHtml}
               <div style="min-width: 0; flex: 1;">
                 <div style="font-size: 16px; font-weight: 600; color: var(--text-primary); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
@@ -1871,23 +1899,108 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
 
-            <div style="font-size: 12px; background: var(--bg-surface); padding: 8px 12px; border-radius: var(--r-sm); border: 1px solid var(--border); margin-bottom: 14px; ${badgeStyle}">
+            ${statusBadges ? `<div style="margin-bottom: 10px;">${statusBadges}</div>` : ''}
+
+            <div style="font-size: 12px; background: var(--bg-surface); padding: 8px 12px; border-radius: var(--r-sm); border: 1px solid var(--border); margin-bottom: 12px;">
               <span style="color: var(--text-muted);">Отдел:</span> <strong>${escapeHtml(u.department || 'Не назначен')}</strong>
             </div>
+
+            ${pendingBox}
           </div>
 
-          <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="width: 100%; justify-content: center; font-size: 13px; padding: 8px;">
-            <i class="fa-solid fa-pen-to-square"></i> Редактировать
-          </button>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+            <div style="display: flex; gap: 6px;">
+              ${isAdminUser ? `
+                <button class="btn btn-secondary admin-toggle-admin-btn" data-userid="${u.id}" data-action="revoke" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff9800; border-color: rgba(255,152,0,0.3);" title="Забрать админку">
+                  <i class="fa-solid fa-user-shield"></i> Забрать адм.
+                </button>
+              ` : `
+                <button class="btn btn-primary admin-toggle-admin-btn" data-userid="${u.id}" data-action="grant" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px;" title="Дать админку">
+                  <i class="fa-solid fa-crown"></i> Дать адм.
+                </button>
+              `}
+
+              ${isBannedUser ? `
+                <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="unban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #4caf50; border-color: rgba(76,175,80,0.3);" title="Разбанить">
+                  <i class="fa-solid fa-user-check"></i> Разбанить
+                </button>
+              ` : `
+                <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="ban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff5252; border-color: rgba(255,82,82,0.3);" title="Забанить">
+                  <i class="fa-solid fa-ban"></i> Забанить
+                </button>
+              `}
+            </div>
+
+            <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="width: 100%; justify-content: center; font-size: 12px; padding: 6px;">
+              <i class="fa-solid fa-pen-to-square"></i> Редактировать
+            </button>
+          </div>
         </div>
       `;
     }).join('');
 
+    // Bind event listeners
     adminUsersGrid.querySelectorAll('.admin-edit-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const uid = e.currentTarget.getAttribute('data-userid');
         const targetUser = adminUsersList.find(u => u.id === uid);
         if (targetUser) openAdminEditModal(targetUser);
+      });
+    });
+
+    adminUsersGrid.querySelectorAll('.admin-toggle-admin-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        const action = e.currentTarget.getAttribute('data-action');
+        const makeAdmin = action === 'grant';
+        try {
+          await AuthService.adminToggleAdmin(uid, makeAdmin);
+          showToast(makeAdmin ? 'Права администратора выгоданы' : 'Права администратора отозваны');
+          loadAdminData();
+        } catch (err) {
+          showToast('Ошибка: ' + err.message);
+        }
+      });
+    });
+
+    adminUsersGrid.querySelectorAll('.admin-toggle-ban-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        const action = e.currentTarget.getAttribute('data-action');
+        const ban = action === 'ban';
+        try {
+          await AuthService.adminToggleBan(uid, ban);
+          showToast(ban ? 'Пользователь заблокирован' : 'Пользователь разблокирован');
+          loadAdminData();
+        } catch (err) {
+          showToast('Ошибка: ' + err.message);
+        }
+      });
+    });
+
+    adminUsersGrid.querySelectorAll('.admin-approve-rank-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        try {
+          await AuthService.adminApproveRank(uid);
+          showToast('Должность успешно подтверждена!');
+          loadAdminData();
+        } catch (err) {
+          showToast('Ошибка: ' + err.message);
+        }
+      });
+    });
+
+    adminUsersGrid.querySelectorAll('.admin-reject-rank-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        try {
+          await AuthService.adminRejectRank(uid);
+          showToast('Заявка на должность отклонена');
+          loadAdminData();
+        } catch (err) {
+          showToast('Ошибка: ' + err.message);
+        }
       });
     });
   }
