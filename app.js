@@ -1507,8 +1507,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = passwordInput.value;
       const confirm = confirmInput.value;
 
-      if (!username || username.length < 3) {
-        alert('Игровой ник должен содержать минимум 3 символа');
+      if (!validateTwoWordNickname(username)) {
+        alert('Никнейм должен состоять ровно из 2 слов (Имя_Фамилия или Имя Фамилия), например: Savely_Gerov или Савелий Геров');
         return;
       }
       if (!password || password.length < 4) {
@@ -2040,6 +2040,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const submitBtn = document.getElementById('admin-create-submit-btn');
 
       if (!username || !password || !submitBtn) return;
+
+      if (!validateTwoWordNickname(username)) {
+        alert('Никнейм должен состоять ровно из 2 слов (Имя_Фамилия или Имя Фамилия), например: Savely_Gerov или Савелий Геров');
+        return;
+      }
 
       try {
         submitBtn.disabled = true;
