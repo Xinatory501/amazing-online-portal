@@ -1861,11 +1861,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     adminUsersGrid.innerHTML = filtered.map(u => {
       const initial = (u.username || 'U')[0].toUpperCase();
-      const isAdminUser = u.is_admin || u.rank === 'Администратор портала' || u.username.toLowerCase() === 'savely_gerov';
+      const isSavely = (u.username || '').toLowerCase() === 'savely_gerov';
+      const isAdminUser = u.is_admin || u.rank === 'Администратор портала' || isSavely;
       const isBannedUser = u.is_banned === true;
       const hasPendingRank = !!u.pending_rank;
 
-      const avatarHtml = (isAdminUser || u.username.toLowerCase() === 'savely_gerov') ? `
+      const avatarHtml = (isAdminUser || isSavely) ? `
         <img src="photo_2026-03-18_22-07-06.jpg" class="user-avatar" style="width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--accent); flex-shrink: 0;">
       ` : `<div class="user-avatar" style="width: 42px; height: 42px; font-size: 18px;">${initial}</div>`;
 
@@ -1873,7 +1874,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isBannedUser) {
         statusBadges += `<span style="background: rgba(255, 82, 82, 0.15); color: #ff5252; border: 1px solid rgba(255,82,82,0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-ban"></i> Заблокирован</span> `;
       }
-      if (isAdminUser) {
+      if (isSavely) {
+        statusBadges += `<span style="background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid rgba(255,193,7,0.4); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;"><i class="fa-solid fa-crown"></i> Главный Админ (Protected)</span>`;
+      } else if (isAdminUser) {
         statusBadges += `<span style="background: rgba(255, 193, 7, 0.15); color: #ffc107; border: 1px solid rgba(255,193,7,0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600;"><i class="fa-solid fa-crown"></i> Админ</span>`;
       }
 
@@ -1892,6 +1895,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 <i class="fa-solid fa-xmark"></i> Отклонить
               </button>
             </div>
+          </div>
+        `;
+      }
+
+      let actionButtons = '';
+      if (isSavely) {
+        actionButtons = `
+          <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="width: 100%; justify-content: center; font-size: 12px; padding: 6px;">
+            <i class="fa-solid fa-pen-to-square"></i> Редактировать
+          </button>
+        `;
+      } else {
+        actionButtons = `
+          <div style="display: flex; gap: 6px;">
+            ${isAdminUser ? `
+              <button class="btn btn-secondary admin-toggle-admin-btn" data-userid="${u.id}" data-action="revoke" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff9800; border-color: rgba(255,152,0,0.3);" title="Забрать админку">
+                <i class="fa-solid fa-user-shield"></i> Забрать адм.
+              </button>
+            ` : `
+              <button class="btn btn-primary admin-toggle-admin-btn" data-userid="${u.id}" data-action="grant" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px;" title="Дать админку">
+                <i class="fa-solid fa-crown"></i> Дать адм.
+              </button>
+            `}
+
+            ${isBannedUser ? `
+              <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="unban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #4caf50; border-color: rgba(76,175,80,0.3);" title="Разбанить">
+                <i class="fa-solid fa-user-check"></i> Разбанить
+              </button>
+            ` : `
+              <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="ban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff5252; border-color: rgba(255,82,82,0.3);" title="Забанить">
+                <i class="fa-solid fa-ban"></i> Забанить
+              </button>
+            `}
+          </div>
+
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="flex: 1; justify-content: center; font-size: 12px; padding: 6px;">
+              <i class="fa-solid fa-pen-to-square"></i> Редактировать
+            </button>
+            <button class="btn btn-secondary admin-delete-user-btn" data-userid="${u.id}" style="flex: 1; justify-content: center; font-size: 12px; padding: 6px; color: #ff5252; border-color: rgba(255,82,82,0.3);" title="Удалить аккаунт">
+              <i class="fa-solid fa-trash"></i> Удалить
+            </button>
           </div>
         `;
       }
@@ -1921,31 +1966,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
-            <div style="display: flex; gap: 6px;">
-              ${isAdminUser ? `
-                <button class="btn btn-secondary admin-toggle-admin-btn" data-userid="${u.id}" data-action="revoke" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff9800; border-color: rgba(255,152,0,0.3);" title="Забрать админку">
-                  <i class="fa-solid fa-user-shield"></i> Забрать адм.
-                </button>
-              ` : `
-                <button class="btn btn-primary admin-toggle-admin-btn" data-userid="${u.id}" data-action="grant" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px;" title="Дать админку">
-                  <i class="fa-solid fa-crown"></i> Дать адм.
-                </button>
-              `}
-
-              ${isBannedUser ? `
-                <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="unban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #4caf50; border-color: rgba(76,175,80,0.3);" title="Разбанить">
-                  <i class="fa-solid fa-user-check"></i> Разбанить
-                </button>
-              ` : `
-                <button class="btn btn-secondary admin-toggle-ban-btn" data-userid="${u.id}" data-action="ban" style="flex: 1; justify-content: center; font-size: 11px; padding: 6px 4px; color: #ff5252; border-color: rgba(255,82,82,0.3);" title="Забанить">
-                  <i class="fa-solid fa-ban"></i> Забанить
-                </button>
-              `}
-            </div>
-
-            <button class="btn btn-secondary admin-edit-btn" data-userid="${u.id}" style="width: 100%; justify-content: center; font-size: 12px; padding: 6px;">
-              <i class="fa-solid fa-pen-to-square"></i> Редактировать
-            </button>
+            ${actionButtons}
           </div>
         </div>
       `;
@@ -1957,6 +1978,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const uid = e.currentTarget.getAttribute('data-userid');
         const targetUser = adminUsersList.find(u => u.id === uid);
         if (targetUser) openAdminEditModal(targetUser);
+      });
+    });
+
+    adminUsersGrid.querySelectorAll('.admin-delete-user-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const uid = e.currentTarget.getAttribute('data-userid');
+        const targetUser = adminUsersList.find(u => u.id === uid);
+        const name = targetUser ? targetUser.username : 'сотрудника';
+        if (!confirm(`Вы действительно хотите БЕЗВОЗВРАТНО удалить аккаунт ${name}?`)) return;
+        try {
+          await AuthService.adminDeleteUser(uid);
+          showToast(`Учетная запись ${name} успешно удалена`);
+          loadAdminData();
+        } catch (err) {
+          showToast('Ошибка: ' + err.message);
+        }
       });
     });
 
