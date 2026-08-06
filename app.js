@@ -1352,10 +1352,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (mobileUserContainer) {
+        const mobileAvatar = getUserAvatarHtml(user, 26);
         mobileUserContainer.innerHTML = `
-          <button class="mobile-user-btn" id="mobile-profile-btn">
-            <i class="fa-solid fa-user"></i>
-            <span>${escapeHtml(user.username)}</span>
+          <button class="mobile-user-btn" id="mobile-profile-btn" style="display: flex; align-items: center; gap: 8px; padding: 4px 10px;">
+            ${mobileAvatar}
+            <span style="font-weight: 500;">${escapeHtml(user.username)}</span>
           </button>
         `;
         document.getElementById('mobile-profile-btn')?.addEventListener('click', openSettingsModal);
@@ -1445,11 +1446,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameDisplay = document.getElementById('settings-username-display');
     const rankSelect = document.getElementById('settings-rank');
     const deptSelect = document.getElementById('settings-department');
+    const avatarSelect = document.getElementById('settings-avatar-preset');
+    const avatarPreview = document.getElementById('settings-avatar-preview');
     const lockNotice = document.getElementById('admin-rank-lock-notice');
 
     if (usernameDisplay) usernameDisplay.value = user.username || '';
     if (rankSelect) rankSelect.value = user.rank || 'Охранник';
     if (deptSelect) deptSelect.value = user.department || 'Отсутствует';
+    if (avatarSelect) avatarSelect.value = user.avatar_url || '';
+
+    const updatePreview = () => {
+      if (avatarPreview) {
+        const selectedUrl = avatarSelect ? avatarSelect.value : '';
+        avatarPreview.innerHTML = getUserAvatarHtml({ ...user, avatar_url: selectedUrl }, 64);
+      }
+    };
+    updatePreview();
+
+    if (avatarSelect) {
+      avatarSelect.onchange = updatePreview;
+    }
 
     // 🔒 Lock rank for Administrator
     const isUserAdmin = user.rank === 'Администратор портала' || (user.username || '').toLowerCase() === 'savely_gerov';
