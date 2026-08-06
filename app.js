@@ -33,41 +33,51 @@ document.addEventListener('DOMContentLoaded', () => {
   let toastTimer        = null;
 
   // ── Theme ──────────────────────────────────
-  const savedTheme = localStorage.getItem('theme') || 'dark';
+  const savedTheme = (function() {
+    try { return localStorage.getItem('theme') || 'dark'; } catch(e) { return 'dark'; }
+  })();
   applyTheme(savedTheme, false);
 
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const doc = document.documentElement;
+      const currentTheme = (doc && doc.getAttribute) ? (doc.getAttribute('data-theme') || 'dark') : 'dark';
       const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
       applyTheme(nextTheme, true);
     });
   }
 
   function applyTheme(theme, animate = true) {
-    if (animate) {
-      document.documentElement.classList.add('theme-switching');
-    }
+    try {
+      const doc = document.documentElement;
+      if (!doc || !doc.setAttribute) return;
 
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-    const isDark = theme === 'dark';
+      if (animate && doc.classList && doc.classList.add) {
+        doc.classList.add('theme-switching');
+      }
 
-    if (themeIcon) themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    if (themeLabel) themeLabel.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
+      doc.setAttribute('data-theme', theme);
+      try { localStorage.setItem('theme', theme); } catch(e) {}
+      const isDark = theme === 'dark';
 
-    const mobileBtn = document.getElementById('theme-toggle-mobile') || document.getElementById('mobile-theme-toggle');
-    if (mobileBtn) {
-      const mobileIcon = mobileBtn.querySelector('i');
-      if (mobileIcon) mobileIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-    }
+      if (themeIcon) themeIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      if (themeLabel) themeLabel.textContent = isDark ? 'Светлая тема' : 'Тёмная тема';
 
-    if (animate) {
-      requestAnimationFrame(() => {
+      const mobileBtn = document.getElementById('theme-toggle-mobile') || document.getElementById('mobile-theme-toggle');
+      if (mobileBtn && typeof mobileBtn.querySelector === 'function') {
+        const mobileIcon = mobileBtn.querySelector('i');
+        if (mobileIcon) mobileIcon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+
+      if (animate && doc.classList && doc.classList.remove) {
         requestAnimationFrame(() => {
-          document.documentElement.classList.remove('theme-switching');
+          requestAnimationFrame(() => {
+            try { doc.classList.remove('theme-switching'); } catch(e) {}
+          });
         });
-      });
+      }
+    } catch(e) {
+      console.warn('Theme switch warning:', e);
     }
   }
 
