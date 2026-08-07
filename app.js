@@ -1081,10 +1081,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    lawReaderBody.addEventListener('copy', (e) => e.preventDefault());
-    lawReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
-    lawReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
-
+    // Copying allowed in Laws section
     if (searchQuery.trim()) {
       setupSearchNavigator(lawViewerEl, searchQuery);
     }
@@ -1261,10 +1258,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const instReaderBody = document.getElementById('instruction-reader-body');
     attachCopyReportListeners(instReaderBody);
-    instReaderBody.addEventListener('copy', (e) => e.preventDefault());
-    instReaderBody.addEventListener('contextmenu', (e) => e.preventDefault());
-    instReaderBody.addEventListener('selectstart', (e) => e.preventDefault());
-
+    // Copying allowed in Instructions section
     if (searchQuery.trim()) {
       setupSearchNavigator(instructionViewerEl, searchQuery);
     }

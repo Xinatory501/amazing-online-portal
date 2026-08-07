@@ -316,21 +316,52 @@
     .ping-status {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       font-size: 12px;
       font-weight: 500;
-      color: var(--success);
+      padding: 5px 12px;
+      border-radius: var(--r-md);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      transition: all var(--transition);
+    }
+
+    .ping-status.status-online {
       background: var(--success-dim);
-      padding: 4px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(78, 184, 123, 0.25);
+      border-color: rgba(78, 184, 123, 0.3);
+      color: var(--text-primary);
+    }
+
+    .ping-status.status-offline {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
     }
 
     .ping-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    .ping-status.status-offline .ping-dot {
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+    }
+
+    .ping-text {
+      font-weight: 600;
+    }
+
+    .ping-ms {
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-family: monospace;
+      padding-left: 4px;
+      border-left: 1px solid var(--border);
     }
 
     .btn {
@@ -462,7 +493,7 @@
           </div>
         </div>
         <div class="card-right">
-          <span class="ping-status" id="status-cf"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <span class="ping-status status-online" id="status-cf"><span class="ping-dot"></span><span class="ping-text">Доступен</span></span>
           <a href="https://portal.xinatory.workers.dev/" class="btn btn-accent" target="_blank">
             Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -487,7 +518,7 @@
           </div>
         </div>
         <div class="card-right">
-          <span class="ping-status" id="status-vercel"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <span class="ping-status status-online" id="status-vercel"><span class="ping-dot"></span><span class="ping-text">Доступен</span></span>
           <a href="https://portals-amazings.vercel.app/" class="btn btn-accent" target="_blank">
             Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -512,7 +543,7 @@
           </div>
         </div>
         <div class="card-right">
-          <span class="ping-status" id="status-netlify"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <span class="ping-status status-online" id="status-netlify"><span class="ping-dot"></span><span class="ping-text">Доступен</span></span>
           <a href="https://amzportal.netlify.app/" class="btn btn-accent" target="_blank">
             Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -537,7 +568,7 @@
           </div>
         </div>
         <div class="card-right">
-          <span class="ping-status" id="status-render"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <span class="ping-status status-online" id="status-render"><span class="ping-dot"></span><span class="ping-text">Доступен</span></span>
           <a href="https://amzportal.onrender.com/" class="btn btn-accent" target="_blank">
             Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -562,7 +593,7 @@
           </div>
         </div>
         <div class="card-right">
-          <span class="ping-status" id="status-gh"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <span class="ping-status status-online" id="status-gh"><span class="ping-dot"></span><span class="ping-text">Доступен</span></span>
           <a href="https://xinatory501.github.io/amazing-online-portal/" class="btn btn-accent" target="_blank">
             Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
           </a>
@@ -616,13 +647,17 @@
 
     // ── LIVE PING CHECK ────────────────────────────────────
     async function checkMirror(url, elId) {
+      const el = document.getElementById(elId);
+      if (!el) return;
       const start = Date.now();
       try {
         await fetch(url + '?t=' + start, { mode: 'no-cors' });
         const ping = Date.now() - start;
-        document.getElementById(elId).innerHTML = `<span class="ping-dot"></span> 🟢 Онлайн (${ping}ms)`;
+        el.className = 'ping-status status-online';
+        el.innerHTML = `<span class="ping-dot"></span><span class="ping-text">Доступен</span><span class="ping-ms">${ping}ms</span>`;
       } catch (e) {
-        document.getElementById(elId).innerHTML = `<span class="ping-dot" style="background:#ff5252;"></span> 🔴 Недоступен`;
+        el.className = 'ping-status status-offline';
+        el.innerHTML = `<span class="ping-dot"></span><span class="ping-text">Недоступен</span>`;
       }
     }
 

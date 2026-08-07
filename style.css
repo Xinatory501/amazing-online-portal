@@ -952,8 +952,8 @@ mark.search-highlight-active {
   display: flex;
   align-items: center;
   gap: 12px;
-  user-select: none;
-  -webkit-user-select: none;
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 .law-chapter-header i {
@@ -968,8 +968,8 @@ mark.search-highlight-active {
   margin-bottom: 14px;
   transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
   position: relative;
-  user-select: none;
-  -webkit-user-select: none;
+  user-select: text !important;
+  -webkit-user-select: text !important;
 }
 
 .law-article-box:hover {
