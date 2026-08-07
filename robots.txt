@@ -10,3 +10,5 @@ Allow: /
 Sitemap: https://portal.xinatory.workers.dev/sitemap.xml
 Sitemap: https://portals-amazings.vercel.app/sitemap.xml
 Sitemap: https://xinatory501.github.io/amazing-online-portal/sitemap.xml
+Sitemap: https://amzportal.netlify.app/sitemap.xml
+Sitemap: https://amzportal.onrender.com/sitemap.xml
