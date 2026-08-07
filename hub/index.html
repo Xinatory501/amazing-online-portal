@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AMZX — Единый Навигатор Зеркал и Серверов | Amazing X</title>
+  <meta name="description" content="Официальный хаб навигации и проверки доступности зеркал Неофициального Форума Amazing X. Актуальные ссылки на Cloudflare, Vercel, Netlify, Render и GitHub Pages.">
+  <meta name="keywords" content="amazing x зеркала, неофициальный форум амейзинг х, зеркало портала савелий геров, amzx">
+  <meta name="robots" content="index, follow">
+
+  <!-- Favicon / Site Icon -->
+  <link rel="shortcut icon" href="./favicon.ico?v=5.0">
+  <link rel="icon" type="image/x-icon" href="./favicon.ico?v=5.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png?v=5.0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./favicon.png?v=5.0">
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=5.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=5.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    /* ══════════════════════════════════════════
+       PORTAL — Claude-inspired dual theme design
+       ══════════════════════════════════════════ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      /* DARK THEME (default) — Claude brand palette */
+      --bg-base:        #1a1915;   /* warm charcoal */
+      --bg-surface:     #211f1c;   /* cards / sidebar */
+      --bg-elevated:    #2a2724;   /* hover states */
+      --bg-input:       #2f2d29;
+
+      --text-primary:   #e8e3dc;   /* warm off-white */
+      --text-secondary: #9a9488;   /* muted warm grey */
+      --text-muted:     #66625c;
+
+      --border:         #312f2b;
+      --border-subtle:  #262420;
+
+      --accent:         #d4a574;   /* Claude signature warm amber */
+      --accent-hover:   #e0b48a;
+      --accent-dim:     rgba(212, 165, 116, 0.12);
+
+      --btn-bg:         #d4a574;
+      --btn-text:       #1a1915;
+      --btn-hover:      #e0b48a;
+
+      --success:        #4eb87b;
+      --success-dim:    rgba(78, 184, 123, 0.15);
+
+      --r-lg:           12px;
+      --r-md:           8px;
+      --r-sm:           5px;
+      --transition:     0.2s ease;
+    }
+
+    [data-theme="light"] {
+      --bg-base:        #f6f4f0;
+      --bg-surface:     #ffffff;
+      --bg-elevated:    #ece7df;
+      --bg-input:       #f0eae1;
+
+      --text-primary:   #1a1714;
+      --text-secondary: #5c554c;
+      --text-muted:     #948c81;
+
+      --border:         #ded6ca;
+      --border-subtle:  #e8e2d7;
+
+      --accent:         #b8824a;
+      --accent-hover:   #9f6f3b;
+      --accent-dim:     rgba(184, 130, 74, 0.12);
+
+      --btn-bg:         #b8824a;
+      --btn-text:       #ffffff;
+      --btn-hover:      #9f6f3b;
+
+      --success:        #2b9355;
+      --success-dim:    rgba(43, 147, 85, 0.12);
+    }
+
+    .theme-switching,
+    .theme-switching *,
+    .theme-switching *::before,
+    .theme-switching *::after {
+      transition: none !important;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* TOP HEADER BAR */
+    .top-bar {
+      height: 64px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .wordmark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .wordmark-icon {
+      color: var(--accent);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-btn {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--r-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .theme-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* MAIN CONTAINER */
+    .main-wrapper {
+      max-width: 880px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 40px 20px 60px;
+      flex: 1;
+    }
+
+    .hero-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 36px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .hero-desc {
+      color: var(--text-secondary);
+      font-size: 15px;
+      max-width: 640px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* MIRROR CARDS */
+    .mirrors-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 22px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+
+    .card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .card.primary-card {
+      border-color: var(--accent);
+      background: linear-gradient(135deg, var(--accent-dim), var(--bg-surface));
+    }
+
+    .card-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-width: 0;
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: var(--r-md);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .card-meta {
+      min-width: 0;
+    }
+
+    .card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .badge-tag {
+      padding: 2px 8px;
+      border-radius: var(--r-sm);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-primary {
+      background: var(--accent);
+      color: var(--btn-text);
+    }
+
+    .badge-subtle {
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .card-url {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .card-url:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .card-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .ping-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--success);
+      background: var(--success-dim);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(78, 184, 123, 0.25);
+    }
+
+    .ping-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 18px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+    }
+
+    .btn-accent {
+      background: var(--btn-bg);
+      color: var(--btn-text);
+    }
+
+    .btn-accent:hover {
+      background: var(--btn-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 40px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--bg-surface);
+      border: 1px solid var(--accent);
+      color: var(--text-primary);
+      padding: 12px 24px;
+      border-radius: var(--r-md);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s ease;
+      z-index: 999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card-right {
+        width: 100%;
+      }
+      .btn-accent {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HEADER BAR -->
+  <header class="top-bar">
+    <a href="https://portal.xinatory.workers.dev/" class="wordmark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="wordmark-icon">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Неофициальный Форум</span>
+    </a>
+
+    <div class="header-actions">
+      <button id="theme-toggle" class="theme-btn" title="Переключить тему">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-wrapper">
+    
+    <div class="hero-section">
+      <div class="hero-badge">
+        <i class="fa-solid fa-shield-halved"></i> AMZX MIRROR HUB
+      </div>
+      <h1>Навигатор Зеркал Форума Amazing X</h1>
+      <p class="hero-desc">
+        Единая платформа автоматической проверки доступности всех серверов и зеркал. 
+        Если один из доменов недоступен у вашего провайдера, используйте резервную ссылку ниже.
+      </p>
+    </div>
+
+    <div class="mirrors-list">
+
+      <!-- 1. CLOUDFLARE WORKERS -->
+      <div class="card primary-card">
+        <div class="card-left">
+          <div class="card-icon">
+            <i class="fa-solid fa-bolt"></i>
+          </div>
+          <div class="card-meta">
+            <div class="card-title-row">
+              <span class="card-title">Cloudflare Workers</span>
+              <span class="badge-tag badge-primary">ОСНОВНОЙ СЕРВЕР</span>
+            </div>
+            <a href="https://portal.xinatory.workers.dev/" class="card-url" target="_blank">portal.xinatory.workers.dev</a>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="ping-status" id="status-cf"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <a href="https://portal.xinatory.workers.dev/" class="btn btn-accent" target="_blank">
+            Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <button class="btn btn-outline" onclick="copyLink('https://portal.xinatory.workers.dev/')" title="Скопировать ссылку">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. VERCEL -->
+      <div class="card">
+        <div class="card-left">
+          <div class="card-icon">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 16px;"></i>
+          </div>
+          <div class="card-meta">
+            <div class="card-title-row">
+              <span class="card-title">Vercel CDN</span>
+              <span class="badge-tag badge-subtle">ЗЕРКАЛО №1</span>
+            </div>
+            <a href="https://portals-amazings.vercel.app/" class="card-url" target="_blank">portals-amazings.vercel.app</a>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="ping-status" id="status-vercel"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <a href="https://portals-amazings.vercel.app/" class="btn btn-accent" target="_blank">
+            Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <button class="btn btn-outline" onclick="copyLink('https://portals-amazings.vercel.app/')" title="Скопировать ссылку">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. NETLIFY -->
+      <div class="card">
+        <div class="card-left">
+          <div class="card-icon">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+          <div class="card-meta">
+            <div class="card-title-row">
+              <span class="card-title">Netlify CDN</span>
+              <span class="badge-tag badge-subtle">ЗЕРКАЛО №2</span>
+            </div>
+            <a href="https://amzportal.netlify.app/" class="card-url" target="_blank">amzportal.netlify.app</a>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="ping-status" id="status-netlify"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <a href="https://amzportal.netlify.app/" class="btn btn-accent" target="_blank">
+            Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <button class="btn btn-outline" onclick="copyLink('https://amzportal.netlify.app/')" title="Скопировать ссылку">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. RENDER -->
+      <div class="card">
+        <div class="card-left">
+          <div class="card-icon">
+            <i class="fa-solid fa-server"></i>
+          </div>
+          <div class="card-meta">
+            <div class="card-title-row">
+              <span class="card-title">Render Cloud</span>
+              <span class="badge-tag badge-subtle">ЗЕРКАЛО №3</span>
+            </div>
+            <a href="https://amzportal.onrender.com/" class="card-url" target="_blank">amzportal.onrender.com</a>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="ping-status" id="status-render"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <a href="https://amzportal.onrender.com/" class="btn btn-accent" target="_blank">
+            Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <button class="btn btn-outline" onclick="copyLink('https://amzportal.onrender.com/')" title="Скопировать ссылку">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 5. GITHUB PAGES -->
+      <div class="card">
+        <div class="card-left">
+          <div class="card-icon">
+            <i class="fa-brands fa-github"></i>
+          </div>
+          <div class="card-meta">
+            <div class="card-title-row">
+              <span class="card-title">GitHub Pages</span>
+              <span class="badge-tag badge-subtle">РЕЗЕРВНЫЙ АРХИВ</span>
+            </div>
+            <a href="https://xinatory501.github.io/amazing-online-portal/" class="card-url" target="_blank">xinatory501.github.io/...</a>
+          </div>
+        </div>
+        <div class="card-right">
+          <span class="ping-status" id="status-gh"><span class="ping-dot"></span> 🟢 Онлайн</span>
+          <a href="https://xinatory501.github.io/amazing-online-portal/" class="btn btn-accent" target="_blank">
+            Перейти <i class="fa-solid fa-arrow-up-right-from-square"></i>
+          </a>
+          <button class="btn btn-outline" onclick="copyLink('https://xinatory501.github.io/amazing-online-portal/')" title="Скопировать ссылку">
+            <i class="fa-regular fa-copy"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <footer>
+      Неофициальный Форум Amazing X &copy; 2026. Разработан <strong>Savely_Gerov</strong> (бывшим главой администрации ЮР).
+    </footer>
+  </main>
+
+  <div class="toast" id="toast">Ссылка скопирована в буфер обмена!</div>
+
+  <script>
+    // ── THEME SWITCHER LOGIC (Claude design system) ────────
+    const themeBtn = document.getElementById('theme-toggle');
+
+    function applyTheme(theme) {
+      document.documentElement.classList.add('theme-switching');
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+      if (themeBtn) {
+        themeBtn.innerHTML = theme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+      }
+      setTimeout(() => document.documentElement.classList.remove('theme-switching'), 50);
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    applyTheme(savedTheme);
+
+    if (themeBtn) {
+      themeBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'dark';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    // ── COPY LINK TOAST ────────────────────────────────────
+    function copyLink(url) {
+      navigator.clipboard.writeText(url).then(() => {
+        const toast = document.getElementById('toast');
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2500);
+      });
+    }
+
+    // ── LIVE PING CHECK ────────────────────────────────────
+    async function checkMirror(url, elId) {
+      const start = Date.now();
+      try {
+        await fetch(url + '?t=' + start, { mode: 'no-cors' });
+        const ping = Date.now() - start;
+        document.getElementById(elId).innerHTML = `<span class="ping-dot"></span> 🟢 Онлайн (${ping}ms)`;
+      } catch (e) {
+        document.getElementById(elId).innerHTML = `<span class="ping-dot" style="background:#ff5252;"></span> 🔴 Недоступен`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkMirror('https://portal.xinatory.workers.dev/', 'status-cf');
+      checkMirror('https://portals-amazings.vercel.app/', 'status-vercel');
+      checkMirror('https://amzportal.netlify.app/', 'status-netlify');
+      checkMirror('https://amzportal.onrender.com/', 'status-render');
+      checkMirror('https://xinatory501.github.io/amazing-online-portal/', 'status-gh');
+    });
+  </script>
+
+</body>
+</html>
