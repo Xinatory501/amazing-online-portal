@@ -1,10 +1,11 @@
 /**
  * Cloudflare Workers Script for Amazing Forum Portal
  * 
- * PURPOSE: Forces absolute cache-busting so that:
- * - index.html is NEVER cached by Cloudflare CDN or Browser
- * - Clear-Site-Data: "cache" header forces browser to purge old cached scripts
- * - Always serves the fresh asset from storage
+ * PURPOSE:
+ * - Serves sitemap.xml and robots.txt with proper XML/text Content-Type
+ * - index.html is NEVER cached by CDN or Browser (no-cache)
+ * - Preserves localStorage authentication sessions (no Clear-Site-Data)
+ * - Always serves fresh assets from storage
  */
 
 export default {
@@ -27,7 +28,13 @@ export default {
     const response = await env.ASSETS.fetch(assetRequest);
     const newHeaders = new Headers(response.headers);
 
-    if (isHtml) {
+    if (pathname === '/sitemap.xml') {
+      newHeaders.set('Content-Type', 'application/xml; charset=utf-8');
+      newHeaders.set('Cache-Control', 'public, max-age=3600');
+    } else if (pathname === '/robots.txt') {
+      newHeaders.set('Content-Type', 'text/plain; charset=utf-8');
+      newHeaders.set('Cache-Control', 'public, max-age=3600');
+    } else if (isHtml) {
       // 🚨 AGGRESSIVE NO-CACHE (Prevents CDN/Browser HTML caching without wiping localStorage)
       newHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
       newHeaders.set('Pragma', 'no-cache');

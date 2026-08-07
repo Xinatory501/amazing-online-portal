@@ -1,18 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // ── GitHub Pages Top Banner with Dismiss (X) ───────────
-  if (window.location.hostname.includes('github.io')) {
-    const banner = document.getElementById('github-migration-banner');
-    const closeBtn = document.getElementById('github-banner-close-btn');
-
-    if (banner) banner.classList.remove('hidden');
-
-    if (closeBtn && banner) {
-      closeBtn.addEventListener('click', () => {
-        banner.classList.add('hidden');
-      });
-    }
-  }
-
   // ── State ──────────────────────────────────
   let activeCategory = 'Все';
   let activeLecId = null;
